@@ -1,0 +1,10 @@
+export("ASICS",
+	"ASICS_multiFiles",
+	"extractConcentrations",
+	"plotSpectrum")
+
+import("ggplot2",
+    "doSNOW",
+    "plyr",
+	"snow",
+	"foreach")
