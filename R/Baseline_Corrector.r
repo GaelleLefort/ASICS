@@ -71,7 +71,7 @@ B_Corrector <- function(i_vector)
           tmp_sum <- 0
           for (i in 1:(involve_interval_2 + 1))
           {
-               if (tmp_sd_mark[i] == 0)  
+               if (tmp_sd_mark[i] == 0)
                {
                   k <- k + 1
                   tmp_sum <- tmp_sum + i_vector[i]
@@ -85,7 +85,7 @@ B_Corrector <- function(i_vector)
           tmp_sum <- 0
           for (i in (length(i_vector) - involve_interval_2):length(i_vector))
           {
-               if (tmp_sd_mark[i] == 0)  
+               if (tmp_sd_mark[i] == 0)
                {
                   k <- k + 1
                   tmp_sum <- tmp_sum + i_vector[i]
@@ -102,12 +102,12 @@ B_Corrector <- function(i_vector)
           tmp_sum <- 0
           while (k <= (2*involve_interval_2 + 1))
           {
-               if (tmp_sd_mark[i] == 0)  
+               if (tmp_sd_mark[i] == 0)
                {
                   k <- k + 1
                   tmp_sum <- tmp_sum + i_vector[i]
                }
-               i <- i + 1       
+               i <- i + 1
           }
           i_vector_h_t[1:(involve_interval_2 + 1)] <- tmp_sum/(2*involve_interval_2 + 1)
     }
@@ -118,12 +118,12 @@ B_Corrector <- function(i_vector)
           tmp_sum <- 0
           while (k <= (2*involve_interval_2 + 1))
           {
-               if (tmp_sd_mark[i] == 0)  
+               if (tmp_sd_mark[i] == 0)
                {
                   k <- k + 1
                   tmp_sum <- tmp_sum + i_vector[i]
                }
-               i <- i - 1       
+               i <- i - 1
           }
           i_vector_h_t[(length(i_vector) - involve_interval_2):length(i_vector)] <- tmp_sum/(2*involve_interval_2 + 1)
     }
@@ -141,7 +141,7 @@ B_Corrector <- function(i_vector)
         }
         if (tmp_sd_mark[(j-1)]==1 & tmp_sd_mark[j]==0)
         {
-            if (counter==0)  
+            if (counter==0)
             {
                 next
             }   else
@@ -153,7 +153,7 @@ B_Corrector <- function(i_vector)
             }
         }
     }
-    
+
     #-------------------------------------------------------------------------------
     #Mean filter
     tmp_baseline <- rep(0, length(i_vector))
@@ -174,6 +174,3 @@ B_Corrector <- function(i_vector)
     return(tmp_list)
 }
 
-# i_vector <- read.table("K:/R/NMR.BaselineCorrector/data/test_spectrum.csv",header=TRUE,sep=",",dec=".")
-# i_vector <- as.numeric(i_vector)
-# i_vector <- as.vector(t(i_vector))

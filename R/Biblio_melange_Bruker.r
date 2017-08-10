@@ -1,5 +1,5 @@
 f_o_phi <- function(x, f, phix)
-{ 
+{
   #il y a des pbs avec les ex aequo dans u et v
   # Attention, il faut que inf phi(x) >= inf x ET sup phi(x)<= sup x
   #phix contient le vecteur phi(x), f contient f(x)
@@ -32,7 +32,7 @@ AUC <- function(x, y) # calcul l'AUC de y=f(x) avec la methode des trapezes
 
 
 # crunch <- function(x, nb_interval=6000)
-# {  
+# {
 #   re1 <- sum(x[,1] < 4.5)
 #   re2 <- sum(x[,1] > 5)
 #   a <- floor((re1 + re2)/(nb_interval))
@@ -40,12 +40,26 @@ AUC <- function(x, y) # calcul l'AUC de y=f(x) avec la methode des trapezes
 #   bb1 <- rep(1:round(re1/a + 1), length.out = re1, each = a)
 #   bb2 <- rep((max(bb1) + 1):(max(bb1) + 1 + round(re2/a + 1)), length.out = re2, each = a)
 #   bb <- c(bb1, bb2)
-#   
+#
 #   yy <- matrix(nrow = max(bb), ncol = 2)
-#   bb <- as.factor(bb) 
+#   bb <- as.factor(bb)
 #   yy[,1] <- tapply(x[, 1], bb, mean)
 #   yy[,2] <- tapply(x[, 2], bb, sum)
 #   return(as.matrix(yy))
 # }
+
+subset_library <- function(pure_library, idx){
+  sub_library <- list()
+  sub_library$name <- pure_library$name[idx]
+  sub_library$grid <- pure_library$grid
+  sub_library$spectra <- pure_library$spectra[, idx]
+  sub_library$nb_protons <- pure_library$nb_protons[idx]
+  return(sub_library)
+}
+
+
+
+
+
 
 

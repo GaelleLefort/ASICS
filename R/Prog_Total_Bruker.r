@@ -1,9 +1,10 @@
 ######Exemple de programme ##############################
 #Pour le parallelisme
-Total_Bruker <- function(name, libraryMetab = NULL, extensionMelange = "Bruker",
-                         ZoneAEnlever = matrix(c(4.5,5.1), ncol = 2, nrow = 1),
-                         DecalageMax = 0.02, DecalageLib = 0, sample = "last")
+Total_Bruker <- function(path, library.metabolites = NULL, file.type = "Bruker",
+                         exclusion.areas = matrix(c(4.5,5.1), ncol = 2, nrow = 1),
+                         max.shift = 0.02, which.spectra = "last")
 {
+
   #name est le nom du dossier dans lequel on a le melange
   #DecalageMax est le decalage qu'on permet sur le spectre en ppm
   # [borneinfZoneEnlever;bornesupZoneEnlever] zone qu'on enlève, souvent zone où il y a l'eau
@@ -29,23 +30,20 @@ Total_Bruker <- function(name, libraryMetab = NULL, extensionMelange = "Bruker",
   #   pas<-data[[1]][2,1]-data[[1]][1,1]
   #
 
-  if(is.null(libraryMetab)) {
+  if(is.null(library.metabolites)) {
     data(Library)
   } else {
-    load(libraryMetab)
+    load(library.metabolites)
   }
 
-  #Decaler la librairie
-  Library$Grid <- Library$Grid + DecalageLib
-
   ##on va chercher le melange
-  a_analyser <- recup_melange_bru(name, Library$Grid, sample = sample)
+  a_analyser <- recup_melange_bru(path, Library$Grid, sample = which.spectra)
 
   ##on enleve la zone a enlever
   Zone <- vector(mode = "logical", length = length(Library$Grid))
-  for (i in 1:nrow(ZoneAEnlever))
+  for (i in 1:nrow(exclusion.areas))
   {
-    Zone <- Zone | ((Library$Grid > ZoneAEnlever[i, 1]) & (Library$Grid < ZoneAEnlever[i, 2]))
+    Zone <- Zone | ((Library$Grid > exclusion.areas[i, 1]) & (Library$Grid < exclusion.areas[i, 2]))
   }
   a_analyser[Zone, 2] <- 0
   Library$Metab[Zone, ] <- 0
@@ -62,7 +60,11 @@ Total_Bruker <- function(name, libraryMetab = NULL, extensionMelange = "Bruker",
   }
   a_analyser[, 2] <- a_analyser[, 2]/AUC(Library$Grid, a_analyser[, 2])
 
-  return(list("Melange" = a_analyser[, 2], "Library" = Library))
+
+  pure_library <- list("grid" = Library$Grid, "name" = Library$Name,
+                       "spectra" = Library$Metab, "nb_protons" = Library$Protons)
+
+  return(list("mixture" = a_analyser[, 2], "pure_library" = pure_library))
   #return(list("Metabolites"=data,"Noms_Metab"=nameMeta,"Melange"=a_analyser))
 
 }
@@ -81,7 +83,7 @@ recup_melange_bru <- function(nameMel, grilleMeta, borneinfZoneEnlever = 0,
   }
 
 
-  a_analyserT <- NmRBrucker_read(nameSample, a_analyserT)
+  a_analyserT <- NmrBrucker_read(nameSample, a_analyserT)
   a_analyserT[, 2] <- B_Corrector(a_analyserT[, 2])[[2]]
 
   a_analyserT[, 2] <- a_analyserT[, 2]/(AUC(a_analyserT[, 1], a_analyserT[, 2]))

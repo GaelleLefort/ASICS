@@ -1,214 +1,159 @@
 #' Automatic Statistical Identification in Complex Spectra
 #'
 #' Description
-#' @param name folder path of the Bruker files
-#' @param ZoneAEnlever exclusion areas to remove before the quantification
-#' @param DecalageMax maximum chemical shift allowed
-#' @param DecalageLib chemical shift between library of pure spectra and complex mixture
-#' @param sample if more than one spectra by sample, spectra to choose (either "first",
-#' "last" or its number
-#' @param seed seed
-#' @param libraryMetab path of the library of standard if not the default one
-#' @param seuilBruit threshold noise
+#' @param path folder path of the Bruker files
+#' @param exclusion.areas exclusion areas of the quantification
+#' @param max.shift maximum chemical shift allowed (in ppm)
+#' @param which.spectra if more than one spectra by sample, spectra to choose
+#' (either "first", "last" or its number)
+#' @param library.metabolites path of the library of standard if not the default
+#' one
+#' @param threshold.noise threshold noise
 #' @keywords NMR quantification metabolites
 #' @export
 #' @examples
-#' result <- ASICS(name = "./spectres_exemple/AG_faq_Beck01",
-#'  ZoneAEnlever = matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE),
-#'  DecalageMax = 0.02, DecalageLib = 0, sample = "last", seed = 12345,
-#'  libraryMetab = NULL)
-ASICS <- function(name, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2, nrow = 1),
-                  DecalageMax = 0.02, DecalageLib = 0, sample = "last", seed = 12345,
-                  libraryMetab = NULL, seuilBruit = 0.02)
+#' result <- ASICS(path = "./spectres_exemple/AG_faq_Beck01",
+#'  exclusion.areas = matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE),
+#'  max.shift = 0.02, which.spectra = "last", library.metabolites = NULL)
+ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2, nrow = 1),
+                  max.shift = 0.02, which.spectra = "last",
+                  library.metabolites = NULL, threshold.noise = 0.02)
 {
 
-  s1 <- 0.172 #ecart type du bruit multiplicatif
-  s2 <- 0.15 #ecart type du bruit additif1
-  set.seed(seed)
-
-  ##On va chercher le melange et la bibliotheque de metabolites
-  a_analyser <- Total_Bruker(name = name, ZoneAEnlever = ZoneAEnlever,
-                             DecalageMax = DecalageMax, DecalageLib = DecalageLib,
-                             sample = sample, libraryMetab = libraryMetab)
-  melange <- a_analyser$Melange
-  nameMeta <- a_analyser$Library$Name
-  x <- a_analyser$Library$Grid
-  biblio <- a_analyser$Library$Metab
-  dep <- DecalageMax
-  h <- floor(dep/(x[2] - x[1]))
-  proton <- a_analyser$Library$Protons
+  ##Seed and variables declaration
+  set.seed(12345)
 
 
-  #####################Amelioration de la ligne de base ##############################
-  N <- floor(length(x)/100)
-  m <- numeric(100)
-  r <- numeric(100)
-  for(i in 1:100)
-  {
-    m[i] <- min(melange[(1+(i-1)*N):(i*N)])
-    r[i] <- which.min(melange[(1+(i-1)*N):(i*N)])+(i-1)*N
-  }
+  #-----------------------------------------------------------------------------
+  #Import complexe mixture and pure spectra library
+  import <- Total_Bruker(path = path, exclusion.areas = exclusion.areas,
+                         max.shift = max.shift, which.spectra = which.spectra,
+                         library.metabolites = library.metabolites)
 
-  cuts <- c(1, r, length(x))
-  vals <- c(0, m, 0)
+  mixture <- import$mixture
+  pure_library <- import$pure_library
 
-  f <- approx(cuts, vals, method = "linear", n = length(x))
-
-  melange <- melange - f$y*(f$y<0)
-
-  #####################################################################################
-  seuil_melange <- seuilBruit
-  Smelange <- 1*(melange > seuil_melange)
-  Saugmente <- grossir_ensemble(Smelange, h)
-  Test <- numeric(ncol(biblio))
-  for(i in 1:ncol(biblio))
-  {
-    Smetab <- 1*(biblio[,i] > 0.1) #Support du metabolite i (on doit etre sur de ne selectionner que le support
-    Test[i] <- 1*(sum(Smetab*(1 - Saugmente)) == 0) #Test si le support du metabolite est inclus dans le support du melange augmente
-  }
-  v0 <- (1:ncol(biblio))[Test == 1] #Metabolites non elimines apres l'etape de nettoyage.
-  nameMeta1 <- nameMeta[v0]
+  #number of points on library grid corresponding to maximum shift
+  nb_points_shift <- floor(max.shift / (pure_library$grid[2] -
+                                          pure_library$grid[1]))
 
 
-  ##################### Etape pour ordonner les metabolites #####################
 
-  u <- melange[(h+1):(length(x)-h)]
-  M <- matrix(nrow = length(x),ncol = (2*h))
-  #matrice ou chaque colonne est le spectre du melange deforme
-  for(i in (0:(2*h-1)))
-  {
-    M[, (i+1)] <- c(rep(0, i),u,rep(0, (2*h-i)))
-  }
-  D <- diag(colSums(biblio[, v0]^2))
-  A <- solve(D)%*%t(biblio[, v0])%*%M #matrice des coefficients des moindres carres ; chaque ligne correspond au coefficient des
-  #moindres carres entre un metabolite et les melanges deformes
+  #-----------------------------------------------------------------------------
+  #Baseline improvement of complex mixture
 
-  R <- apply(A, 1, which.max)
-  Resultat <- numeric(length(v0))
+  #Minimum and minimum index for nb_interval of same length
+  nb_interval <- 100
+  interval_length <- floor(length(pure_library$grid) / nb_interval)
 
-  for(i in (1:length(v0)))
-  {
-    Resultat[i] <- sum((lm(M[, R[i]]~biblio[, v0[i]]-1)$residuals)^2)
-  }
+  minima <- rollapply(mixture, FUN = min,
+                      width = interval_length, by = interval_length)
 
-  order <- sort(Resultat, decreasing = FALSE, index.return = TRUE)$ix
-  v1 <- v0[order]
-  proton1 <- proton[v1]
+  minima_idx <- rollapply(mixture, FUN = which.min,
+                          width = interval_length, by = interval_length) +
+    (1:nb_interval - 1) * interval_length
 
-  ###############################################################################
+  #Smooth grid with linear interpolation between minimum
+  minima_idx <- c(1, minima_idx, length(pure_library$grid))
+  minima <- c(0, minima, 0)
+  fitted_baseline <- approx(minima_idx, minima, method = "linear",
+                            n = length(pure_library$grid))
 
-  biblio_a_conserver <- biblio[,v1]
-  nameMeta_final <- nameMeta[v1]
-
-  phi <- function(x, a)
-  {
-    u <- min(x)
-    v <- max(x) - min(x)
-    z <- (x - u)/v
-    tt <- z + a*z*(1 - z)
-    return(u + tt*v)
-  }
-  deforme <- function(x, y, a)
-  {
-    phix <- phi(x, a)
-    return(f_o_phi(x, y, phix)) # phix deformation de l'axe des absisses et f_o_phi est la valeur de la spectre deforme sur les points
-    #de discretisation de l'axe ds absisses.
-  }
+  #Corrected mixture
+  mixture <- mixture - fitted_baseline$y * (fitted_baseline$y < 0)
 
 
-  ############################ Reprend l'etape de deformation #########################
 
-  var <- abs(melange)*s1^2 + s2^2
-  pondere <- 1/var
-  MC <- lm(melange~biblio_a_conserver - 1, weights = pondere)
-  biblio_deformee <- biblio_a_conserver
-  rangea <- -9:9/10
+  #-----------------------------------------------------------------------------
+  #Cleaning step: remove metabolites that cannot belong to the mixture
+
+  signal_mixture <- 1 * (mixture > threshold.noise)
+  signal_mixture_shift <- grossir_ensemble(signal_mixture, nb_points_shift)
+  signal_library <- 1 * (pure_library$spectra > 0.1)
+
+  #keep metabolites for which signal is included in mixture signal
+  metab_to_keep <- which(apply(signal_library, 2,
+                               function(x)
+                                 sum(x - signal_mixture_shift == 1) == 0))
+
+  pure_lib_clean <- subset_library(pure_library, metab_to_keep)
+
+
+
+  #-----------------------------------------------------------------------------
+  #Sort metabolites by regression residuals
+
+  #create a matrix with all possible shifted mixture in column
+  max_shift_left <- c(tail(head(mixture, -nb_points_shift), -nb_points_shift),
+                      rep(0, 2 * nb_points_shift))
+  mixture_shift <- t(laply (.data = as.list(1:(nb_points_shift * 2 - 1)),
+                            .fun = function (x) c(tail(max_shift_left, x),
+                                                  head(max_shift_left, -x))))
+  mixture_shift <- cbind(max_shift_left, mixture_shift)
+
+  #compute least square between all possible shifted mixture and all metabolites
+  XtX <- diag(colSums(pure_lib_clean$spectra^2))
+  least_square_shift <- solve(XtX)%*%t(pure_lib_clean$spectra)%*%mixture_shift
+  max_least_square <- apply(least_square_shift, 1, which.max)
+
+  #optimal shift
+  residuals_opti <- unlist(lapply(1:length(pure_lib_clean$name),
+                                  function(x)
+                                    sum((lm(mixture_shift[, max_least_square[x]]~
+                                              pure_lib_clean$spectra[,x] -
+                                              1)$residuals) ^ 2)))
+
+  # metabolites sorted by decreasing residual sum
+  order <- sort(residuals_opti, decreasing = FALSE, index.return = TRUE)$ix
+  pure_lib_sorted <- subset_library(pure_lib_clean, order)
+
+
+
+  #-----------------------------------------------------------------------------
+  #Deformations of pure spectra
+
+  #Noises and weights
+  s1 <- 0.172 #standard deviation of multiplicative noise
+  s2 <- 0.15 #standard deviation of additive noise
+  noises <- abs(mixture) * s1 ^ 2 + s2 ^ 2
+  mixture_weights <- 1 / noises
+
+  #Linear regression between mixture and each pure spectra
+  least_square <- lm(mixture~pure_lib_sorted$spectra - 1,
+                     weights = mixture_weights)
+
+  #Shifted library
+  pure_lib_shifted <- pure_lib_sorted
+
+  #Deform each spectrum
+  pure_lib_shifted$spectra <- t(laply(as.list(1:ncol(pure_lib_sorted$spectra)),
+                                      deform_spectra, pure_lib_sorted, least_square,
+                                      mixture_weights, nb_points_shift, max.shift))
+
+
+  #-----------------------------------------------------------------------------
+  #Localized deformations of pure spectra
+  nb_iter_deform_loc <- 5
   nb_iter_deform <- 4
+  range_a <- -9:9/10
   seuil1 <- 1
 
-  for (i in 1:ncol(biblio_deformee))
-  {
-    ##recupere les extremites des composantes connexes##
-    control <- x
-    sel <- which(biblio_deformee[, i] > seuil1)
-    u <- which((sel[-1] - sel[1:(length(sel) - 1)] - 1) != 0)
-    nb_int <- length(u) + 1
-    v <- matrix(nrow = nb_int, ncol = 2)
-    v[, 2]=c(sel[u], max(sel))
-    v[, 1]=c(min(sel), sel[u + 1])
-    ####
-    ##agrandi les composantes connexes##
-    v[, 1]=v[, 1] - h
-    v[, 2]=v[, 2] + h
-    ####
+  nb_iter <- 0
+  while(nb_iter < nb_iter_deform_loc){
 
-    ###si elles se chevauchent on les fusionne
-    # iii<-1
-    #while(iii<nrow(matrix(v,ncol=2)))
-    #{   if (v[iii,2]>v[iii+1,1])
-    #    {v[iii,2]<-v[iii+1,2]
-    #      v<-v[-(iii+1),]
-    #     }
-    #      else
-    #      {iii<-iii+1}
-    #}
-    #v<-matrix(v,ncol=2)
-    #nb_int<-nrow(v)
-
-    #reste <- as.numeric(MC$residuals) + as.numeric(MC$coefficients[i])*biblio_deformee[, i]
-    reste <- as.numeric(MC$residuals) + max(0, as.numeric(MC$coefficients[i]))*biblio_deformee[, i]
-
-    ## deforme sur chaque composante connexe##
-    for (j in 1:nb_int)
-    {
-      #_res signifie que l'on se restreint à un intervalle
-      reste_res <- reste[v[j, 1]:v[j, 2]]
-      biblio_res <- biblio_deformee[v[j, 1]:v[j, 2],] #restriction des spectres de metabolite sur la composante connexe
-      adeformer <- biblio_res[, i] #partie du spectre du metabolite a deformer
-      x_res <- x[v[j, 1]:v[j, 2]]
-      pondere_res <- pondere[v[j, 1]:v[j, 2]]
-      tt <- x_res
-      for (k in 1:nb_iter_deform)
-      {
-        opti <- abs(sum(adeformer*reste_res*pondere_res)/sqrt(sum((adeformer^2)*pondere_res)))
-        flag <- F
-        for (a in rangea)
-        {
-          control[v[j, 1]:v[j, 2]] <- phi(tt, a)
-          candidat <- deforme(x_res, adeformer, a)
-
-          if ((abs(sum(candidat*reste_res*pondere_res)/sqrt(sum((candidat^2)*pondere_res))) > opti) & (max(abs(control - x)[v[j, 1]:v[j, 2]]) < dep))
-          {
-            adeformer <- candidat
-            opti <- abs(sum(candidat*reste_res*pondere_res)/sqrt(sum((candidat)^2*pondere_res)))
-            flag <- T
-            tt <- phi(tt, a)
-          }
-        }
-        if (flag == T) biblio_deformee[v[j, 1]:v[j, 2], i] <- adeformer
-      }
-
-    }
-
-    biblio_deformee[, i] <- biblio_deformee[, i]/AUC(x, biblio_deformee[, i])
-  }
-
-
-  ###################### Deformation localisee #######################
-  biblio_deformeee <- biblio_deformee
-  for(l in 1:5)
-  {
-
-    MC <- lm(melange~biblio_deformeee - 1, weights = pondere)
+    #####################!! script d'origine : pour moi il faut réutiliser la
+    #fonction précédente mais il y quelques petites choses qui ne sont pas
+    #faite pareilles
+    MC <- lm(mixture~pure_lib_shifted$spectra - 1, weights = mixture_weights)
     r <- as.numeric(MC$residuals)
 
 
-    for (i in 1:ncol(biblio_deformeee))
+    for (i in 1:ncol(pure_lib_shifted$spectra))
     {
 
       c <- as.numeric(MC$coefficients[i])
       ##recupere les extremites des composantes connexes##
-      sel <- which(biblio_deformeee[, i] > seuil1)
+      sel <- which(pure_lib_shifted$spectra[, i] > seuil1)
       u <- which((sel[-1] - sel[1:(length(sel)-1)]-1) != 0)
       nb_int <- length(u) + 1
       v <- matrix(nrow = nb_int, ncol = 2)
@@ -217,21 +162,23 @@ ASICS <- function(name, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2, nrow = 1),
       ####
       for(j in 1:nb_int)
       {
-        x_res <- x[v[j, 1]:v[j, 2]]
+        x_res <- pure_lib_shifted$grid[v[j, 1]:v[j, 2]]
         r_res <- r[v[j, 1]:v[j, 2]]
-        i0 <- which.max(abs(r_res))
+        i0 <- which.max(abs(r_res)) ######## Pourquoi partir de là ??
         amin <- x_res[i0] - 0.002
         bmax <- x_res[i0] + 0.002
-        r_opti <- r[(x > amin) & (x < bmax)]
-        x_def <- x[(x > amin) & (x < bmax)]
-        adeformer <- biblio_deformeee[(x > amin) & (x < bmax), i]
-        pondere_res <- pondere[(x > amin) & (x < bmax)]
-        reste_res <- r_opti + c*biblio_deformeee[(x > amin) & (x < bmax), i]
+        r_opti <- r[(pure_lib_shifted$grid > amin) & (pure_lib_shifted$grid < bmax)]
+        x_def <- pure_lib_shifted$grid[(pure_lib_shifted$grid > amin) & (pure_lib_shifted$grid < bmax)]
+
+
+        adeformer <- pure_lib_shifted$spectra[(pure_lib_shifted$grid > amin) & (pure_lib_shifted$grid < bmax), i]
+        pondere_res <- mixture_weights[(pure_lib_shifted$grid > amin) & (pure_lib_shifted$grid < bmax)]
+        reste_res <- r_opti + c*pure_lib_shifted$spectra[(pure_lib_shifted$grid > amin) & (pure_lib_shifted$grid < bmax), i]
         for (k in 1:nb_iter_deform)
         {
           opti <- abs(sum(adeformer*reste_res*pondere_res)/sqrt(sum((adeformer^2)*pondere_res)))
           flag <- F
-          for (a in rangea)
+          for (a in range_a) ## même range_a que précédemment
           {
             candidat <- deforme(x_def, adeformer, a)
 
@@ -242,67 +189,58 @@ ASICS <- function(name, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2, nrow = 1),
               flag <- T
             }
           }
-          if (flag == T) biblio_deformeee[(x > amin) & (x < bmax), i] <- adeformer
+          if (flag == T) pure_lib_shifted$spectra[(pure_lib_shifted$grid > amin) & (pure_lib_shifted$grid < bmax), i] <- adeformer
         }
 
       }
 
-      biblio_deformeee[, i] <- biblio_deformeee[, i]/AUC(x, biblio_deformeee[, i])
+      pure_lib_shifted$spectra[, i] <- pure_lib_shifted$spectra[, i]/AUC(pure_lib_shifted$grid, pure_lib_shifted$spectra[, i])
     }
+    ####################################
+    nb_iter <- nb_iter + 1
   }
 
-  ####################### Optimisation lasso ##########################
+
+
+
+
+  #-----------------------------------------------------------------------------
+  #Lasso optimisation
+  ### Je n'ai pas changé les noms des variables ou essayer d'optimiser cette partie
+  #du code
 
   #Construction de la matrice de variance du maximum de vraisemblance
-  U <- 1/sqrt(var)
-  A <- as.numeric(U)*biblio_deformeee
+  U <- 1 / sqrt(noises)
+  A <- as.numeric(U) * pure_lib_shifted$spectra
   VMLE <- solve(t(A)%*%A) #La matrice du MLE est (X^T %*% D^{-1} %*% X)^{-1}
 
   N <- 1000 # Pour la minimisation (grossière des seuils), on prend peu d'observation de ZMLE
   C <- t(chol(VMLE))
   ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N, rnorm(nrow(C)*N))
 
-  ################## parametre de regulariusation du lasso sous contraintes positives #############
-
-  Tuning <- function(delta)
-  {
-    Observation <- apply(as.double(delta)*(ZMLE), 2, max)
-    return(quantile(Observation, 0.95))
-  }
-
-  #########################################################
-
+  ##### parametre de regulariusation du lasso sous contraintes positives #######
   se <- sqrt(diag(VMLE))
 
-  seuil <- function(x)
-  {
-    return(Tuning(x)/x + se*qnorm(0.95))
-  }
-
-
-  aminimiser <- function(x)
-  {
-    sum(seuil(x))
-  }
 
   #Optimisation de la norme 1 des seuils
 
   Nbtirage <- 30
-  p <- ncol(VMLE)
+  p <- ncol(VMLE) #nb de metab
   W <- matrix(nrow = Nbtirage, ncol = p)
   u <- numeric(Nbtirage)
 
-  delta0 <- rep(0.5, p)
-  a_min <- sum(seuil(delta0))
+  delta0 <- rep(0.5, p) # 0.5 par metab
+  a_min <- sum(seuil(delta0, ZMLE, se)) # somme des seuil par metab
   err <- 0.4
 
-  for(i in 1:400)
+  for(i in 1:400) ## pk 400 ?
   {
-    err <- 0.99*err
-    W <- matrix(delta0 + err*c(runif(p*Nbtirage, -1, 1)), nrow = Nbtirage, byrow = T)
-    W[W >1 ]  <-  1
+    err <- 0.99 * err
+    W <- matrix(delta0 + err * c(runif(p * Nbtirage, -1, 1)), nrow = Nbtirage,
+                byrow = T)
+    W[W > 1]  <-  1
     W[W < 0] <- 0.0001
-    u <- apply(W, 1, aminimiser)
+    u <- apply(W, 1, aminimiser, ZMLE, se)
     if (min(u) < a_min)
     {
       delta0 <- W[which.min(u), ]
@@ -312,58 +250,62 @@ ASICS <- function(name, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2, nrow = 1),
 
 
   #Estimation du pseudo MLE
-  B2 <- as.numeric(lm(melange~biblio_deformeee - 1, weights = pondere)$coefficients) #estimation du pseudo MLE
+  B2 <- as.numeric(lm(mixture~pure_lib_shifted$spectra - 1,
+                      weights = mixture_weights)$coefficients)
 
   N <- 10000
-  ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N,rnorm(nrow(C)*N)) #Calcul des seuils on prend beaucoup de realisations de ZMLE
+  #Calcul des seuils on prend beaucoup de realisations de ZMLE
+  ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N,rnorm(nrow(C)*N))
 
-  ################## Estimation lasso de l'active avec contraintes de positivite #############
-  v <- 1*(B2 > Tuning(delta0)/delta0)*1*(B2 > 0)
-  B_final_tot <- as.numeric(lm(melange~biblio_deformeee[, v==1] - 1, weights = pondere)$coefficients)
-  Positif <- B_final_tot > 0
-  B_final <- B_final_tot[Positif]
-  if (any(Positif == FALSE))
-  {
-    Compo_Negative <- v1[v == 1][Positif == FALSE]
-    for (j in 1:length(Compo_Negative))
-    {
-      v[v1 == Compo_Negative[j]] <- 0
-    }   ##on met les negatifs dans non identifies
-  }
+  ####### Estimation lasso de l'active avec contraintes de positivite ##########
+  identified_metab <- (B2 > Tuning(delta0, ZMLE) / delta0) & (B2 > 0)
+  pure_lib_identified <- subset_library(pure_lib_shifted, which(identified_metab))
 
-  Metamelange <- nameMeta_final[v == 1]
+  B_final_tot <- as.numeric(lm(mixture~pure_lib_identified$spectra - 1, weights = mixture_weights)$coefficients)
 
-  ############ Reconstitution du melange avec les metabolites observes ##########
-  Melange_rec <- biblio_deformeee[, v == 1]%*%B_final #spectre du melange reconstitue
+  #Test de la positivité des coefficients
+  B_final <- B_final_tot[B_final_tot > 0]
 
-  ############## Concentrations relatives ###########################
-  v2 <- v1[v == 1] #Metabolite conserver à l'issue de l'etape d'elimination et du lasso
-  proton_final <- proton[v2]
-  concentration_final <- B_final/proton_final #concentration est proportionnelle à l'AUC et est inversement proportionnelle au nombre de proton
-  ord <- sort(concentration_final, decreasing = TRUE, index.return = TRUE)$ix
-  Metaordonnee <- Metamelange[ord]
+  identified_metab[identified_metab][B_final_tot < 0] <- FALSE
 
-  Metabolite_ref <- Metaordonnee[1] #Metabolite de reference
-  B_ord <- B_final[ord]
-  proton_ord <- proton_final[ord]
-  concentration_ord <- concentration_final[ord]
+  pure_lib_final <- subset_library(pure_lib_shifted, which(identified_metab))
 
-  #concentration relatives à celle de Metabolite_ref
-  #C_final=(B_ord[-1]*proton_ord[1])/(B_ord[1]*proton_ord[-1])
 
-  ##!!!!!!
-  #C_final=(concentration_ord[-1])/(concentration_ord[1])
-  C_final <- concentration_ord
 
-  # Seuil d'identification relatif
-  Meta_non_identifie <- nameMeta_final[v == 0]
-  seuil_identification_relatif <- round((seuil(delta0)[v == 0]*proton_ord[1])/(proton[v1[v == 0]]), digits = 4)
 
-  ##A renvoyer
-  ##!!!
-  Present <- data.frame(Name = Metaordonnee, Relative_Concentration = C_final)
-  Non_identified <- data.frame(Name = Meta_non_identifie, Threshold = seuil_identification_relatif)
-  L <- list("Present" = Present, "Non_identified" = Non_identified, "Mixture" = melange,
-            "Estimated_mixture" = Melange_rec, "Grid" = a_analyser$Library$Grid)
+
+
+
+  #-----------------------------------------------------------------------------
+  #Results
+
+  #Reconstituted mixture with estimated coefficents
+  est_mixture <- pure_lib_final$spectra%*%B_final
+
+  #Compute relative concentration of identified metabolites
+  relative_concentration <- B_final / pure_lib_final$nb_protons
+  #Sort library according to relative concentration
+  sorted_idx <- sort(relative_concentration, decreasing = TRUE,
+                     index.return = TRUE)$ix
+  pure_lib_final_sorted <- subset_library(pure_lib_final, sorted_idx)
+
+  present_metab <- data.frame(Name = pure_lib_final_sorted$name,
+                              Relative_Concentration =
+                                relative_concentration[sorted_idx])
+
+
+  #Compute identification threshold of non identified metabolites
+  identification_threshold <- round((seuil(delta0, ZMLE, se)[!identified_metab] *
+                                       pure_lib_final_sorted$nb_protons[1]) /
+                                      (pure_lib_shifted$nb_protons[!identified_metab]),
+                                    digits = 4)
+
+  non_identified_metab <- data.frame(Name = pure_lib_shifted$name[!identified_metab],
+                                     Threshold = identification_threshold)
+
+  #List to return
+  L <- list("Present" = present_metab, "Non_identified" = non_identified_metab,
+            "Mixture" = mixture, "Estimated_mixture" = est_mixture,
+            "Grid" = pure_lib_final$grid)
   return(L)
 }
