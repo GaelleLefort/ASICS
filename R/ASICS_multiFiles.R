@@ -20,11 +20,11 @@
 #' DecalageMax = 0.021, DecalageLib = -0.002,
 #' ncores = 4, sample = "last", seed = 12345,
 #' libraryMetab = NULL)
-ASICS_multiFiles <- function(nameDir, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2,
+ASICS_multiFiles <- function(nameDir, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
                                                             nrow = 1),
-                             DecalageMax = 0.021, DecalageLib = 0,
-                             ncores = 1, sample = "last", seed = 12345,
-                             libraryMetab = NULL, seuilBruit = 0.02){
+                             max.shift = 0.021,
+                             ncores = 1, which.spectra = "last",
+                             library.metabolites = NULL, threshold.noise = 0.02){
 
   dossiers <- dir(nameDir)
 
@@ -39,11 +39,11 @@ ASICS_multiFiles <- function(nameDir, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 
 
 
   resEstimation <- foreach(i=1:length(dossiers), .options.snow = opts,
-                           .packages = "ASICS") %dopar% {
-     name <- file.path(nameDir, dossiers[i])
+                          .packages = "ASICS") %dopar% {
+     path <- file.path(nameDir, dossiers[i])
      res <- NULL
-     res <- try(ASICS(name = name, ZoneAEnlever = ZoneAEnlever, DecalageMax = DecalageMax, DecalageLib = DecalageLib,
-                      sample = sample, seed = seed, libraryMetab = libraryMetab, seuilBruit = seuilBruit))
+     res <- try(ASICS(path = path, exclusion.areas = exclusion.areas, max.shift = max.shift,
+                      which.spectra = which.spectra, library.metabolites = library.metabolites, threshold.noise = threshold.noise))
      res
                            }
   close(pb)
@@ -52,3 +52,4 @@ ASICS_multiFiles <- function(nameDir, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 
   names(resEstimation) <- dossiers
   return(resEstimation)
 }
+

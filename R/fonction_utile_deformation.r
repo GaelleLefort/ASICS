@@ -1,146 +1,10 @@
-recupere_intervalle <- function(X, e)
-{
-  #X est le spectre d'un m?tabolite
-  # e permet de d?finir la notion de support (qui n'est pas d?ini pour le spectre bruit? d'un m?tabolite)
-  supp <- which(X > e) #points du support
-  u <- which((supp[-1] - supp[1:(length(supp) - 1)] - 1) != 0)#recupere les composantes connexes du support
-  nb_int <- length(u) + 1
-  v <- matrix(nrow = nb_int, ncol = 2)
-  v[, 2] <- c(supp[u], max(supp))
-  v[, 1] <- c(min(supp), supp[u + 1])
-  return(v)
-}
-
-
-grossir_ensemble <- function(S, e)
-{
-  #Le vecteur S est un vecteur bool?ens dont on suppose que les extr?mit? ont suffisament de z?ros.
-  #l'entier e donne dle grossissement de l'ensemble S
-  M <- matrix(nrow = (2*e+1), ncol = length(S))
-  u <- S[(e + 1):(length(S) - e)]
-  M[1, ] <- c(u, rep(0, (2*e))) #d?calage de S le plus ? gauche
-  for(i in 1:(2*e))
-  {
-    M[1+i, ] <- c(rep(0, i), u, rep(0, (2*e - i))) #On d?place le vecteur S vers la gauche
-  }
-  R <- 1*(colSums(M) != 0) #grossisement du vecteur S
-  return(R)
-}
-
-
-
-recal_1_pic <- function(X, Y, d1, d2)
-{
-  #d1=d?calage vers la gauche et d2 d?calage vers la droite
-  M <- matrix(nrow = d1 + d2 + 1, ncol = length(X))
-  u <- X[(1 + d1):(length(X) - d2)]
-  M[1, ] <- c(u, rep(0, (d1 + d2))) #D?calage du pic le plus ? gauche
-  for(i in 1:(d1 + d2))
-  {
-    M[1+i, ] <- c(rep(0, i), u, rep(0, (d1 + d2 - i))) #On d?place le vecteur X vers la gauche
-  }
-  i0 <- which.max(Y%*%t(M))
-  return(c(i0, M[i0, ]))
-}
-
-
-translation_intervalle <- function(Y, X, d, e)
-{
-  # X est la matrice des spectres m?tabolites
-  # Y est le spectre du m?lange
-  # d est la d?formation maximale
-  mc <- lm(Y~X - 1)
-  res <- mc$residuals
-  for(i in 1:ncol(X))
-  {
-    Nexp <- res + mc$coefficients[i]*X[, i] #r?sidues plus partie non expliqu? par X[,i]
-    v <- recupere_intervalle(X[, i], e)
-    for(j in 1:nrow(v))
-    {
-      if(j == 1){b1 <- v[j, 1] - d} else {b1 <- max(v[j, 1] - d, mean(c(v[j - 1, 2], v[j, 1])))}
-      d1 <- abs(v[j, 1] - b1)
-      if(j == nrow(v)){b2 <- v[j, 2] + d} else {b2 <- min(v[j, 2] + d, mean(c(v[j, 2], v[j + 1, 1])))}
-      d2 <- abs(b2 - v[j, 2])
-      M <- recal_1_pic(X[b1:b2, i], Y[b1:b2], d1, d2)
-      i0 <- M[1]
-      X[b1:b2, i] <- M[-1]
-      b <- lm(Nexp[b1:b2]~X[b1:b2, i] - 1)$coefficients[1]
-      A <- rep(0, length(res))
-      A[b1:b2] <- b*X[b1:b2, i]
-      Nexp <- Nexp - A
-    }
-  }
-  return(X)
-}
-
-deformation <- function(biblio_deformee,y)
-
-  for (i in 1:ncol(biblio_deformee))
-  {
-    yy <- residu + coeff[i]*biblio[, i]
-    adeformer <- biblio_deformee[, i]
-    sel <- which(biblio_deformee[, i] > seuil1)
-    u <- which((sel[-1] - sel[1:(length(sel) - 1)] - 1) != 0)
-    nb_int <- length(u) + 1
-    v <- matrix(nrow = nb_int, ncol = 2)
-    v[, 2] <- c(sel[u], max(sel))
-    v[, 1] <- c(min(sel), sel[u + 1])
-    v[, 1] <- v[, 1] - h
-    v[, 2] <- v[, 2] + h
-    for (j in 1:nb_int)
-    {
-      xx <- x[v[j, 1]:v[j, 2]]
-      zz <- adeformer[v[j, 1]:v[j, 2]]
-      yyy <- yy[v[j, 1]:v[j, 2]]
-      for (k in 1:nb_iter_deform)
-      {
-        opti <- abs(sum(yyy*zz)/sum(zz))
-        flag <- F
-        for (a in rangea)
-        {
-          candidat <- deforme(xx, zz, a)
-          if (abs(sum(candidat*yyy)/sum(zz)) > opti)
-          {
-            zz <- candidat
-            opti <- abs(sum(candidat*yyy)/sum(zz))
-            flag <- T
-          }
-        }
-      }
-      if (flag==T) biblio_deformee[v[j, 1]:v[j, 2], i] <- zz
-      else k <- nb_iter_deform + 1
-    }
-    #cat(" i =",i,"\n")
-    biblio_deformee[, i] <- biblio_deformee[, i]/AUC(x, biblio_deformee[, i])
-  }
-
-
-phi <- function(x, a)
-{
-  set.seed(12345)
-  u <- min(x)
-  v <- max(x) - min(x)
-  z <- (x - u)/v
-  tt <- z + a*z*(1 - z)
-  return(u + tt*v)
-}
-
-deforme <- function(x, y, a)
-{
-  set.seed(12345)
-  phix <- phi(x, a)
-  return(f_o_phi(x, y, phix)) # phix deformation de l'axe des absisses et f_o_phi est la valeur de la spectre deforme sur les points
-  #de discretisation de l'axe ds absisses.
-}
-
-
+## Deforme each peak of a pure spectrum to align it on the complex mixture
 deform_spectra <- function(idx_to_deform, pure_lib, least_square,
-                           mixture_weights, nb_points_shift, max.shift){
+                           mixture_weights, nb_points_shift, max.shift) {
   #Algorithm parameters
   peak_threshold <- 1
   nb_iter_deform <- 4
   range_a <- -9:9/10
-  set.seed(12345)
 
   #Deformed spetrum
   deform_spectrum <- pure_lib$spectra[, idx_to_deform]
@@ -152,6 +16,14 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
                                          signal_peak_lib)] - nb_points_shift
   max_extremities <- signal_peak_lib[!((signal_peak_lib + 1) %in%
                                          signal_peak_lib)] + nb_points_shift
+  peaks_extremities <- cbind(min_extremities, max_extremities)
+
+  #Remove overlapping
+  long_signal <- unique(unlist(apply(peaks_extremities, 1,
+                                     function(x) x[[1]]:x[[2]])))
+
+  min_extremities <- long_signal[!((long_signal - 1) %in% long_signal)]
+  max_extremities <- long_signal[!((long_signal + 1) %in% long_signal)]
   peaks_extremities <- cbind(min_extremities, max_extremities)
 
   #Residuals without those corresponding to the current spectrum
@@ -198,9 +70,7 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
       iter <- iter + 1
     }
 
-
     deform_spectrum[peak_area] <- to_deform
-    #print(deform_spectrum[peak_area])
   }
   deform_spectrum <- deform_spectrum/AUC(pure_lib$grid, deform_spectrum)
 
@@ -209,21 +79,86 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
 
 
+
+
+
+
+
+
+f_o_phi <- function(x, f, phix) {
+  #il y a des pbs avec les ex aequo dans u et v
+  # Attention, il faut que inf phi(x) >= inf x ET sup phi(x)<= sup x
+  #phix contient le vecteur phi(x), f contient f(x)
+  #renvoie f(phi(x))
+
+  #Le minimum et le maximum de phix doivent être compris dans x
+  if (phix[1] < x[1]) phix[1] <- x[1]
+  n <- length(x)
+  nphi <- length(phix)
+  if (phix[nphi] > x[n]) phix[nphi] <- x[n]
+
+  #1 pour la grille d'origine et 0 pour la nouvelle
+  orde <- rep(c(1, 0), c(n, nphi))
+
+  x[1] <- x[1] - 1e-06
+  x[n] <- x[n] + 1e-06
+
+  #Concaténation des 2 grilles
+  zx <- c(x, phix)
+
+  #On ordonne les 2 grilles et on récupère les indices
+  o <- order(zx)
+
+  #On augmente de 1 si on est sur la grille d'origine
+  #On a donc un vecteur d'indice allant de 1 à n où la valeur ne change pas quand
+  #un point de la nouvelle grille est compris dans l'ancienne
+  u <- cumsum(orde[o])
+
+  #On récupère les points de l'ancienne grille juste inférieurs à ceux de la nouvelle
+  v <- u[orde[o] == 0]
+
+  #Nouvelle fonction par interpolation linéaire
+  fophi <- f[v] + (phix - x[v])*(f[(v + 1)] - f[v])/(x[(v + 1)] - x[v])
+
+  if (is.na(fophi[nphi])) fophi[nphi] <- f[n]
+  if (is.na(fophi[1])) fophi[1] <- f[1]
+
+  return(fophi)
+}
+
+
+
+phi <- function(x, a) {
+  u <- min(x)
+  v <- max(x) - min(x)
+  z <- (x - u)/v
+  tt <- z + a*z*(1 - z)
+  return(u + tt*v)
+}
+
+deforme <- function(x, y, a) {
+  phix <- phi(x, a)
+  return(f_o_phi(x, y, phix)) # phix deformation de l'axe des absisses et f_o_phi est la valeur de la spectre deforme sur les points
+  #de discretisation de l'axe ds absisses.
+}
+
+
+
+
+
+
 ##### fonctions optimisation
-Tuning <- function(delta, ZMLE)
-{
+Tuning <- function(delta, ZMLE) {
   Observation <- apply(as.double(delta)*(ZMLE), 2, max)
   return(quantile(Observation, 0.95))
 }
 
-seuil <- function(x, ZMLE, se)
-{
+seuil <- function(x, ZMLE, se) {
   return(Tuning(x, ZMLE)/x + se*qnorm(0.95))
 }
 
 
-aminimiser <- function(x, ZMLE, se)
-{
+aminimiser <- function(x, ZMLE, se) {
   sum(seuil(x, ZMLE, se))
 }
 
