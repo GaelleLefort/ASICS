@@ -55,6 +55,9 @@ get_mixture <- function(path, library.grid, which.spectra = "last") {
   #baseline correction
   imported_mixture[, 2] <- baseline_corrector(imported_mixture[, 2])
 
+  #baseline improvement of complex mixture : remove negative values
+  imported_mixture[, 2][imported_mixture[, 2] < 0] <- 0
+
   #normalisation by area under the curve
   imported_mixture[, 2] <- imported_mixture[, 2] /
     AUC(imported_mixture[, 1], imported_mixture[, 2])
@@ -67,7 +70,6 @@ get_mixture <- function(path, library.grid, which.spectra = "last") {
 
 
 ## Extract a spectrum from Bruker files
-###### !! A revoir sauf si ça vient d'un script déjà écrit
 read_NMR_bruker <- function(path){
 
   ACQFILE <- file.path(path, "acqus")

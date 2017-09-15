@@ -7,4 +7,6 @@ import("ggplot2",
     "doSNOW",
     "plyr",
 	"snow",
-	"foreach")
+	"foreach",
+	"zoo",
+	"quadprog")
