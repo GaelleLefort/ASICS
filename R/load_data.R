@@ -6,7 +6,7 @@ load_data <- function(path, library.metabolites = NULL,
 
   #load default or user metabolites library
   if(is.null(library.metabolites)) {
-    data(Library)
+    data(pure_library)
   } else {
     load(library.metabolites)
   }
@@ -15,10 +15,10 @@ load_data <- function(path, library.metabolites = NULL,
   mixture <- get_mixture(path, pure_library$grid, which.spectra)
 
   #for signal in exclusion.areas, intesity is null (mixture and library)
-  idx_to_remove <- unlist(alply(exclusion.areas, 1,
-                                function(x) which(pure_library$grid >= x[[1]] &
-                                                    pure_library$grid <= x[[2]])),
-                          use.names = FALSE)
+  idx_to_remove <-
+    unlist(plyr::alply(exclusion.areas, 1, function(x)
+      which(pure_library$grid >= x[[1]] & pure_library$grid <= x[[2]])),
+      use.names = FALSE)
 
   mixture[idx_to_remove] <- 0
   pure_library$spectra[idx_to_remove, ] <- 0
@@ -29,7 +29,8 @@ load_data <- function(path, library.metabolites = NULL,
 
   #re-normalisation of mixture and pure spectra library
   cleaned_library$spectra <- apply(cleaned_library$spectra, 2,
-                                 function(x) t(x / AUC(cleaned_library$grid, x)))
+                                 function(x)
+                                   t(x / AUC(cleaned_library$grid, x)))
   mixture <- mixture / AUC(cleaned_library$grid, mixture)
 
   return(list("mixture" = mixture, "pure_library" = cleaned_library))
@@ -72,45 +73,49 @@ get_mixture <- function(path, library.grid, which.spectra = "last") {
 ## Extract a spectrum from Bruker files
 read_NMR_bruker <- function(path){
 
-  ACQFILE <- file.path(path, "acqus")
-  SPECFILE <- file.path(path, "pdata/1/1r")
-  PROCFILE <- file.path(path, "pdata/1/procs")
+  #file paths
+  acq_file <- file.path(path, "acqus")
+  spec_file <- file.path(path, "pdata/1/1r")
+  proc_file <- file.path(path, "pdata/1/procs")
 
-  ACQ <- readLines(ACQFILE)
-  TD      <- get_bruker_param(ACQ, "TD")
-  SW      <- get_bruker_param(ACQ, "SW")
-  SWH     <- get_bruker_param(ACQ, "SW_h")
-  DTYPA   <- get_bruker_param(ACQ, "DTYPA")
+  #meta-data in acq_file
+  ACQ <- readLines(acq_file)
+  TD <- get_bruker_param(ACQ, "TD")
+  SW <- get_bruker_param(ACQ, "SW")
+  SWH <- get_bruker_param(ACQ, "SW_h")
+  DTYPA <- get_bruker_param(ACQ, "DTYPA")
   BYTORDA <- get_bruker_param(ACQ, "BYTORDA")
   ENDIAN <- "little"
   SIZE <- ifelse(DTYPA == 0, 4, 8)
 
-  PROC <- readLines(PROCFILE)
+  #meta-data in proc_file
+  PROC <- readLines(proc_file)
   OFFSET <- get_bruker_param(PROC, "OFFSET")
   SI <- get_bruker_param(PROC, "SI")
 
-  to.read <- file(SPECFILE, "rb")
+  #meta-data in spec_file
+  to.read <- file(spec_file, "rb")
   maxTDSI <- max(TD, SI)
   signal <- rev(readBin(to.read, what = "int", size = SIZE, n = maxTDSI,
                         signed = TRUE, endian = ENDIAN))
   close(to.read)
 
+  #get signal
   td <- length(signal)
-
   dppm <- SW / (td - 1)
   pmax <- OFFSET
   pmin <- OFFSET - SW
   ppmseq <- seq(from = pmin, to = pmax, by = dppm)
   signal <- 100 * signal / max(signal)
 
-  SampleSpectrum <- cbind(ppmseq, signal)
-  return(SampleSpectrum)
+  sample_spectrum <- cbind(ppmseq, signal)
+  return(sample_spectrum)
 }
 
-
-get_bruker_param <- function(ACQ, paramStr){
+# find parameter in a bruker file
+get_bruker_param <- function(file, paramStr){
   regexpStr <- paste0("^...", paramStr, "=")
   as.numeric(gsub("^[^=]+= ", "" ,
-                  ACQ[which(simplify2array(regexpr(regexpStr, ACQ)) > 0)]))
+                  file[which(simplify2array(regexpr(regexpStr, file)) > 0)]))
 }
 

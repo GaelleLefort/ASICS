@@ -4,41 +4,40 @@
 \alias{ASICS_multiFiles}
 \title{Automatic Statistical Identification in Complex Spectra for many files}
 \usage{
-ASICS_multiFiles(nameDir, ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2, nrow =
-  1), DecalageMax = 0.021, DecalageLib = 0, ncores = 1, sample = "last",
-  seed = 12345, libraryMetab = NULL, seuilBruit = 0.02)
+ASICS_multiFiles(name.dir, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
+  nrow = 1), max.shift = 0.02, which.spectra = "last",
+  library.metabolites = NULL, threshold.noise = 0.02, ncores = 1)
 }
 \arguments{
-\item{ZoneAEnlever}{exclusion areas to remove before the quantification}
+\item{name.dir}{folder path of the Bruker files}
 
-\item{DecalageMax}{maximum chemical shift allowed}
+\item{exclusion.areas}{exclusion areas to remove before the quantification}
 
-\item{DecalageLib}{chemical shift between library of pure spectra and complex mixture}
+\item{max.shift}{maximum chemical shift allowed}
+
+\item{which.spectra}{if more than one spectra by sample, spectra to choose
+(either "first", "last" or its number)}
+
+\item{library.metabolites}{path of the library of pure spectra if not the
+default one}
+
+\item{threshold.noise}{threshold for signal noise}
 
 \item{ncores}{number of cores to use}
-
-\item{sample}{if more than one spectra by sample, spectra to choose (either "first",
-"last" or its number}
-
-\item{seed}{seed}
-
-\item{libraryMetab}{path of the library of standard if not the default one}
-
-\item{seuilBruit}{threshold noise}
-
-\item{name}{folder path of the Bruker files}
+}
+\value{
+A list containing ASICS results for each spectrum
 }
 \description{
 Description
 }
 \examples{
-ASICS_multiFiles(nameDir = "./spectres_exemple/",
-ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2,
-nrow = 1),
-DecalageMax = 0.021, DecalageLib = -0.002,
-ncores = 4, sample = "last", seed = 12345,
-libraryMetab = NULL)
+res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
+                                                     "example_spectra",
+                                                     package = "ASICS"),
+                           exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
+                                                    ncol = 2, byrow = TRUE),
+                           max.shift = 0.02, which.spectra = "last",
+                           library.metabolites = NULL,
+                           threshold.noise = 0.02, ncores = 1)
 }
-\keyword{NMR}
-\keyword{metabolites}
-\keyword{quantification}

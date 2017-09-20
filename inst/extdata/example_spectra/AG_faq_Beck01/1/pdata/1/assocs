@@ -1,0 +1,11 @@
+##TITLE= Parameter file, TOPSPIN		Version 2.1
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= cecile
+$$ 2011-03-01 15:16:26.218 +0100  cecile@INSTR_RMN
+$$ C:/Bruker/TOPSPIN/data/cecile/nmr/AG_faq_Beck01/1/pdata/1/assocs
+$$ process C:\Bruker\TOPSPIN\prog\mod\dataserver.exe
+##$MULTDISP= <C:\Bruker\TOPSPIN\data\cecile\nmr\AG_faq_Fo01\1\pdata\1>
+##END=

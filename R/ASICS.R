@@ -8,13 +8,29 @@
 #' (either "first", "last" or its number)
 #' @param library.metabolites path of the library of standard if not the default
 #' one
-#' @param threshold.noise threshold noised
+#' @param threshold.noise threshold for signal noise
+#' @return A list of 5 elements containing ASICS results:
+#' \describe{
+#'   \item{Present}{a data frame with identified metabolites and their relative
+#'   concentrations}
+#'   \item{Non_identified}{a data frame with non-identified metabolites and
+#'   their identification thresholds}
+#'   \item{Mixture}{original spectrum}
+#'   \item{Estimated_mixture}{reconstituted spectrum with estimated
+#'   concentrations}
+#'   \item{Grid}{grid of the spectrum}
+#' }
 #' @export
 #' @examples
-#' result <- ASICS(path = "./spectres_exemple/AG_faq_Beck01",
-#'  exclusion.areas = matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE),
-#'  max.shift = 0.02, which.spectra = "last", library.metabolites = NULL)
-ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2, nrow = 1),
+#' result <- ASICS(path = system.file("extdata", "example_spectra",
+#'                                    "AG_faq_Beck01", package = "ASICS"),
+#'                 exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
+#'                                          ncol = 2, byrow = TRUE),
+#'                 max.shift = 0.02, which.spectra = "last",
+#'                 library.metabolites = NULL, threshold.noise = 0.02)
+
+ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
+                                                 nrow = 1),
                   max.shift = 0.02, which.spectra = "last",
                   library.metabolites = NULL, threshold.noise = 0.02){
 

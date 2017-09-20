@@ -6,9 +6,10 @@ translate_library <- function(mixture, pure_lib_clean, nb_points_shift){
                          mixture,
                          rep(0, nb_points_shift))
 
-  mixture_shift <- t(laply(.data = as.list(1:(nb_points_shift * 2 + 1)),
-                           .fun = function (x)
-                             mixture_all_shift[x:(x + length(mixture) - 1)]))
+  mixture_shift <- t(plyr::laply(.data = as.list(1:(nb_points_shift * 2 + 1)),
+                                 .fun = function (x)
+                                   mixture_all_shift[x:(x + length(mixture) -
+                                                          1)]))
 
   #create a matrix of all pure spectra with shift
   spectra_all_shift <- rbind(matrix(0, nrow = nb_points_shift,
@@ -19,7 +20,8 @@ translate_library <- function(mixture, pure_lib_clean, nb_points_shift){
 
   #compute least square between all possible shifted mixture and all metabolites
   XtX <- diag(colSums(pure_lib_clean$spectra^2))
-  least_square_shift <- solve(XtX) %*% t(pure_lib_clean$spectra) %*% mixture_shift
+  least_square_shift <- solve(XtX) %*% t(pure_lib_clean$spectra) %*%
+    mixture_shift
   max_least_square <- apply(least_square_shift, 1, which.max)
 
   #shift between original spectrum and translate spectrum
@@ -29,10 +31,12 @@ translate_library <- function(mixture, pure_lib_clean, nb_points_shift){
   #shift library according to least square
   pure_lib_shifted <- pure_lib_clean
   pure_lib_shifted$spectra <-
-    t(laply(as.list(1:ncol(pure_lib_clean$spectra)),
-            function(i) spectra_all_shift[(ncol(mixture_shift) - max_least_square[i] + 1):
-                                            (ncol(mixture_shift) - max_least_square[i] +
-                                               nrow(pure_lib_shifted$spectra)), i]))
+    t(plyr::laply(as.list(1:ncol(pure_lib_clean$spectra)),
+                  function(i)
+                    spectra_all_shift[(ncol(mixture_shift) - max_least_square[i]
+                                       + 1):(ncol(mixture_shift) -
+                                               max_least_square[i] +
+                                           nrow(pure_lib_shifted$spectra)), i]))
 
   #optimal residuals
   residuals_opti <- unlist(lapply(1:length(pure_lib_shifted$name),
@@ -71,19 +75,19 @@ deform_library <- function(mixture, pure_lib_sorted, nb_points_shift,
   while(nb_iter_lib < nb_iter_by_library){
 
     #Linear regression between mixture and each pure spectra
-    least_square <- try(lm.constrained(mixture, pure_lib_deformed$spectra,
+    least_square <- try(lm_constrained(mixture, pure_lib_deformed$spectra,
                                        mixture_weights), silent = TRUE)
 
     if(is(least_square,"try-error")){
-      least_square <- lm.constrained(mixture, pure_lib_deformed$spectra,
+      least_square <- lm_constrained(mixture, pure_lib_deformed$spectra,
                                          mixture_weights, 10e-3)
     }
 
     #Deform each spectrum
     pure_lib_deformed$spectra <-
-      t(laply(as.list(1:ncol(pure_lib_deformed$spectra)),
-              deform_spectra, pure_lib_deformed, least_square,
-              mixture_weights, nb_points_shift, max.shift, shift))
+      t(plyr::laply(as.list(1:ncol(pure_lib_deformed$spectra)),
+                    deform_spectra, pure_lib_deformed, least_square,
+                    mixture_weights, nb_points_shift, max.shift, shift))
 
     nb_iter_lib <- nb_iter_lib + 1
   }

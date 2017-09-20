@@ -1,0 +1,36 @@
+##TITLE= Audit trail, TOPSPIN		Version 2.1
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= cecile
+$$ C:\Bruker\TOPSPIN/data/cecile/nmr/AG_faq_Beck176/1/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2011-03-01 23:31:14.625 +0100>,<cecile>,<INSTR_RMN>,<go>,<TOPSPIN 2.1>,
+      <created by zg
+	started at 2011-03-01 23:14:41.406 +0100,
+	POWCHK disabled, PULCHK disabled,
+       configuration hash MD5:
+       EE 58 EC 52 FD 4A 3B 21 EF CD 71 A6 92 74 E0 B0
+       data hash MD5: 32K
+       42 1F E6 B7 E5 3D 07 FC C5 2C 5C 8D C7 EF 4A D9>)
+(   2,<2011-03-01 23:31:22.500 +0100>,<cecile>,<INSTR_RMN>,<audit>,<TOPSPIN 2.1>,
+      <user comment:
+       ICON-NMR User ID: cecile
+       data hash MD5: 32K
+       42 1F E6 B7 E5 3D 07 FC C5 2C 5C 8D C7 EF 4A D9>)
+(   3,<2011-03-02 09:47:36.453 +0100>,<cecile>,<INSTR_RMN>,<proc1d>,<TOPSPIN 2.1>,
+      <Start of raw data processing
+       efp LB = 0.3 FT_mod = 6 PKNL = 1 PHC0 = -42.23431 PHC1 = 3.200001 SI = 16K 
+       data hash MD5: 16K
+       A7 D4 23 14 6C FE 07 A9 24 77 D3 FF BF A1 84 97>)
+(   4,<2011-03-02 09:47:47.046 +0100>,<cecile>,<INSTR_RMN>,<proc1d>,<TOPSPIN 2.1>,
+      <pk fgphup PHC0 = 7.187354 PHC1 = -2.4 
+       data hash MD5: 16K
+       99 5C 7E 16 81 B0 02 1A D7 6B 64 38 AF BF E0 68>)
+(   5,<2011-03-02 09:47:59.968 +0100>,<cecile>,<INSTR_RMN>,<proc1d>,<TOPSPIN 2.1>,
+      <abs ABSG = 5 
+       data hash MD5: 16K
+       76 36 E3 AB 4B 68 F8 5C 68 27 A8 CB F0 1C 15 B1>)
+##END=
+
+$$ hash MD5
+$$ 69 F7 2D 02 EE AB 1A A3 FC 1B DE 33 33 08 E0 15

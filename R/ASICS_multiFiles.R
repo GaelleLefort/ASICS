@@ -1,55 +1,63 @@
 #' Automatic Statistical Identification in Complex Spectra for many files
 #'
 #' Description
-#' @param name folder path of the Bruker files
-#' @param ZoneAEnlever exclusion areas to remove before the quantification
-#' @param DecalageMax maximum chemical shift allowed
-#' @param DecalageLib chemical shift between library of pure spectra and complex mixture
-#' @param sample if more than one spectra by sample, spectra to choose (either "first",
-#' "last" or its number
-#' @param seed seed
-#' @param libraryMetab path of the library of standard if not the default one
-#' @param seuilBruit threshold noise
+#' @param name.dir folder path of the Bruker files
+#' @param exclusion.areas exclusion areas to remove before the quantification
+#' @param max.shift maximum chemical shift allowed
+#' @param which.spectra if more than one spectra by sample, spectra to choose
+#' (either "first", "last" or its number)
+#' @param library.metabolites path of the library of pure spectra if not the
+#' default one
+#' @param threshold.noise threshold for signal noise
 #' @param ncores number of cores to use
-#' @keywords NMR quantification metabolites
+#' @return A list containing ASICS results for each spectrum
 #' @export
 #' @examples
-#' ASICS_multiFiles(nameDir = "./spectres_exemple/",
-#' ZoneAEnlever = matrix(c(4.5, 5.1), ncol = 2,
-#' nrow = 1),
-#' DecalageMax = 0.021, DecalageLib = -0.002,
-#' ncores = 4, sample = "last", seed = 12345,
-#' libraryMetab = NULL)
-ASICS_multiFiles <- function(nameDir, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
+#' res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
+#'                                                      "example_spectra",
+#'                                                      package = "ASICS"),
+#'                            exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
+#'                                                     ncol = 2, byrow = TRUE),
+#'                            max.shift = 0.02, which.spectra = "last",
+#'                            library.metabolites = NULL,
+#'                            threshold.noise = 0.02, ncores = 1)
+ASICS_multiFiles <- function(name.dir,
+                             exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
                                                             nrow = 1),
-                             max.shift = 0.021,
-                             ncores = 1, which.spectra = "last",
-                             library.metabolites = NULL, threshold.noise = 0.02){
+                             max.shift = 0.02, which.spectra = "last",
+                             library.metabolites = NULL, threshold.noise = 0.02,
+                             ncores = 1){
 
-  dossiers <- dir(nameDir)
+  dossiers <- dir(name.dir)
 
-  #Parallel
-  cl <- makeCluster(ncores)
-  registerDoSNOW(cl)
+  # Parallel environment
+  cl <- parallel::makeCluster(ncores)
+  doSNOW::registerDoSNOW(cl)
 
-  ##Progress bar
+  # Progress bar
   pb <- txtProgressBar(max = length(dossiers), style = 3)
   progress <- function(n) setTxtProgressBar(pb, n)
   opts <- list(progress = progress)
 
-
-  resEstimation <- foreach(i=1:length(dossiers), .options.snow = opts,
-                          .packages = "ASICS") %dopar% {
-     path <- file.path(nameDir, dossiers[i])
+  # ASICS for each spectrum
+  `%dopar%` <- foreach::`%dopar%`
+  res_estimation <- foreach::foreach(i = 1:length(dossiers),
+                                     .options.snow = opts,
+                                     .packages = "ASICS") %dopar% {
+     path <- file.path(name.dir, dossiers[i])
      res <- NULL
-     res <- try(ASICS(path = path, exclusion.areas = exclusion.areas, max.shift = max.shift,
-                      which.spectra = which.spectra, library.metabolites = library.metabolites, threshold.noise = threshold.noise))
+     res <- try(ASICS(path = path, exclusion.areas = exclusion.areas,
+                      max.shift = max.shift, which.spectra = which.spectra,
+                      library.metabolites = library.metabolites,
+                      threshold.noise = threshold.noise))
      res
-                           }
-  close(pb)
-  stopCluster(cl)
+  }
 
-  names(resEstimation) <- dossiers
-  return(resEstimation)
+  # Close parallel environment
+  close(pb)
+  parallel::stopCluster(cl)
+
+  names(res_estimation) <- dossiers
+  return(res_estimation)
 }
 

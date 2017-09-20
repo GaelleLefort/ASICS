@@ -25,14 +25,14 @@ concentration_opti <- function(mixture, pure_lib_deformed){
   u <- numeric(nb_draw)
 
   delta0 <- rep(0.5, p) # 0.5 by metabolite
-  a_min <- sum(compute_threshold(delta0, ZMLE, se)) # threshold sum by metabolite
+  a_min <- sum(compute_threshold(delta0, ZMLE, se)) #threshold sum by metabolite
   err <- 0.4
 
   for(i in 1:400)
   {
     err <- 0.99 * err
     W <- matrix(delta0 + err * c(runif(p * nb_draw, -1, 1)), nrow = nb_draw,
-                byrow = T)
+                byrow = TRUE)
     W[W > 1]  <-  1
     W[W < 0] <- 0.0001
     u <- apply(W, 1, to_minimize, ZMLE, se)
@@ -44,10 +44,10 @@ concentration_opti <- function(mixture, pure_lib_deformed){
   }
 
   #Pseudo MLE estimation
-  B2 <- try(lm.constrained(mixture, pure_lib_deformed$spectra,
+  B2 <- try(lm_constrained(mixture, pure_lib_deformed$spectra,
                            mixture_weights)$coefficients, silent = TRUE)
   if(is(B2, "try-error")){
-    B2 <- lm.constrained(mixture, pure_lib_deformed$spectra,
+    B2 <- lm_constrained(mixture, pure_lib_deformed$spectra,
                              mixture_weights, 10e-3)$coefficients
   }
 
@@ -57,12 +57,14 @@ concentration_opti <- function(mixture, pure_lib_deformed){
 
   #Concentration lasso estimation with positive constraints
   identified_metab <- (B2 > tuning(delta0, ZMLE) / delta0) & (B2 > 0)
-  pure_lib_identified <- subset_library(pure_lib_deformed, which(identified_metab))
+  pure_lib_identified <- subset_library(pure_lib_deformed,
+                                        which(identified_metab))
 
-  B_final_tot <- try(lm.constrained(mixture, pure_lib_identified$spectra,
-                                    mixture_weights)$coefficients, silent = TRUE)
+  B_final_tot <- try(lm_constrained(mixture, pure_lib_identified$spectra,
+                                    mixture_weights)$coefficients,
+                     silent = TRUE)
   if(is(B_final_tot,"try-error")){
-    B_final_tot <- lm.constrained(mixture, pure_lib_identified$spectra,
+    B_final_tot <- lm_constrained(mixture, pure_lib_identified$spectra,
                                  mixture_weights, 10e-3)$coefficients
   }
 

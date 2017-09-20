@@ -1,6 +1,6 @@
 ## Compute the area under the curve (y = f(x)) using the trapezoidal rule
 AUC <- function(x, y) {
-  auc <- sum(diff(x) * rollmean(y, 2))
+  auc <- sum(diff(x) * zoo::rollmean(y, 2))
   return(auc)
 }
 
@@ -24,8 +24,8 @@ clean_library <- function(mixture, pure_library, threshold.noise,
   signal_mixture_shift <- signal_with_shift(signal_mixture, nb_points_shift)
 
   #normalize each spectra with the maximum of mixture
-  norm_library <- t(aaply(pure_library$spectra, 2, function(x) x * max(mixture) /
-                            max(x)))
+  norm_library <- t(plyr::aaply(pure_library$spectra, 2, function(x) x *
+                                  max(mixture) / max(x)))
   signal_library <- 1 * (norm_library > threshold.noise)
 
   #keep metabolites for which signal is included in mixture signal
@@ -63,7 +63,7 @@ signal_with_shift <- function(signal, nb_points_shift) {
 
 
 ## Non-negative least square (formula : y~x with weights w)
-lm.constrained <- function(y, x, w = 1, precision = 1){
+lm_constrained <- function(y, x, w = 1, precision = 1){
   #constraints
   Amat <- diag(rep(1, ncol(x)))
   b0 <- rep(0, ncol(x))
@@ -73,7 +73,7 @@ lm.constrained <- function(y, x, w = 1, precision = 1){
   dlittle <- t(x) %*% (w * y) * precision
 
   #optimisation
-  res.lm <- solve.QP(D, dlittle, Amat, b0)
+  res.lm <- quadprog::solve.QP(D, dlittle, Amat, b0)
 
   #coefficients
   coefficients <- res.lm$solution

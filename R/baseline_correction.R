@@ -4,12 +4,12 @@
 #Analytical Chemistry, 85(2), 1231-1239."
 
 baseline_corrector <- function(intensity){
-  sliding_windows <- 1 #20 ## (sliding_windows*2+1)
+  sliding_windows <- 1
   convergence_ratio <- 0.999
-  nb_central_points <- 1 # 3
-  cutoff_threshold <- 1.5 #1.1
-  nb_interpolation_points <- 3 #7
-  nb_smooth_points <- 10 #60
+  nb_central_points <- 1
+  cutoff_threshold <- 1.5
+  nb_interpolation_points <- 3
+  nb_smooth_points <- 10
 
   #1 - Calculating the expected value of noise standard deviation
   SDset <- getSD(intensity, sliding_windows)
@@ -42,7 +42,8 @@ getSD <- function(intensity, sliding_windows){
 
 ## Calculate the median m1 from SDset. Exclude the elements greater than 2m1
 #from SDset, and recalculate the median m2 from SDset. Repeat this routine until
-#m2/m1 converges and set m2 as the expected value of the noise standard deviation
+#m2/m1 converges and set m2 as the expected value of the noise standard
+#deviation
 findNoiseSD <- function(SDset, ratio){
   m1 <- median(SDset)
   SDset <- SDset[SDset < 2 * m1]

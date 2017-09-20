@@ -1,17 +1,27 @@
 Package: ASICS
 Type: Package
 Title: ASICS (Automatic Statistical Identification in Complex Spectra)
-Version: 0.1.0
+Version: 1.0.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: ASICS works relying on a library of pure metabolites spectra. The identification of metabolites is performed by comparing the spectrum of the mixture with spectra of the library. These comparisons are carried out using a statistical theory with established statistical properties (Tardivel et al. 2017). 
+Description: ASICS works relying on a library of pure metabolites spectra to 
+    quantify metabolites concentration in a complex spectrum. The identification 
+    of metabolites is performed by comparing the spectrum of the mixture with 
+    spectra of the library. These comparisons are carried out using a 
+    statistical theory with established statistical properties 
+    (Tardivel et al. 2017). 
 Imports:
-    ggplot2,
     doSNOW,
-    snow,
+    ggplot2,
     foreach,
-    plyr
+    plyr,
+    quadprog,
+    snow,
+    zoo
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
