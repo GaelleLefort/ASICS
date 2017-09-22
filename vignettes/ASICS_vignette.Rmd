@@ -21,6 +21,7 @@ A dataset with spectra of 175 pure metabolites are available.
 
 Data are loaded and available metabolite are displayed with:
 ```{r lib}
+library(ASICS)
 data(pure_library)
 pure_library$name
 ```
