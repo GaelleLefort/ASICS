@@ -11,10 +11,6 @@
   \item{spectra}{a data frame with each pure metabolite spectrum in column}
   \item{nb_protons}{number of proton of each metabolite}
 }}
-\usage{
-pure_library
-}
 \description{
 A list containing 175 spectrums of pure metabolites.
 }
-\keyword{datasets}
