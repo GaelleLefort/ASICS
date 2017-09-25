@@ -14,6 +14,9 @@ automated procedure to identify and quantify metabolites in 1H NMR spectra of
 biological mixtures. It will enable empowering NMR-based metabolomics by quickly 
 and accurately helping experts to obtain metabolic profiles.
 
+```{r}
+library(ASICS)
+```
 
 ## Library of pure NMR spectra
 
@@ -36,7 +39,6 @@ result <- ASICS(path = system.file("extdata", "example_spectra",
                                          ncol = 2, byrow = TRUE),
                 max.shift = 0.02, which.spectra = "last",
                 library.metabolites = NULL, threshold.noise = 0.02)
-
 ```
 
 We can judge the quality of the quantification by stacking the original and the 

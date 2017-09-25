@@ -1,3 +1,6 @@
+## ------------------------------------------------------------------------
+library(ASICS)
+
 ## ----lib-----------------------------------------------------------------
 data(pure_library)
 pure_library$name
@@ -9,7 +12,6 @@ result <- ASICS(path = system.file("extdata", "example_spectra",
                                          ncol = 2, byrow = TRUE),
                 max.shift = 0.02, which.spectra = "last",
                 library.metabolites = NULL, threshold.noise = 0.02)
-
 
 ## ----plot_spectrum, warning=FALSE, fig.width=10, fig.height=6------------
 plot_spectrum(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
