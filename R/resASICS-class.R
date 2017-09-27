@@ -50,10 +50,7 @@ setMethod(
   f = "summary",
   signature = "resASICS",
   definition = function(object, ...){
-    cat("Number of identified metabolites:", nrow(object@present_metabolites), "\n\n")
-
-    cat("Most concentrated metabolites: \n")
-    print(head(object@present_metabolites))
+    print(object)
   }
 )
 
@@ -64,6 +61,9 @@ setMethod(
   f = "print",
   signature = "resASICS",
   definition = function(x){
-    summary(x)
+    cat("Number of identified metabolites:", nrow(x@present_metabolites), "\n\n")
+    
+    cat("Most concentrated metabolites: \n")
+    print(head(x@present_metabolites))
   }
 )
