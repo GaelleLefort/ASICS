@@ -59,12 +59,11 @@ setMethod(
 
 #' @rdname resASICS-class
 #' @aliases print.resASICS
-#' @importFrom utils str
 #' @export
 setMethod(
   f = "print",
   signature = "resASICS",
   definition = function(x){
-    str(x)
+    summary(x)
   }
 )
