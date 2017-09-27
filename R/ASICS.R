@@ -9,30 +9,38 @@
 #' @param library.metabolites path of the library of standard if not the default
 #' one
 #' @param threshold.noise threshold for signal noise
-#' @return A list of 5 elements containing ASICS results:
-#' \describe{
-#'   \item{Present}{a data frame with identified metabolites and their relative
-#'   concentrations}
-#'   \item{Non_identified}{a data frame with non-identified metabolites and
-#'   their identification thresholds}
-#'   \item{Mixture}{original spectrum}
-#'   \item{Estimated_mixture}{reconstituted spectrum with estimated
-#'   concentrations}
-#'   \item{Grid}{grid of the spectrum}
-#' }
+#' @return A object of type resASICS
+#' @importFrom methods new
 #' @export
 #' @examples
+#' \dontrun{
 #' result <- ASICS(path = system.file("extdata", "example_spectra",
 #'                                    "AG_faq_Beck01", package = "ASICS"),
 #'                 exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-#'                                          ncol = 2, byrow = TRUE),
-#'                 max.shift = 0.02, which.spectra = "last",
-#'                 library.metabolites = NULL, threshold.noise = 0.02)
+#'                                          ncol = 2, byrow = TRUE))
+#' }
 
 ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
                                                  nrow = 1),
                   max.shift = 0.02, which.spectra = "last",
                   library.metabolites = NULL, threshold.noise = 0.02){
+
+  ## checking the validity of the parameters
+  if(!dir.exists(path)){
+    stop("Path of the Bruker file does'nt exist !")
+  }
+
+  if(!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2){
+    stop("exclusion.areas need to be a matrix of 2 columns.")
+  }
+
+  if(max.shift < 0){
+    stop("max.shift must be positive.")
+  }
+
+  if(threshold.noise < 0){
+    stop("threshold.noise must be positive.")
+  }
 
   ##Seed and variables declaration
   set.seed(12345)
@@ -83,7 +91,7 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
   #### Results ####
 
   #Reconstituted mixture with estimated coefficents
-  est_mixture <- pure_lib_final$spectra %*% res_opti$B_final
+  est_mixture <- as.numeric(pure_lib_final$spectra %*% res_opti$B_final)
 
   #Compute relative concentration of identified metabolites
   relative_concentration <- res_opti$B_final / pure_lib_final$nb_protons
@@ -110,8 +118,12 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
 
 
   #List to return
-  L <- list("Present" = present_metab, "Non_identified" = non_identified_metab,
-            "Mixture" = mixture, "Estimated_mixture" = est_mixture,
-            "Grid" = pure_lib_final$grid)
-  return(L)
+  res_object <- new(Class = "resASICS",
+                    original_mixture = mixture,
+                    reconstituted_mixture = est_mixture,
+                    grid = pure_lib_final$grid,
+                    present_metabolites = present_metab,
+                    non_identified_metabolites = non_identified_metab)
+
+  return(res_object)
 }

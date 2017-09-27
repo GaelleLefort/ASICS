@@ -24,26 +24,16 @@ one}
 \item{threshold.noise}{threshold for signal noise}
 }
 \value{
-A list of 5 elements containing ASICS results:
-\describe{
-  \item{Present}{a data frame with identified metabolites and their relative
-  concentrations}
-  \item{Non_identified}{a data frame with non-identified metabolites and
-  their identification thresholds}
-  \item{Mixture}{original spectrum}
-  \item{Estimated_mixture}{reconstituted spectrum with estimated
-  concentrations}
-  \item{Grid}{grid of the spectrum}
-}
+A object of type resASICS
 }
 \description{
 Description
 }
 \examples{
+\dontrun{
 result <- ASICS(path = system.file("extdata", "example_spectra",
                                    "AG_faq_Beck01", package = "ASICS"),
                 exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-                                         ncol = 2, byrow = TRUE),
-                max.shift = 0.02, which.spectra = "last",
-                library.metabolites = NULL, threshold.noise = 0.02)
+                                         ncol = 2, byrow = TRUE))
+}
 }

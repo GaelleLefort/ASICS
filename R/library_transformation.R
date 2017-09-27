@@ -1,5 +1,7 @@
 ## Find the best translation between each pure spectra and mixture ####
 #and sort metabolites by regression residuals
+#' @importFrom stats lm
+#' @keywords internal
 translate_library <- function(mixture, pure_lib_clean, nb_points_shift){
   #create a matrix with all possible shifted mixture in column
   mixture_all_shift <- c(rep(0, nb_points_shift),
@@ -56,6 +58,8 @@ translate_library <- function(mixture, pure_lib_clean, nb_points_shift){
 
 
 ##Localized deformations of pure spectra
+#' @importFrom methods is
+#' @keywords internal
 deform_library <- function(mixture, pure_lib_sorted, nb_points_shift,
                            max.shift, shift){
   #noises and weights
@@ -78,7 +82,7 @@ deform_library <- function(mixture, pure_lib_sorted, nb_points_shift,
     least_square <- try(lm_constrained(mixture, pure_lib_deformed$spectra,
                                        mixture_weights), silent = TRUE)
 
-    if(is(least_square,"try-error")){
+    if(is(least_square, "try-error")){
       least_square <- lm_constrained(mixture, pure_lib_deformed$spectra,
                                          mixture_weights, 10e-3)
     }

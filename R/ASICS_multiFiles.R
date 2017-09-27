@@ -11,22 +11,28 @@
 #' @param threshold.noise threshold for signal noise
 #' @param ncores number of cores to use
 #' @return A list containing ASICS results for each spectrum
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @export
 #' @examples
+#' \dontrun{
 #' res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
 #'                                                      "example_spectra",
 #'                                                      package = "ASICS"),
 #'                            exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-#'                                                     ncol = 2, byrow = TRUE),
-#'                            max.shift = 0.02, which.spectra = "last",
-#'                            library.metabolites = NULL,
-#'                            threshold.noise = 0.02, ncores = 1)
+#'                                                     ncol = 2, byrow = TRUE))
+#' }
+
 ASICS_multiFiles <- function(name.dir,
                              exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
                                                             nrow = 1),
                              max.shift = 0.02, which.spectra = "last",
                              library.metabolites = NULL, threshold.noise = 0.02,
                              ncores = 1){
+
+  ## checking the validity of the parameters
+  if(!dir.exists(name.dir)){
+    stop("Path of the Bruker file does'nt exist !")
+  }
 
   dossiers <- dir(name.dir)
 
@@ -41,6 +47,7 @@ ASICS_multiFiles <- function(name.dir,
 
   # ASICS for each spectrum
   `%dopar%` <- foreach::`%dopar%`
+  i <- NULL
   res_estimation <- foreach::foreach(i = 1:length(dossiers),
                                      .options.snow = opts,
                                      .packages = "ASICS") %dopar% {

@@ -5,10 +5,25 @@ load_data <- function(path, library.metabolites = NULL,
                       max.shift = 0.02, which.spectra = "last"){
 
   #load default or user metabolites library
-  if(is.null(library.metabolites)) {
-    data(pure_library)
-  } else {
+  if(!is.null(library.metabolites)) {
+    if(!file.exists(library.metabolites)){
+      stop("Pure library file does'nt exist !")
+    }
+
     load(library.metabolites)
+  }
+
+  ## checking the validity of the library
+  if(sum(names(pure_library) %in% c("grid", "name", "spectra", "nb_protons"))
+     != 4){
+    stop("grid, name, spectra and nb_protons must be elements of pure library
+         list.")
+  }
+
+  if(length(pure_library$grid) != nrow(pure_library$spectra) |
+     ncol(pure_library$spectra) != length(pure_library$name) |
+     ncol(pure_library$spectra) != length(pure_library$nb_protons)){
+    stop("Pure library is not conform.")
   }
 
   #get the mixture

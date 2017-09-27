@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ASICS package}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 This vignette provides an overview of the package ASICS. ASICS is a completely 
@@ -20,13 +22,11 @@ library(ASICS)
 
 ## Library of pure NMR spectra
 
-A dataset with spectra of 175 pure metabolites are available.
+A dataset with spectra of 175 pure metabolites is available.
 
-Data are loaded and available metabolite are displayed with:
+Data are loaded and available metabolites are displayed with:
 ```{r lib}
-library(ASICS)
-data(pure_library)
-pure_library$name
+head(pure_library$name, n = 20)
 ```
 
 ## Quantification of one or more Bruker files with ASICS
@@ -37,41 +37,40 @@ from raw files (Bruker files):
 result <- ASICS(path = system.file("extdata", "example_spectra",
                                    "AG_faq_Beck01", package = "ASICS"),
                 exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-                                         ncol = 2, byrow = TRUE),
-                max.shift = 0.02, which.spectra = "last",
-                library.metabolites = NULL, threshold.noise = 0.02)
+                                         ncol = 2, byrow = TRUE))
+print(result)
+summary(result)
 ```
 
 We can judge the quality of the quantification by stacking the original and the 
 recomposed spectrum. Pure metabolites spectrum can also be added.
 ```{r plot_spectrum, warning=FALSE, fig.width=10, fig.height=6}
-plot_spectrum(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
+plot(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
 ```
 
 Relative concentrations of identified metabolites are saved in:
 ```{r rel_conc}
-result$Present
+result@present_metabolites
 ```
 
-Usually, many spectra are available for one experience. With the following 
-function, quantification is lauched on all spectra present in a folder 
-(possibly in parallel):
-```{r ASICS_multifile, results='hide'}
+Usually, many spectra are available for one experience. With the 
+\code{ASICS_multiFiles} function, quantification is lauched on all spectra 
+present in a folder (name.dir). Arguments are same as for \code{ASICS} function 
+plus \code{ncores} for the parallel environment if wanted.
+
+```{r ASICS_multifile, results = 'hide', eval = FALSE}
 res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
                                                      "example_spectra",
                                                      package = "ASICS"),
                               exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
                                                        ncol = 2, byrow = TRUE),
-                              max.shift = 0.02, which.spectra = "last",
-                              library.metabolites = NULL,
-                              threshold.noise = 0.02, ncores = 4)
+                              ncores = 4)
 ```
 
 For further analysis, it is possible to extract concentrations of all spectra in
 a data-frame:
-```{r extract_concentrations}
+```{r extract_concentrations, eval = FALSE}
 quantification <- extract_concentrations(res_multi)
-head(quantification)
 ```
 
 

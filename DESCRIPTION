@@ -4,16 +4,18 @@ Title: ASICS (Automatic Statistical Identification in Complex Spectra)
 Version: 1.0.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: ASICS works relying on a library of pure metabolites spectra to 
-    quantify metabolites concentration in a complex spectrum. The identification 
-    of metabolites is performed by comparing the spectrum of the mixture with 
+Description: With a library of pure metabolites spectra, ASICS quantify 
+    metabolites concentration in a complex spectrum. The identification of 
+    metabolites is performed by comparing the spectrum of the mixture with 
     spectra of the library. These comparisons are carried out using a 
     statistical theory with established statistical properties 
     (Tardivel et al. 2017). 
+Depends: R (>= 2.10)
 Imports:
     doSNOW,
     ggplot2,
     foreach,
+    methods,
     plyr,
     quadprog,
     snow,

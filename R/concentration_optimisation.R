@@ -1,4 +1,7 @@
 #### Threshold and concentration optimisation for each metabolites ####
+#' @importFrom stats rnorm runif
+#' @importFrom methods is
+#' @keywords internal
 concentration_opti <- function(mixture, pure_lib_deformed){
   #noises and weights
   s1 <- 0.172 #standard deviation of multiplicative noise
@@ -85,10 +88,14 @@ to_minimize <- function(x, ZMLE, se) {
   sum(compute_threshold(x, ZMLE, se))
 }
 
+#' @importFrom stats qnorm
+#' @keywords internal
 compute_threshold <- function(x, ZMLE, se) {
   return(tuning(x, ZMLE)/x + se*qnorm(0.95))
 }
 
+#' @importFrom stats quantile
+#' @keywords internal
 tuning <- function(delta, ZMLE) {
   observation <- apply(as.double(delta) * (ZMLE), 2, max)
   return(quantile(observation, 0.95))

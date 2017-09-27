@@ -31,6 +31,8 @@ baseline_corrector <- function(intensity){
 
 ## Obtain  a  set  of  standard deviation SDset from intensity with 2w + 1 point
 #sliding windows
+#' @importFrom stats sd
+#' @keywords internal
 getSD <- function(intensity, sliding_windows){
   SDset <- numeric(length(intensity))
   for(i in 1:length(intensity)){
@@ -44,6 +46,8 @@ getSD <- function(intensity, sliding_windows){
 #from SDset, and recalculate the median m2 from SDset. Repeat this routine until
 #m2/m1 converges and set m2 as the expected value of the noise standard
 #deviation
+#' @importFrom stats median
+#' @keywords internal
 findNoiseSD <- function(SDset, ratio){
   m1 <- median(SDset)
   SDset <- SDset[SDset < 2 * m1]
