@@ -11,6 +11,7 @@
 #' @param threshold.noise threshold for signal noise
 #' @return A object of type resASICS
 #' @importFrom methods new
+#' @importFrom stats relevel
 #' @export
 #' @examples
 #' \dontrun{
