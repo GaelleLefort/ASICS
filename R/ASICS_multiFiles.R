@@ -3,12 +3,12 @@
 #' Compute ASICS on multiple spectra of a folder.
 #'
 #' @param name.dir folder path of the Bruker files
-#' @param exclusion.areas exclusion areas to remove before the quantification
-#' @param max.shift maximum chemical shift allowed
+#' @param exclusion.areas areas to exclude (in ppm)
+#' @param max.shift maximum chemical shift allowed (in ppm)
 #' @param which.spectra if more than one spectra by sample, spectra to choose
 #' (either "first", "last" or its number)
-#' @param library.metabolites path of the library of pure spectra if not the
-#' default one
+#' @param library.metabolites path of the library containing the standard of pure metabolites, if not the default
+#' one
 #' @param threshold.noise threshold for signal noise
 #' @param ncores number of cores to use
 #' @return A list containing ASICS results for each spectrum.

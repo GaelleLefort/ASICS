@@ -3,7 +3,11 @@
 \docType{class}
 \name{resASICS-class}
 \alias{resASICS-class}
+\alias{present_metabolites,resASICS-method}
 \title{An S4 class to represent results of ASICS.}
+\usage{
+\S4method{present_metabolites}{resASICS}(object)
+}
 \description{
 An S4 class to represent results of ASICS.
 }

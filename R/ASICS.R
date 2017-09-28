@@ -4,11 +4,11 @@
 #' pure metabolite spectra. It is detailed in Tardivel et al. (2017).
 #'
 #' @param path folder path of the Bruker files
-#' @param exclusion.areas exclusion areas of the quantification
+#' @param exclusion.areas areas to exclude (in ppm)
 #' @param max.shift maximum chemical shift allowed (in ppm)
 #' @param which.spectra if more than one spectra by sample, spectra to choose
 #' (either "first", "last" or its number)
-#' @param library.metabolites path of the library of standard if not the default
+#' @param library.metabolites path of the library containing the standard of pure metabolites, if not the default
 #' one
 #' @param threshold.noise threshold for signal noise
 #' @return A object of type \link{resASICS-class}
