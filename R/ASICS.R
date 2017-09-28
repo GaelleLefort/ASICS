@@ -1,6 +1,8 @@
 #' Automatic Statistical Identification in Complex Spectra
 #'
-#' Description
+#' Quantification of 1D 1H NMR spectrum with ASICS method using a library of 175
+#' pure metabolite spectra. It is detailed in Tardivel et al. (2017).
+#'
 #' @param path folder path of the Bruker files
 #' @param exclusion.areas exclusion areas of the quantification
 #' @param max.shift maximum chemical shift allowed (in ppm)
@@ -9,10 +11,19 @@
 #' @param library.metabolites path of the library of standard if not the default
 #' one
 #' @param threshold.noise threshold for signal noise
-#' @return A object of type resASICS
+#' @return A object of type \link{resASICS-class}
 #' @importFrom methods new
 #' @importFrom stats relevel
 #' @export
+#'
+#' @seealso \link{resASICS-class}
+#'
+#' @references Tardivel, P., Canlet, C., Lefort, G., Tremblay-Franco, M.,
+#' Debrauwer, L., Concordet, D., and Servien, R. (2017). ASICS: an automatic
+#' method for identification and quantification of metabolites in complex 1D 1H
+#' NMR spectra Metabolomics, 13: 109.
+#' \url{https://doi.org/10.1007/s11306-017-1244-5}
+#'
 #' @examples
 #' \dontrun{
 #' result <- ASICS(path = system.file("extdata", "example_spectra",
@@ -122,7 +133,7 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
   res_object <- new(Class = "resASICS",
                     original_mixture = mixture,
                     reconstituted_mixture = est_mixture,
-                    grid = pure_lib_final$grid,
+                    ppm_grid = pure_lib_final$grid,
                     present_metabolites = present_metab,
                     non_identified_metabolites = non_identified_metab)
 

@@ -7,14 +7,15 @@
 extract_concentrations(res_ASICS)
 }
 \arguments{
-\item{res_ASICS}{result of ASICS_multiFiles functions}
+\item{res_ASICS}{result of ASICS_multiFiles function}
 }
 \value{
 A data frame containing relative concentrations of identified
 metabolites for each spectrum
 }
 \description{
-Description
+Combine results of multiple ASICS function to obtain quantified relative
+concentration of each spectrum in one dataset
 }
 \examples{
 \dontrun{

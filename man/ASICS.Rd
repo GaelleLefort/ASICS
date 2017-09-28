@@ -24,10 +24,11 @@ one}
 \item{threshold.noise}{threshold for signal noise}
 }
 \value{
-A object of type resASICS
+A object of type \link{resASICS-class}
 }
 \description{
-Description
+Quantification of 1D 1H NMR spectrum with ASICS method using a library of 175
+pure metabolite spectra. It is detailed in Tardivel et al. (2017).
 }
 \examples{
 \dontrun{
@@ -36,4 +37,14 @@ result <- ASICS(path = system.file("extdata", "example_spectra",
                 exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
                                          ncol = 2, byrow = TRUE))
 }
+}
+\references{
+Tardivel, P., Canlet, C., Lefort, G., Tremblay-Franco, M.,
+Debrauwer, L., Concordet, D., and Servien, R. (2017). ASICS: an automatic
+method for identification and quantification of metabolites in complex 1D 1H
+NMR spectra Metabolomics, 13: 109.
+\url{https://doi.org/10.1007/s11306-017-1244-5}
+}
+\seealso{
+\link{resASICS-class}
 }

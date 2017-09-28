@@ -26,10 +26,10 @@ default one}
 \item{ncores}{number of cores to use}
 }
 \value{
-A list containing ASICS results for each spectrum
+A list containing ASICS results for each spectrum.
 }
 \description{
-Description
+Compute ASICS on multiple spectra of a folder.
 }
 \examples{
 \dontrun{
@@ -39,4 +39,7 @@ res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
                            exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
                                                     ncol = 2, byrow = TRUE))
 }
+}
+\seealso{
+\link{ASICS}, \link{resASICS-class}
 }

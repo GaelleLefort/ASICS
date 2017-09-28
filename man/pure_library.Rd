@@ -12,5 +12,15 @@
   \item{nb_protons}{number of proton of each metabolite}
 }}
 \description{
-A list containing 175 spectrums of pure metabolites.
+The 1D 1H NMR spectra of 175 reference compounds were collected to build the
+spectral library. These compounds have been prepared and recorded using a
+Bruker Avance III HD spectrometer in the MetaToul - AXIOM Site at Toulouse
+(France).
+}
+\references{
+Tardivel, P., Canlet, C., Lefort, G., Tremblay-Franco, M.,
+Debrauwer, L., Concordet, D., and Servien, R. (2017). ASICS: an automatic
+method for identification and quantification of metabolites in complex 1D 1H
+NMR spectra Metabolomics, 13: 109.
+\url{https://doi.org/10.1007/s11306-017-1244-5}
 }

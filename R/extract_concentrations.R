@@ -1,7 +1,9 @@
 #' Extract concentrations
 #'
-#' Description
-#' @param res_ASICS result of ASICS_multiFiles functions
+#' Combine results of multiple ASICS function to obtain quantified relative
+#' concentration of each spectrum in one dataset
+#'
+#' @param res_ASICS result of ASICS_multiFiles function
 #' @return A data frame containing relative concentrations of identified
 #' metabolites for each spectrum
 #' @export

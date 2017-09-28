@@ -1,6 +1,7 @@
 #' Automatic Statistical Identification in Complex Spectra for many files
 #'
-#' Description
+#' Compute ASICS on multiple spectra of a folder.
+#'
 #' @param name.dir folder path of the Bruker files
 #' @param exclusion.areas exclusion areas to remove before the quantification
 #' @param max.shift maximum chemical shift allowed
@@ -10,9 +11,10 @@
 #' default one
 #' @param threshold.noise threshold for signal noise
 #' @param ncores number of cores to use
-#' @return A list containing ASICS results for each spectrum
+#' @return A list containing ASICS results for each spectrum.
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @export
+#' @seealso \link{ASICS}, \link{resASICS-class}
 #' @examples
 #' \dontrun{
 #' res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
