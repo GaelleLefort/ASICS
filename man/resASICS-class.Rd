@@ -3,35 +3,10 @@
 \docType{class}
 \name{resASICS-class}
 \alias{resASICS-class}
-\alias{plot,resASICS-method}
-\alias{plot.resASICS}
-\alias{summary,resASICS-method}
-\alias{summary.resASICS}
-\alias{print,resASICS-method}
-\alias{print.resASICS}
+\alias{present_metabolites,resASICS-method}
 \title{An S4 class to represent results of ASICS.}
 \usage{
-\S4method{plot}{resASICS}(x, y, ..., xmin = 0, xmax = 10, ymin = 0,
-  ymax = NULL, add_metab = NULL)
-
-\S4method{summary}{resASICS}(object, ...)
-
-\S4method{print}{resASICS}(x)
-}
-\arguments{
-\item{x}{an object of class resASICS}
-
-\item{y}{not used}
-
-\item{...}{not used}
-
-\item{xmin, xmax}{x minimum and maximum limits}
-
-\item{ymin, ymax}{y minimum and maximum limits}
-
-\item{add_metab}{name of one metabolite to add to the plot}
-
-\item{object}{an object of class resASICS}
+\S4method{present_metabolites}{resASICS}(object)
 }
 \description{
 An S4 class to represent results of ASICS.
@@ -44,7 +19,7 @@ An S4 class to represent results of ASICS.
 \item{\code{reconstituted_mixture}}{reconstituted spectrum with estimated
 concentrations}
 
-\item{\code{grid}}{grid of the spectrum (in p.p.m.)}
+\item{\code{ppm_grid}}{grid of the spectrum (in p.p.m.)}
 
 \item{\code{present_metabolites}}{a data frame with identified metabolites and their
 relative concentrations}
@@ -53,3 +28,7 @@ relative concentrations}
 and their identification thresholds}
 }}
 
+\note{
+Slots can be accessed by accessor functions with the same name
+(e.g., \code{original_mixture(object)})
+}
