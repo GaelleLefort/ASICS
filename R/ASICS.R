@@ -117,25 +117,12 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
                                 relative_concentration[sorted_idx])
 
 
-  #Compute identification threshold of non identified metabolites
-  identification_threshold <-
-    round((res_opti$threshold[!res_opti$identified_metab] *
-             pure_lib_final_sorted$nb_protons[1]) /
-            (pure_lib_deformed$nb_protons[!res_opti$identified_metab]),
-          digits = 4)
-
-  non_identified_metab <-
-    data.frame(Name = pure_lib_deformed$name[!res_opti$identified_metab],
-               Threshold = identification_threshold)
-
-
   #List to return
   res_object <- new(Class = "resASICS",
                     original_mixture = mixture,
                     reconstituted_mixture = est_mixture,
                     ppm_grid = pure_lib_final$grid,
-                    present_metabolites = present_metab,
-                    non_identified_metabolites = non_identified_metab)
+                    present_metabolites = present_metab)
 
   return(res_object)
 }

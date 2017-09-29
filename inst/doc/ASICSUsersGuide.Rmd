@@ -1,0 +1,94 @@
+---
+title: "ASICS User's Guide"
+author: "Author"
+date: "`r Sys.Date()`"
+output:
+  BiocStyle::html_document2:
+    toc_float: true
+---
+
+
+This user's guide provides an overview of the package ASICS. ASICS is a 
+completely automated procedure to identify and quantify metabolites in $^1$H 
+NMR spectra of biological mixtures. It will enable empowering NMR-based 
+metabolomics by quickly and accurately helping experts to obtain metabolic 
+profiles.
+
+```{r ASICSload}
+library(ASICS)
+```
+
+# Library of pure NMR metabolites spectra
+
+A dataset with spectra of 175 pure metabolites is available in the package. It
+is automatically loaded at package start and available metabolites are displayed
+with:
+```{r lib}
+head(pure_library$name, n = 20)
+```
+
+# Identification and quantification of metabolites on one Bruker files with ASICS
+
+The identification and the quantification are carried out using only one 
+function `ASICS` directly from raw files (Bruker files):
+```{r ASICS_onefile}
+# part of the spectrum to exclude (water)
+to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+result <- ASICS(path = system.file("extdata", "example_spectra",
+                                   "AG_faq_Beck01", package = "ASICS"),
+                exclusion.areas = to_exclude)
+print(result)
+summary(result)
+```
+
+The quality of the results can be assessed by stacking the original and 
+the recomposed spectrum on one plot. Pure metabolites spectrum can also be 
+added for visual comparison.
+```{r plot_spectrum, warning=FALSE, fig.width=8, fig.height=6}
+plot(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
+```
+
+Relative concentrations of identified metabolites are saved in:
+```{r rel_conc}
+present_metabolites(result)
+```
+
+# Identification and quantification of metabolites on multiple Bruker files with ASICS
+
+Usually, many spectra are available for one experience. With the 
+`ASICS_multiFiles` function, quantification is launched on all spectra 
+present in the specified folder (`name.dir`). The arguments of this function are the 
+same than for `ASICS` function with the addition of `ncores` for  parallel 
+computation (if wanted).
+                                                                                                         
+```{r ASICS_multifile, results = 'hide'}
+res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
+                                                     "example_spectra",
+                                                     package = "ASICS"),
+                              exclusion.areas = to_exclude, ncores = 4)
+```
+
+For further analyses, it is possible to extract concentrations of all spectra in
+a data-frame:
+```{r extract_concentrations}
+quantification <- extract_concentrations(res_multi)
+head(quantification)
+```
+
+
+# Reference 
+
+Tardivel, P., Canlet, C., Lefort, G., Tremblay-Franco, M., Debrauwer, L., 
+Concordet, D., and Servien, R. (2017). ASICS: an automatic method for 
+identification and quantification of metabolites in complex 1D 1H NMR spectra 
+Metabolomics, 13: 109. https://doi.org/10.1007/s11306-017-1244-5
+
+
+# Session information
+
+This user's guide has been created with the following system configuration
+```{r sysinfo}
+sessionInfo()
+```
+
+

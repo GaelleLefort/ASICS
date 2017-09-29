@@ -3,11 +3,7 @@
 \docType{class}
 \name{resASICS-class}
 \alias{resASICS-class}
-\alias{present_metabolites,resASICS-method}
 \title{An S4 class to represent results of ASICS.}
-\usage{
-\S4method{present_metabolites}{resASICS}(object)
-}
 \description{
 An S4 class to represent results of ASICS.
 }
@@ -23,9 +19,6 @@ concentrations}
 
 \item{\code{present_metabolites}}{a data frame with identified metabolites and their
 relative concentrations}
-
-\item{\code{non_identified_metabolites}}{a data frame with non-identified metabolites
-and their identification thresholds}
 }}
 
 \note{

@@ -20,8 +20,9 @@
 #' res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
 #'                                                      "example_spectra",
 #'                                                      package = "ASICS"),
-#'                            exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-#'                                                     ncol = 2, byrow = TRUE))
+#'                               exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
+#'                                                     ncol = 2, byrow = TRUE),
+#'                               ncores = 2)
 #' }
 
 ASICS_multiFiles <- function(name.dir,

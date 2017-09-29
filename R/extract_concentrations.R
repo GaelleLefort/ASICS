@@ -1,7 +1,7 @@
 #' Extract concentrations
 #'
 #' Combine results of multiple ASICS function to obtain quantified relative
-#' concentration of each spectrum in one dataset
+#' concentrations of each spectrum in one dataset
 #'
 #' @param res_ASICS result of ASICS_multiFiles function
 #' @return A data frame containing relative concentrations of identified
@@ -38,6 +38,8 @@ extract_concentrations <- function(res_ASICS){
   concentration <- plyr::join_all(concentration_list, by = "Name",
                                   type = "full")
   colnames(concentration)[1] <- "metabolites"
+  concentration[is.na(concentration)] <- 0
+
 
   return(concentration)
 }

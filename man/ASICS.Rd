@@ -11,14 +11,14 @@ ASICS(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2, nrow = 1),
 \arguments{
 \item{path}{folder path of the Bruker files}
 
-\item{exclusion.areas}{exclusion areas of the quantification}
+\item{exclusion.areas}{areas to exclude (in ppm)}
 
 \item{max.shift}{maximum chemical shift allowed (in ppm)}
 
 \item{which.spectra}{if more than one spectra by sample, spectra to choose
 (either "first", "last" or its number)}
 
-\item{library.metabolites}{path of the library of standard if not the default
+\item{library.metabolites}{path of the library containing the standard of pure metabolites, if not the default
 one}
 
 \item{threshold.noise}{threshold for signal noise}

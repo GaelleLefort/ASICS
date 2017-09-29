@@ -15,7 +15,7 @@ metabolites for each spectrum
 }
 \description{
 Combine results of multiple ASICS function to obtain quantified relative
-concentration of each spectrum in one dataset
+concentrations of each spectrum in one dataset
 }
 \examples{
 \dontrun{

@@ -5,8 +5,6 @@
 \alias{resASICS-getters}
 \alias{present_metabolites,resASICS-method}
 \alias{present_metabolites}
-\alias{non_identified_metabolites,resASICS-method}
-\alias{non_identified_metabolites}
 \alias{original_mixture,resASICS-method}
 \alias{original_mixture}
 \alias{reconstituted_mixture,resASICS-method}
@@ -16,8 +14,6 @@
 \title{S4 methods to represent results of ASICS.}
 \usage{
 \S4method{present_metabolites}{resASICS}(object)
-
-\S4method{non_identified_metabolites}{resASICS}(object)
 
 \S4method{original_mixture}{resASICS}(object)
 

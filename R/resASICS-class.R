@@ -8,8 +8,6 @@
 #' @slot ppm_grid grid of the spectrum (in p.p.m.)
 #' @slot present_metabolites a data frame with identified metabolites and their
 #'   relative concentrations
-#' @slot non_identified_metabolites a data frame with non-identified metabolites
-#'   and their identification thresholds
 #'
 #' @note Slots can be accessed by accessor functions with the same name
 #' (see \link{resASICS-getters})
@@ -20,8 +18,7 @@ setClass(
     original_mixture = "numeric",
     reconstituted_mixture = "numeric",
     ppm_grid = "numeric",
-    present_metabolites = "data.frame",
-    non_identified_metabolites = "data.frame"
+    present_metabolites = "data.frame"
   )
 )
 
@@ -85,9 +82,6 @@ setMethod(
 setGeneric("present_metabolites",
            function(object){standardGeneric("present_metabolites")}
 )
-setGeneric("non_identified_metabolites",
-           function(object){standardGeneric("non_identified_metabolites")}
-)
 setGeneric("original_mixture",
            function(object){standardGeneric("original_mixture")}
 )
@@ -114,15 +108,6 @@ setMethod("present_metabolites", "resASICS",
           }
 )
 
-
-#' @export
-#' @aliases non_identified_metabolites
-#' @rdname resASICS-getters
-setMethod("non_identified_metabolites", "resASICS",
-          function(object){
-            return(object@non_identified_metabolites)
-          }
-)
 
 
 #' @export

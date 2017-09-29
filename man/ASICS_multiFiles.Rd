@@ -11,15 +11,15 @@ ASICS_multiFiles(name.dir, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
 \arguments{
 \item{name.dir}{folder path of the Bruker files}
 
-\item{exclusion.areas}{exclusion areas to remove before the quantification}
+\item{exclusion.areas}{areas to exclude (in ppm)}
 
-\item{max.shift}{maximum chemical shift allowed}
+\item{max.shift}{maximum chemical shift allowed (in ppm)}
 
 \item{which.spectra}{if more than one spectra by sample, spectra to choose
 (either "first", "last" or its number)}
 
-\item{library.metabolites}{path of the library of pure spectra if not the
-default one}
+\item{library.metabolites}{path of the library containing the standard of pure metabolites, if not the default
+one}
 
 \item{threshold.noise}{threshold for signal noise}
 
@@ -36,8 +36,9 @@ Compute ASICS on multiple spectra of a folder.
 res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
                                                      "example_spectra",
                                                      package = "ASICS"),
-                           exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-                                                    ncol = 2, byrow = TRUE))
+                              exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
+                                                    ncol = 2, byrow = TRUE),
+                              ncores = 2)
 }
 }
 \seealso{
