@@ -8,8 +8,8 @@
 #' @param max.shift maximum chemical shift allowed (in ppm)
 #' @param which.spectra if more than one spectra by sample, spectra to choose
 #' (either "first", "last" or its number)
-#' @param library.metabolites path of the library containing the standard of pure metabolites, if not the default
-#' one
+#' @param library.metabolites path of the library containing the standard of
+#' pure metabolites, if not the default one
 #' @param threshold.noise threshold for signal noise
 #' @return A object of type \link{resASICS-class}
 #' @importFrom methods new

@@ -5,6 +5,10 @@ date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document2:
     toc_float: true
+vignette: |
+  %\VignetteIndexEntry{ASICS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
