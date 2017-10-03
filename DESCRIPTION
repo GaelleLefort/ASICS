@@ -3,13 +3,10 @@ Type: Package
 Title: ASICS (Automatic Statistical Identification in Complex Spectra)
 Version: 1.0.0
 Authors@R: c(
-    person("Gaëlle", "Lefort", email = "gaelle.lefort@inra.fr", 
-    role = c("aut", "cre")),
+    person("Gaëlle", "Lefort", email = "gaelle.lefort@inra.fr", role = c("aut", "cre")),
     person("Rémi", "Sevien", email = "remi.servien@inra.fr", role = "aut"),
-    person("Patrick", "Tardivel", email = "patrick.tardivel@inra.fr", 
-    role = "aut"),
-    person("Nathalie", "Villa-Vialaneix", 
-    email = "nathalie.villa-vialaneix@inra.fr", role = "aut"))
+    person("Patrick", "Tardivel", email = "patrick.tardivel@inra.fr", role = "aut"),
+    person("Nathalie", "Villa-Vialaneix", email = "nathalie.villa-vialaneix@inra.fr", role = "aut"))
 Description: With a library of pure metabolite spectra, ASICS quantifies 
     metabolites concentration in a complex spectrum. The identification of 
     metabolites is performed by fitting a mixture model to the spectra of the

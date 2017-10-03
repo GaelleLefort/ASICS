@@ -15,7 +15,7 @@ An S4 class to represent results of ASICS.
 \item{\code{reconstituted_mixture}}{reconstituted spectrum with estimated
 concentrations}
 
-\item{\code{ppm_grid}}{grid of the spectrum (in p.p.m.)}
+\item{\code{ppm_grid}}{grid (definition domain) of the spectrum (in ppm)}
 
 \item{\code{present_metabolites}}{a data frame with identified metabolites and their
 relative concentrations}
@@ -23,5 +23,8 @@ relative concentrations}
 
 \note{
 Slots can be accessed by accessor functions with the same name
-(see \link{resASICS-getters})
+(see \link{resASICS-getters}).
+}
+\seealso{
+\code{\link{ASICS}} \code{\link{resASICS-methods}}
 }

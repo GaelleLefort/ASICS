@@ -4,13 +4,15 @@
 #'
 #' @slot original_mixture original spectrum
 #' @slot reconstituted_mixture reconstituted spectrum with estimated
-#'   concentrations
-#' @slot ppm_grid grid of the spectrum (in p.p.m.)
+#' concentrations
+#' @slot ppm_grid grid (definition domain) of the spectrum (in ppm)
 #' @slot present_metabolites a data frame with identified metabolites and their
-#'   relative concentrations
+#' relative concentrations
 #'
 #' @note Slots can be accessed by accessor functions with the same name
-#' (see \link{resASICS-getters})
+#' (see \link{resASICS-getters}).
+#' 
+#' @seealso \code{\link{ASICS}} \code{\link{resASICS-methods}}
 
 setClass(
   Class = "resASICS",
@@ -41,6 +43,18 @@ setMethod(
   }
 )
 
+#' @aliases show.resASICS
+#' @rdname resASICS-methods
+#' @importFrom methods show
+#' @export
+setMethod(
+  f = "show",
+  signature = "resASICS",
+  definition = function(object){
+    print(object)
+  }
+)
+
 #' @rdname resASICS-methods
 #' @aliases print.resASICS
 #' @importFrom utils head
@@ -56,14 +70,22 @@ setMethod(
   }
 )
 
-
 #' @param x an object of class resASICS
 #' @param y not used
-#' @param xmin,xmax x minimum and maximum limits
-#' @param ymin,ymax y minimum and maximum limits
-#' @param add_metab name of one metabolite to add to the plot
+#' @param xmin,xmax,ymin,ymax lower and upper bounds for x and y, respectively
+#' @param add_metab name of one metabolite to add to the plot. Default to 
+#' \code{NULL} (no pure spectrum added to the plot)
+#' 
 #' @aliases plot.resASICS
+#' 
+#' @return plot the true and recomposed (as estimated by \code{\link{ASICS}})
+#' spectra on one figure. In addition, one pure metabolite spectrum (as 
+#' provided in the reference library) can be superimposed to the plot.
+#' 
+#' @seealso \code{\link{ASICS}} \code{\link{resASICS-class}}
+#' 
 #' @export
+#' 
 #' @rdname resASICS-methods
 setMethod(
   f = "plot",
@@ -73,10 +95,6 @@ setMethod(
     plot_spectrum(x, xmin, xmax, ymin, ymax, add_metab)
   }
 )
-
-
-
-
 
 
 setGeneric("present_metabolites",

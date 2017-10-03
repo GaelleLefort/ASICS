@@ -1,6 +1,6 @@
 ---
 title: "ASICS"
-author: "Vignette Author"
+author: "Gaëlle Lefort"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 package: ASICS
@@ -10,10 +10,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
-This vignette provides an overview of the package ASICS. ASICS is a completely 
-automated procedure to identify and quantify metabolites in $^1$H NMR spectra of 
-biological mixtures. It will enable empowering NMR-based metabolomics by quickly 
-and accurately helping experts to obtain metabolic profiles.
+This vignette provides an overview of the package ```ASICS```. ```ASICS``` is a 
+fully automated procedure to identify and quantify metabolites in $^1$H NMR
+spectra of biological mixtures. It will enable empowering NMR-based metabolomics
+by quickly and accurately helping experts to obtain metabolic profiles.
 
 ```{r ASICSload}
 library(ASICS)
@@ -38,12 +38,11 @@ to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
 result <- ASICS(path = system.file("extdata", "example_spectra",
                                    "AG_faq_Beck01", package = "ASICS"),
                 exclusion.areas = to_exclude)
-print(result)
-summary(result)
+result
 ```
 
 The quality of the results can be assessed by stacking the original and 
-the recomposed spectrum on one plot. Pure metabolites spectrum can also be 
+the recomposed spectrum on one plot. A pure metabolite spectrum can also be 
 added for visual comparison.
 ```{r plot_spectrum, warning=FALSE, fig.width=8, fig.height=5}
 plot(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
@@ -64,10 +63,10 @@ ASICSUsersGuide()
 
 ## Reference 
 
-Tardivel, P., Canlet, C., Lefort, G., Tremblay-Franco, M., Debrauwer, L., 
-Concordet, D., and Servien, R. (2017). ASICS: an automatic method for 
-identification and quantification of metabolites in complex 1D 1H NMR spectra 
-Metabolomics, 13: 109. https://doi.org/10.1007/s11306-017-1244-5
+Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer L., Concordet 
+D., Servien R. (2017). ASICS: an automatic method for identification and 
+quantification of metabolites in complex 1D 1H NMR spectra. *Metabolomics*,
+**13**(10): 109. https://doi.org/10.1007/s11306-017-1244-5
 
 
 ## Session information

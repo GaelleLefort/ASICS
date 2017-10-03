@@ -1,29 +1,28 @@
 #' Extract concentrations
 #'
-#' Combine results of multiple ASICS function to obtain quantified relative
-#' concentrations of each spectrum in one dataset
+#' Combine results of the multiple file ASICS function to obtain quantified
+#' relative concentrations of metabolites for each spectrum in one dataset
 #'
-#' @param res_ASICS result of ASICS_multiFiles function
+#' @param res_ASICS result of the \code{\link{ASICS_multiFiles}} function
 #' @return A data frame containing relative concentrations of identified
 #' metabolites for each spectrum
 #' @export
 #' @examples
 #' \dontrun{
-#' #Compute quantification on all spectra
-#' res_multi <- ASICS_multiFiles(name.dir = system.file("extdata",
-#'                                                      "example_spectra",
-#'                                                      package = "ASICS"),
-#'                            exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-#'                                                     ncol = 2, byrow = TRUE))
+#' cur_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+#' res_multi <- ASICS_multiFiles(name.dir = cur_path, 
+#'                               exclusion.areas = to_exclude,
+#'                               ncores = 2)
 #'
-#' #Extract relative concentrations
+#' # extract relative concentrations
 #' quantification <- extract_concentrations(res_multi)
 #' }
 
 extract_concentrations <- function(res_ASICS){
   concentration_list <- list()
 
-  # Name of each sample
+  # sample name
   pos <- 1
   for(i in 1:length(res_ASICS)){
     if(class(res_ASICS[[i]]) != "try-error"){
@@ -34,7 +33,7 @@ extract_concentrations <- function(res_ASICS){
 
   }
 
-  #Get a data-frame from a list
+  # get a data-frame from a list
   concentration <- plyr::join_all(concentration_list, by = "Name",
                                   type = "full")
   colnames(concentration)[1] <- "metabolites"

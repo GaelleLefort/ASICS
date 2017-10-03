@@ -1,61 +1,65 @@
 #' Automatic Statistical Identification in Complex Spectra
 #'
 #' Quantification of 1D 1H NMR spectrum with ASICS method using a library of 175
-#' pure metabolite spectra. It is detailed in Tardivel et al. (2017).
+#' pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 #'
 #' @param path folder path of the Bruker files
-#' @param exclusion.areas areas to exclude (in ppm)
+#' @param exclusion.areas definition domain of spectra to exclude (ppm)
 #' @param max.shift maximum chemical shift allowed (in ppm)
-#' @param which.spectra if more than one spectra by sample, spectra to choose
-#' (either "first", "last" or its number)
-#' @param library.metabolites path of the library containing the standard of
-#' pure metabolites, if not the default one
+#' @param which.spectra if more than one spectra by sample, spectra used to 
+#' perform the quantification (either \code{"first"}, \code{"last"} or its 
+#' number). Default to \code{"last"}
+#' @param library.metabolites path of the library containing the references 
+#' (pure metabolite spectra). If \code{NULL}, the library included in the 
+#' package is used
 #' @param threshold.noise threshold for signal noise
-#' @return A object of type \link{resASICS-class}
+#' @param seed random seed to control randomness in the algorithm
+#' @return An object of type \code{\link{resASICS-class}}
 #' @importFrom methods new
 #' @importFrom stats relevel
 #' @export
 #'
-#' @seealso \link{resASICS-class}
+#' @seealso \code{\link{resASICS-class}} \code{\link{ASICS_multiFiles}}
+#' \code{\link{pure_library}}
 #'
-#' @references Tardivel, P., Canlet, C., Lefort, G., Tremblay-Franco, M.,
-#' Debrauwer, L., Concordet, D., and Servien, R. (2017). ASICS: an automatic
-#' method for identification and quantification of metabolites in complex 1D 1H
-#' NMR spectra Metabolomics, 13: 109.
+#' @references Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer 
+#' L., Concordet D., Servien R. (2017). ASICS: an automatic method for 
+#' identification and quantification of metabolites in complex 1D 1H NMR 
+#' spectra. \emph{Metabolomics}, \strong{13}(10): 109.
 #' \url{https://doi.org/10.1007/s11306-017-1244-5}
 #'
 #' @examples
 #' \dontrun{
-#' result <- ASICS(path = system.file("extdata", "example_spectra",
-#'                                    "AG_faq_Beck01", package = "ASICS"),
-#'                 exclusion.areas = matrix(c(4.5,5.1,5.5,6.5),
-#'                                          ncol = 2, byrow = TRUE))
+#' cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01", 
+#'                         package = "ASICS")
+#' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+#' result <- ASICS(path = cur_path, exclusion.areas = to_exclude)
 #' }
 
-ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
-                                                 nrow = 1),
+ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, which.spectra = "last",
-                  library.metabolites = NULL, threshold.noise = 0.02){
+                  library.metabolites = NULL, threshold.noise = 0.02,
+                  seed = 1234){
 
   ## checking the validity of the parameters
   if(!dir.exists(path)){
-    stop("Path of the Bruker file does'nt exist !")
+    stop("Path of the Bruker file doesn't exist!")
   }
 
   if(!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2){
-    stop("exclusion.areas need to be a matrix of 2 columns.")
+    stop("'exclusion.areas' needs to be a matrix with 2 columns.")
   }
 
   if(max.shift < 0){
-    stop("max.shift must be positive.")
+    stop("'max.shift' must be non negative.")
   }
 
   if(threshold.noise < 0){
-    stop("threshold.noise must be positive.")
+    stop("'threshold.noise' must be non negative.")
   }
 
   ##Seed and variables declaration
-  set.seed(12345)
+  set.seed(seed)
 
 
   #-----------------------------------------------------------------------------
@@ -75,7 +79,7 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2,
   #-----------------------------------------------------------------------------
   #### Cleaning step: remove metabolites that cannot belong to the mixture ####
   pure_lib_clean <- clean_library(mixture, pure_library, threshold.noise,
-                                 nb_points_shift)
+                                  nb_points_shift)
 
 
   #-----------------------------------------------------------------------------
