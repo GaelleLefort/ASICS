@@ -13,7 +13,8 @@
 #' (pure metabolite spectra). If \code{NULL}, the library included in the 
 #' package is used
 #' @param threshold.noise threshold for signal noise
-#' @param seed random seed to control randomness in the algorithm
+#' @param seed random seed to control randomness in the algorithm (used in the
+#' estimation of significativity of a given metabolite concentration)
 #' @return An object of type \code{\link{resASICS-class}}
 #' @importFrom methods new
 #' @importFrom stats relevel
