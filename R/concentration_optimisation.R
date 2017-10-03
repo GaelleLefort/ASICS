@@ -56,7 +56,7 @@ concentration_opti <- function(mixture, pure_lib_deformed){
 
   #Compute all thresholds
   N <- 10000
-  ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N,rnorm(nrow(C)*N))
+  ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N, rnorm(nrow(C)*N))
 
   #Concentration lasso estimation with positive constraints
   identified_metab <- (B2 > tuning(delta0, ZMLE) / delta0) & (B2 > 0)

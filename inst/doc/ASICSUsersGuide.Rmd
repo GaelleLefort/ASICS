@@ -52,7 +52,7 @@ plot(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
 
 Relative concentrations of identified metabolites are saved in:
 ```{r rel_conc}
-present_metabolites(result)
+head(present_metabolites(result), 10)
 ```
 
 # Identification and quantification of metabolites on multiple Bruker files with ASICS

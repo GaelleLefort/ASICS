@@ -4,28 +4,15 @@
 \alias{ASICS_multiFiles}
 \title{Automatic Statistical Identification in Complex Spectra for many files}
 \usage{
-ASICS_multiFiles(name.dir, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
-  max.shift = 0.02, which.spectra = "last", library.metabolites = NULL,
-  threshold.noise = 0.02, ncores = 1)
+ASICS_multiFiles(name.dir, ncores = max(detectCores() - 1, 1), ...)
 }
 \arguments{
 \item{name.dir}{folder path of the Bruker files}
 
-\item{exclusion.areas}{definition domain of spectra to exclude (ppm)}
-
-\item{max.shift}{maximum chemical shift allowed (in ppm)}
-
-\item{which.spectra}{if more than one spectra by sample, spectra used to 
-perform the quantification (either \code{"first"}, \code{"last"} or its 
-number). Default to \code{"last"}}
-
-\item{library.metabolites}{path of the library containing the references 
-(pure metabolite spectra). If \code{NULL}, the library included in the 
-package is used}
-
-\item{threshold.noise}{threshold for signal noise}
-
 \item{ncores}{number of cores to use. Default to 1 (no parallel processing)}
+
+\item{...}{further arguments to be passed to the function
+\code{\link{ASICS}} for specifying the parameters of the algorithm.}
 }
 \value{
 A list containing \code{ASICS} results for each spectrum.
@@ -37,12 +24,12 @@ Compute ASICS on multiple spectra of a folder.
 \dontrun{
 cur_path <- system.file("extdata", "example_spectra", package = "ASICS")
 to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-res_multi <- ASICS_multiFiles(name.dir = cur_path, 
+res_multi <- ASICS_multiFiles(name.dir = cur_path,
                               exclusion.areas = to_exclude,
-                              ncores = 2)
+                              ncores = 1)
 }
 }
 \seealso{
-\code{\link{ASICS}}, \code{\link{resASICS-class}} 
+\code{\link{ASICS}}, \code{\link{resASICS-class}}
 \code{\link{pure_library}}
 }

@@ -2,7 +2,7 @@ citHeader("To cite ASICS in publications use:")
 
 citEntry(entry = "Article",
   title        = "ASICS: an automatic method for identification and quantification of metabolites in complex 1D 1H NMR spectra",
-  author       = "Tardivel P. and Canlet C. and Lefort G. and Tremblay-Franco M. and Debrauwer L. and Concordet D. and Servien R.",
+  author       = personList(as.person("Patrick Tardivel"), as.person("Cécile Canlet"), as.person("Gaëlle Lefort"), as.person("Marie Tremblay-Franco"), as.person("Laurent Debrauwer"), as.person("Didier Concordet"), as.person("Rémi Servien")),
   journal      = "Metabolomics",
   year         = "2017",
   volume       = "13",
@@ -17,4 +17,3 @@ citEntry(entry = "Article",
         "Metabolomics, 13(10): 109.",
         "https://doi.org/10.1007/s11306-017-1244-5")
 )
-

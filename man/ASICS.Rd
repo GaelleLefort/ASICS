@@ -25,7 +25,8 @@ package is used}
 
 \item{threshold.noise}{threshold for signal noise}
 
-\item{seed}{random seed to control randomness in the algorithm}
+\item{seed}{random seed to control randomness in the algorithm (used in the
+estimation of significativity of a given metabolite concentration)}
 }
 \value{
 An object of type \code{\link{resASICS-class}}
