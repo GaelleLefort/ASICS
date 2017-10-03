@@ -12,7 +12,7 @@ ASICS_multiFiles(name.dir, ncores = max(detectCores() - 1, 1), ...)
 \item{ncores}{number of cores to use. Default to 1 (no parallel processing)}
 
 \item{...}{further arguments to be passed to the function
-\code{\link{ASICS}} for specifying the parameters of the algorithm.}
+\code{\link{ASICS}} for specifying the parameters of the algorithm}
 }
 \value{
 A list containing \code{ASICS} results for each spectrum.

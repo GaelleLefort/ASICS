@@ -19,7 +19,8 @@
 
 \S4method{print}{resASICS}(x)
 
-\S4method{plot}{resASICS}(x, y, ..., add_metab = NULL)
+\S4method{plot}{resASICS}(x, y, xmin = 0, xmax = 10, ymin = 0,
+  ymax = NULL, add_metab = NULL)
 }
 \arguments{
 \item{object}{an object of class resASICS}
@@ -29,6 +30,8 @@
 \item{x}{an object of class resASICS}
 
 \item{y}{not used}
+
+\item{xmin, xmax, ymin, ymax}{lower and upper bounds for x and y, respectively}
 
 \item{add_metab}{name of one metabolite to add to the plot. Default to
 \code{NULL} (no pure spectrum added to the plot)}

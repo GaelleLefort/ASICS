@@ -72,6 +72,7 @@ setMethod(
 
 #' @param x an object of class resASICS
 #' @param y not used
+#' @param xmin,xmax,ymin,ymax lower and upper bounds for x and y, respectively
 #' @param add_metab name of one metabolite to add to the plot. Default to
 #' \code{NULL} (no pure spectrum added to the plot)
 #'
@@ -89,25 +90,8 @@ setMethod(
 setMethod(
   f = "plot",
   signature = "resASICS",
-  definition = function(x, y, ..., add_metab = NULL){
-    param.args <- list(...)
-
-    if(is.null(param.args$xlim)){
-      xmin = 0
-      xmax = 10
-    } else {
-      xmin = param.args$xlim[1]
-      xmax = param.args$xlim[2]
-    }
-
-    if(is.null(param.args$ylim)){
-      ymin = 0
-      ymax = NULL
-    } else {
-      ymin = param.args$ylim[1]
-      ymax = param.args$ylim[2]
-    }
-
+  definition = function(x, y, xmin = 0, xmax = 10, ymin = 0, ymax = NULL,
+                        add_metab = NULL){
     plot_spectrum(x, xmin, xmax, ymin, ymax, add_metab)
   }
 )

@@ -5,7 +5,7 @@
 #' @param name.dir folder path of the Bruker files
 #' @param ncores number of cores to use. Default to 1 (no parallel processing)
 #' @param ... further arguments to be passed to the function
-#' \code{\link{ASICS}} for specifying the parameters of the algorithm.
+#' \code{\link{ASICS}} for specifying the parameters of the algorithm
 #'
 #' @return A list containing \code{ASICS} results for each spectrum.
 #'
