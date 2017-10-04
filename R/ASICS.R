@@ -15,9 +15,11 @@
 #' @param threshold.noise threshold for signal noise
 #' @param seed random seed to control randomness in the algorithm (used in the
 #' estimation of significativity of a given metabolite concentration)
-#' @param nb.iter.signif number of iteration for the estimation of
-#' significativity of a given metabolite concentration
+#' @param nb.iter.signif number of iterations for the estimation of
+#' significativity of a given metabolite concentration. Default to 400
+#' 
 #' @return An object of type \code{\link{resASICS-class}}
+#' 
 #' @importFrom methods new
 #' @importFrom stats relevel
 #' @export
