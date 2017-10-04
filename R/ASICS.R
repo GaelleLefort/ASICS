@@ -6,15 +6,17 @@
 #' @param path folder path of the Bruker files
 #' @param exclusion.areas definition domain of spectra to exclude (ppm)
 #' @param max.shift maximum chemical shift allowed (in ppm)
-#' @param which.spectra if more than one spectra by sample, spectra used to 
-#' perform the quantification (either \code{"first"}, \code{"last"} or its 
+#' @param which.spectra if more than one spectra by sample, spectra used to
+#' perform the quantification (either \code{"first"}, \code{"last"} or its
 #' number). Default to \code{"last"}
-#' @param library.metabolites path of the library containing the references 
-#' (pure metabolite spectra). If \code{NULL}, the library included in the 
+#' @param library.metabolites path of the library containing the references
+#' (pure metabolite spectra). If \code{NULL}, the library included in the
 #' package is used
 #' @param threshold.noise threshold for signal noise
 #' @param seed random seed to control randomness in the algorithm (used in the
 #' estimation of significativity of a given metabolite concentration)
+#' @param nb.iter.signif number of iteration for the estimation of
+#' significativity of a given metabolite concentration
 #' @return An object of type \code{\link{resASICS-class}}
 #' @importFrom methods new
 #' @importFrom stats relevel
@@ -23,24 +25,34 @@
 #' @seealso \code{\link{resASICS-class}} \code{\link{ASICS_multiFiles}}
 #' \code{\link{pure_library}}
 #'
-#' @references Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer 
-#' L., Concordet D., Servien R. (2017). ASICS: an automatic method for 
-#' identification and quantification of metabolites in complex 1D 1H NMR 
+#' @references Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer
+#' L., Concordet D., Servien R. (2017). ASICS: an automatic method for
+#' identification and quantification of metabolites in complex 1D 1H NMR
 #' spectra. \emph{Metabolomics}, \strong{13}(10): 109.
 #' \url{https://doi.org/10.1007/s11306-017-1244-5}
 #'
 #' @examples
+#' \dontshow{
+#' lib_file <- system.file("extdata", "library_for_examples.rda",
+#'                         package = "ASICS")
+#' cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
+#'                         package = "ASICS")
+#' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+#' result <- ASICS(path = cur_path, exclusion.areas = to_exclude,
+#'                 nb.iter.signif = 10, library.metabolites = lib_file)
+#' }
 #' \dontrun{
-#' cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01", 
+#' cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
 #'                         package = "ASICS")
 #' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
 #' result <- ASICS(path = cur_path, exclusion.areas = to_exclude)
 #' }
 
+
 ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, which.spectra = "last",
                   library.metabolites = NULL, threshold.noise = 0.02,
-                  seed = 1234){
+                  seed = 1234, nb.iter.signif = 400){
 
   ## checking the validity of the parameters
   if(!dir.exists(path)){
@@ -100,7 +112,7 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
 
   #-----------------------------------------------------------------------------
   #### Threshold and concentration optimisation for each metabolites ####
-  res_opti <- concentration_opti(mixture, pure_lib_deformed)
+  res_opti <- concentration_opti(mixture, pure_lib_deformed, nb.iter.signif)
   pure_lib_final <- res_opti$pure_lib_final
 
 

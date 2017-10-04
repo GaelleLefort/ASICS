@@ -18,10 +18,21 @@ Combine results of the multiple file ASICS function to obtain quantified
 relative concentrations of metabolites for each spectrum in one dataset
 }
 \examples{
+\dontshow{
+lib_file <- system.file("extdata", "library_for_examples.rda",
+                        package = "ASICS")
+cur_path <- system.file("extdata", "example_spectra", package = "ASICS")
+to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+res_multi <- ASICS_multiFiles(name.dir = cur_path,
+                              exclusion.areas = to_exclude,
+                              nb.iter.signif = 10,
+                              library.metabolites = lib_file, ncores = 1)
+quantification <- extract_concentrations(res_multi)
+}
 \dontrun{
 cur_path <- system.file("extdata", "example_spectra", package = "ASICS")
 to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-res_multi <- ASICS_multiFiles(name.dir = cur_path, 
+res_multi <- ASICS_multiFiles(name.dir = cur_path,
                               exclusion.areas = to_exclude,
                               ncores = 2)
 

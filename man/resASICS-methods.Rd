@@ -19,7 +19,7 @@
 
 \S4method{print}{resASICS}(x)
 
-\S4method{plot}{resASICS}(x, y, xmin = 0, xmax = 10, ymin = 0,
+\S4method{plot}{resASICS}(x, y, xmin = 0.5, xmax = 10, ymin = 0,
   ymax = NULL, add_metab = NULL)
 }
 \arguments{

@@ -2,7 +2,7 @@
 #' @importFrom stats rnorm runif
 #' @importFrom methods is
 #' @keywords internal
-concentration_opti <- function(mixture, pure_lib_deformed){
+concentration_opti <- function(mixture, pure_lib_deformed, nb.iter.signif){
   #noises and weights
   s1 <- 0.172 #standard deviation of multiplicative noise
   s2 <- 0.15 #standard deviation of additive noise
@@ -31,8 +31,7 @@ concentration_opti <- function(mixture, pure_lib_deformed){
   a_min <- sum(compute_threshold(delta0, ZMLE, se)) #threshold sum by metabolite
   err <- 0.4
 
-  for(i in 1:400)
-  {
+  for(i in 1:nb.iter.signif) {
     err <- 0.99 * err
     W <- matrix(delta0 + err * c(runif(p * nb_draw, -1, 1)), nrow = nb_draw,
                 byrow = TRUE)

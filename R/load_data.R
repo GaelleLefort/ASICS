@@ -7,7 +7,7 @@ load_data <- function(path, library.metabolites = NULL,
   #load default or user metabolites library
   if(!is.null(library.metabolites)) {
     if(!file.exists(library.metabolites)){
-      stop("Pure library file does'nt exist !")
+      stop("Pure library file doesn't exist !")
     }
 
     load(library.metabolites)
@@ -23,13 +23,13 @@ load_data <- function(path, library.metabolites = NULL,
   if(length(pure_library$grid) != nrow(pure_library$spectra) |
      ncol(pure_library$spectra) != length(pure_library$name) |
      ncol(pure_library$spectra) != length(pure_library$nb_protons)){
-    stop("Pure library is not conform.")
+    stop("Pure library is not well formatted.")
   }
 
   #get the mixture
   mixture <- get_mixture(path, pure_library$grid, which.spectra)
 
-  #for signal in exclusion.areas, intesity is null (mixture and library)
+  #for signal in exclusion.areas, intensity is null (mixture and library)
   idx_to_remove <-
     unlist(plyr::alply(exclusion.areas, 1, function(x)
       which(pure_library$grid >= x[[1]] & pure_library$grid <= x[[2]])),

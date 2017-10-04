@@ -90,7 +90,7 @@ setMethod(
 setMethod(
   f = "plot",
   signature = "resASICS",
-  definition = function(x, y, xmin = 0, xmax = 10, ymin = 0, ymax = NULL,
+  definition = function(x, y, xmin = 0.5, xmax = 10, ymin = 0, ymax = NULL,
                         add_metab = NULL){
     plot_spectrum(x, xmin, xmax, ymin, ymax, add_metab)
   }
