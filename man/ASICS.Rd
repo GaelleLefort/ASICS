@@ -28,8 +28,8 @@ package is used}
 \item{seed}{random seed to control randomness in the algorithm (used in the
 estimation of significativity of a given metabolite concentration)}
 
-\item{nb.iter.signif}{number of iteration for the estimation of
-significativity of a given metabolite concentration}
+\item{nb.iter.signif}{number of iterations for the estimation of
+significativity of a given metabolite concentration. Default to 400}
 }
 \value{
 An object of type \code{\link{resASICS-class}}

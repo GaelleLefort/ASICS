@@ -10,7 +10,6 @@
 #' @return A list containing \code{ASICS} results for each spectrum.
 #'
 #' @importFrom utils setTxtProgressBar txtProgressBar
-#' @importFrom parallel detectCores makeCluster stopCluster
 #'
 #' @export
 #'
@@ -25,7 +24,7 @@
 #' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
 #' result <- ASICS_multiFiles(name.dir = cur_path,
 #'                            exclusion.areas = to_exclude,
-#'                            nb.iter.signif = 10,
+#'                            nb.iter.signif = 10, which.spectra = 2,
 #'                            library.metabolites = lib_file, ncores = 1)
 #' }
 #' \dontrun{
@@ -36,7 +35,7 @@
 #'                               ncores = 1)
 #' }
 
-ASICS_multiFiles <- function(name.dir, ncores = max(detectCores() - 1, 1), ...){
+ASICS_multiFiles <- function(name.dir, ncores = 1, ...){
   ## ASICS parameters
   param.args <- list(...)
 
@@ -52,7 +51,7 @@ ASICS_multiFiles <- function(name.dir, ncores = max(detectCores() - 1, 1), ...){
 
   # Parallel environment
   if(ncores > 1) {
-    cl <- makeCluster(ncores)
+    cl <- snow::makeCluster(ncores)
     doSNOW::registerDoSNOW(cl)
     `%dopar%` <- foreach::`%dopar%`
 
@@ -73,7 +72,8 @@ ASICS_multiFiles <- function(name.dir, ncores = max(detectCores() - 1, 1), ...){
                                      .packages = "ASICS") %dopar% {
      path <- file.path(name.dir, cur_dir[i])
      res <- NULL
-     res <- try(do.call("ASICS", c(path, param.args)))
+     res <- suppressWarnings(try(do.call("ASICS", c(path, param.args)),
+                                 silent = TRUE))
 
      if(ncores == 1){
        setTxtProgressBar(pb, i)
@@ -85,7 +85,7 @@ ASICS_multiFiles <- function(name.dir, ncores = max(detectCores() - 1, 1), ...){
   # Close parallel environment
   if(ncores != 1) {
     close(pb)
-    stopCluster(cl)
+    snow::stopCluster(cl)
   }
 
   names(res_estimation) <- cur_dir

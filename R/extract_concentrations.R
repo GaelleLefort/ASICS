@@ -15,7 +15,7 @@
 #' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
 #' res_multi <- ASICS_multiFiles(name.dir = cur_path,
 #'                               exclusion.areas = to_exclude,
-#'                               nb.iter.signif = 10,
+#'                               nb.iter.signif = 10, which.spectra = 2,
 #'                               library.metabolites = lib_file, ncores = 1)
 #' quantification <- extract_concentrations(res_multi)
 #' }
