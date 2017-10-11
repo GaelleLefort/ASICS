@@ -30,3 +30,28 @@ The respective slot from resASICS object.
 \description{
 S4 methods to represent results of ASICS.
 }
+\examples{
+\dontshow{
+lib_file <- system.file("extdata", "library_for_examples.rda",
+                        package = "ASICS")
+cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
+                        package = "ASICS")
+to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+result <- ASICS(path = cur_path, exclusion.areas = to_exclude,
+                nb.iter.signif = 10, library.metabolites = lib_file)
+
+#Identified metabolites
+present_metabolites(result)
+
+}
+\dontrun{
+cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
+                        package = "ASICS")
+to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+result <- ASICS(path = cur_path, exclusion.areas = to_exclude)
+
+#Identified metabolites
+present_metabolites(result)
+
+}
+}
