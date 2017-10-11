@@ -1,10 +1,16 @@
-TODO
+**********************************************************************************************
+******************************************** TODO ********************************************
+**********************************************************************************************
+
 
 ********* Amélioration de l'algorithme
 
   - revoir la translation : ajouter des poids ?
   - revoir l'optimisation des seuils --> Patrick ?
   - seuil automatique pour le bruit ?
+  - quand on a plusieurs spectres, faire la même déformation pour tous ? -->
+  regarder les déformations de chaque spectres sur Porcinet
+  - intervalle de confiance sur les concentrations
 
 
 ********* Amélioration du package
@@ -18,6 +24,8 @@ TODO
   - ajout de fonctions d'analyses de données ?
   - ajout d'une interface graphique comme dans le package ideal
   - résolution bug si 1 seul standard
+  - problème avec la barre de progression : voir si le package de bioconductor
+  permettrait de résoudre ça
 
 
 ********* A ajouter au package
@@ -26,6 +34,12 @@ TODO
   - tests unitaires : avec testthat ?
   - améliorer le user's guide
   - formatter le package pour un passage sous Bioconductor
-  - vérifier combatibilité avec ggplot2
+
+
+********* Autres
+
+  - quels outils sont disponible pour la métabolomique sur Bioconductor -->
+  pas beaucoup d'outils spécialisés RMN mais regarder les analyses faites
+  - passer le package sous Galaxy dans W4M --> réunion avec Marie
 
 
