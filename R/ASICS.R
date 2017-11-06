@@ -17,9 +17,9 @@
 #' estimation of significativity of a given metabolite concentration)
 #' @param nb.iter.signif number of iterations for the estimation of
 #' significativity of a given metabolite concentration. Default to 400
-#' 
+#'
 #' @return An object of type \code{\link{resASICS-class}}
-#' 
+#'
 #' @importFrom methods new
 #' @importFrom stats relevel
 #' @export
@@ -109,7 +109,7 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
   #-----------------------------------------------------------------------------
   #### Localized deformations of pure spectra ####
   pure_lib_deformed <- deform_library(mixture, pure_lib_sorted, nb_points_shift,
-                                      max.shift, shift)
+                                     max.shift, shift)
 
 
   #-----------------------------------------------------------------------------
@@ -121,8 +121,11 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
   #-----------------------------------------------------------------------------
   #### Results ####
 
-  #Reconstituted mixture with estimated coefficents
+  #Reconstituted mixture with estimated coefficents and
   est_mixture <- as.numeric(pure_lib_final$spectra %*% res_opti$B_final)
+  pure_lib_final_conc <- pure_lib_final
+  pure_lib_final_conc$spectra <- pure_lib_final$spectra %*%
+    diag(res_opti$B_final)
 
   #Compute relative concentration of identified metabolites
   relative_concentration <- res_opti$B_final / pure_lib_final$nb_protons
@@ -141,7 +144,8 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                     original_mixture = mixture,
                     reconstituted_mixture = est_mixture,
                     ppm_grid = pure_lib_final$grid,
-                    present_metabolites = present_metab)
+                    present_metabolites = present_metab,
+                    deformed_library = pure_lib_final_conc)
 
   return(res_object)
 }

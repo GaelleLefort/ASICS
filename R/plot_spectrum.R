@@ -15,12 +15,22 @@ plot_spectrum <- function(res_ASICS, xmin = 0, xmax = 10, ymin = 0, ymax = NULL,
 
   # Add a pure spectrum if the user wants
   if(!is.null(add_metab)){
-    metab_to_add <- ASICS::pure_library$spectra[, ASICS::pure_library$name == add_metab]
-    metab_to_add <- metab_to_add * max(spectra$mixture) / max(metab_to_add)
-    spectra <- rbind(spectra, data.frame(grid = rep(res_ASICS@ppm_grid, 2),
-                                         mixture = metab_to_add,
-                                         which_mix  = rep(add_metab,
-                                                          length(res_ASICS@ppm_grid))))
+    metab_to_add_pure <-
+      ASICS::pure_library$spectra[, ASICS::pure_library$name == add_metab]
+    metab_to_add_pure <- metab_to_add_pure *
+      max(spectra$mixture) / max(metab_to_add_pure)
+
+    metab_to_add_def <-
+      res_ASICS@deformed_library$spectra[, res_ASICS@deformed_library$name ==
+                                           add_metab]
+
+    spectra <- rbind(spectra,
+                     data.frame(grid = rep(res_ASICS@ppm_grid, 2),
+                                mixture = c(metab_to_add_pure,
+                                            metab_to_add_def),
+                                which_mix  = rep(c(add_metab, paste0(add_metab,
+                                                                     " deformed")),
+                                                 each=length(res_ASICS@ppm_grid))))
   }
 
   spectra$which_mix <- relevel(spectra$which_mix, "Original spectrum")
@@ -33,7 +43,7 @@ plot_spectrum <- function(res_ASICS, xmin = 0, xmax = 10, ymin = 0, ymax = NULL,
     ggplot2::ylab("Standardized intensity") +
     ggplot2::scale_x_reverse(limits = c(xmax, xmin)) +
     ggplot2::ylim(c(ymin, ymax)) +
-    ggplot2::scale_color_manual(name = "", values = c("black", "blue", "red"))
+    ggplot2::scale_color_manual(name = "", values = c("black", "blue", "red", "orange"))
 
   print(p1)
 }

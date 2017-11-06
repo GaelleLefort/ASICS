@@ -4,15 +4,15 @@
 \alias{ASICS_multiFiles}
 \title{Automatic Statistical Identification in Complex Spectra for many files}
 \usage{
-ASICS_multiFiles(name.dir, ncores = 1, ...)
+ASICS_multiFiles(name.dir, ...)
 }
 \arguments{
 \item{name.dir}{folder path of the Bruker files}
 
-\item{ncores}{number of cores to use. Default to 1 (no parallel processing)}
-
 \item{...}{further arguments to be passed to the function
 \code{\link{ASICS}} for specifying the parameters of the algorithm}
+
+\item{ncores}{number of cores to use. Default to 1 (no parallel processing)}
 }
 \value{
 A list containing \code{ASICS} results for each spectrum.
@@ -35,8 +35,7 @@ result <- ASICS_multiFiles(name.dir = cur_path,
 cur_path <- system.file("extdata", "example_spectra", package = "ASICS")
 to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
 res_multi <- ASICS_multiFiles(name.dir = cur_path,
-                              exclusion.areas = to_exclude,
-                              ncores = 1)
+                              exclusion.areas = to_exclude)
 }
 }
 \seealso{

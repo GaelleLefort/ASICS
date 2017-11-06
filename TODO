@@ -1,15 +1,17 @@
-**********************************************************************************************
-******************************************** TODO ********************************************
-**********************************************************************************************
+********************************************************************************
+************************************* TODO *************************************
+********************************************************************************
 
 
 ********* Amélioration de l'algorithme
 
-  - revoir la translation : ajouter des poids ?
+  - revoir la translation : voir avec la déformation du package speaq -->
+  fait c'est beaucoup mieux
   - revoir l'optimisation des seuils --> Patrick ?
   - seuil automatique pour le bruit ?
   - quand on a plusieurs spectres, faire la même déformation pour tous ? -->
-  regarder les déformations de chaque spectres sur Porcinet
+  regarder les déformations de chaque spectres sur Porcinet, ce n'est pas
+  vraiment possible
   - intervalle de confiance sur les concentrations
 
 
@@ -24,8 +26,11 @@
   - ajout de fonctions d'analyses de données ?
   - ajout d'une interface graphique comme dans le package ideal
   - résolution bug si 1 seul standard
+
   - problème avec la barre de progression : voir si le package de bioconductor
-  permettrait de résoudre ça
+  permettrait de résoudre ça --> résolu avec le package BioParallel
+
+  - gérer les poids dans le main
 
 
 ********* A ajouter au package
@@ -40,6 +45,8 @@
 
   - quels outils sont disponible pour la métabolomique sur Bioconductor -->
   pas beaucoup d'outils spécialisés RMN mais regarder les analyses faites
-  - passer le package sous Galaxy dans W4M --> réunion avec Marie
+
+  - passer le package sous Galaxy dans W4M --> réunion avec Marie --> Marie va
+  le faire
 
 

@@ -8,6 +8,7 @@
 #' @slot ppm_grid grid (definition domain) of the spectrum (in ppm)
 #' @slot present_metabolites a data frame with identified metabolites and their
 #' relative concentrations
+#' @slot deformed_library a list containing the deformed library of pure spectra
 #'
 #' @note Slots can be accessed by accessor functions with the same name
 #' (see \link{resASICS-getters}).
@@ -20,7 +21,8 @@ setClass(
     original_mixture = "numeric",
     reconstituted_mixture = "numeric",
     ppm_grid = "numeric",
-    present_metabolites = "data.frame"
+    present_metabolites = "data.frame",
+    deformed_library = "list"
   )
 )
 
@@ -136,6 +138,9 @@ setGeneric("reconstituted_mixture",
 setGeneric("ppm_grid",
            function(object){standardGeneric("ppm_grid")}
 )
+setGeneric("deformed_library",
+           function(object){standardGeneric("deformed_library")}
+)
 
 
 #' S4 methods to represent results of ASICS.
@@ -181,6 +186,15 @@ setMethod("reconstituted_mixture", "resASICS",
 setMethod("ppm_grid", "resASICS",
           function(object){
             return(object@ppm_grid)
+          }
+)
+
+#' @export
+#' @aliases deformed_library
+#' @rdname resASICS-getters
+setMethod("deformed_library", "resASICS",
+          function(object){
+            return(object@deformed_library)
           }
 )
 

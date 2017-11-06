@@ -1,17 +1,23 @@
 ## Find the best translation between each pure spectra and mixture ####
 #and sort metabolites by regression residuals
 #' @importFrom stats lm
+#' @importFrom speaq findShiftStepFFT
+#' @importFrom plyr laply
 #' @keywords internal
 translate_library <- function(mixture, pure_lib_clean, nb_points_shift){
-  #create a matrix with all possible shifted mixture in column
-  mixture_all_shift <- c(rep(0, nb_points_shift),
-                         mixture,
-                         rep(0, nb_points_shift))
+  #weights
+  s1 <- 0.172 #standard deviation of multiplicative noise
+  s2 <- 0.15 #standard deviation of additive noise
+  noises <- abs(mixture) * s1 ^ 2 + s2 ^ 2
+  mixture_weights <- 1 / noises
 
-  mixture_shift <- t(plyr::laply(.data = as.list(1:(nb_points_shift * 2 + 1)),
-                                 .fun = function (x)
-                                   mixture_all_shift[x:(x + length(mixture) -
-                                                          1)]))
+  #find best shift with FFT cross-correlation
+  ref <- mixture*mixture_weights
+  which_shift <-
+    apply(pure_lib_clean$spectra, 2,
+          function(x) findShiftStepFFT(ref, x,
+                                       maxShift = nb_points_shift)$stepAdj)
+  shift <- which_shift * (pure_lib_clean$grid[2] - pure_lib_clean$grid[1])
 
   #create a matrix of all pure spectra with shift
   spectra_all_shift <- rbind(matrix(0, nrow = nb_points_shift,
@@ -20,32 +26,20 @@ translate_library <- function(mixture, pure_lib_clean, nb_points_shift){
                              matrix(0, nrow = nb_points_shift,
                                     ncol = ncol(pure_lib_clean$spectra)))
 
-  #compute least square between all possible shifted mixture and all metabolites
-  XtX <- diag(colSums(pure_lib_clean$spectra^2))
-  least_square_shift <- solve(XtX) %*% t(pure_lib_clean$spectra) %*%
-    mixture_shift
-  max_least_square <- apply(least_square_shift, 1, which.max)
-
-  #shift between original spectrum and translate spectrum
-  shift <- (max_least_square - (ncol(mixture_shift) - 1) / 2) *
-    diff(pure_lib_clean$grid)[1]
-
-  #shift library according to least square
+  #shift library according to FFT cross-correlation
   pure_lib_shifted <- pure_lib_clean
   pure_lib_shifted$spectra <-
-    t(plyr::laply(as.list(1:ncol(pure_lib_clean$spectra)),
-                  function(i)
-                    spectra_all_shift[(ncol(mixture_shift) - max_least_square[i]
-                                       + 1):(ncol(mixture_shift) -
-                                               max_least_square[i] +
-                                           nrow(pure_lib_shifted$spectra)), i]))
+    t(laply(as.list(1:ncol(pure_lib_clean$spectra)),
+            function(i)
+              spectra_all_shift[(nb_points_shift - which_shift[i] + 1):
+                                  (nb_points_shift - which_shift[i] +
+                                     nrow(pure_lib_shifted$spectra)), i]))
 
   #optimal residuals
-  residuals_opti <- unlist(lapply(1:length(pure_lib_shifted$name),
-                                  function(x)
-                                    sum((lm(mixture_shift[, max_least_square[x]]~
-                                              pure_lib_shifted$spectra[,x] -
-                                              1)$residuals) ^ 2)))
+  residuals_opti <-
+    unlist(lapply(1:length(pure_lib_shifted$name),
+                  function(i) sum((lm(mixture~pure_lib_shifted$spectra[, i] -
+                                        1)$residuals) ^ 2)))
 
   #metabolites sorted by decreasing residual sum
   order <- sort(residuals_opti, decreasing = FALSE, index.return = TRUE)$ix
@@ -117,10 +111,10 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
   min_extremities <- signal_peak_lib[!((signal_peak_lib - 1) %in%
                                          signal_peak_lib)] -
-    floor(nb_points_shift / 5)
+    floor(nb_points_shift / 10)
   max_extremities <- signal_peak_lib[!((signal_peak_lib + 1) %in%
                                          signal_peak_lib)] +
-    floor(nb_points_shift / 5)
+    floor(nb_points_shift / 10)
   peaks_extremities <- cbind(min_extremities, max_extremities)
 
   #Remove overlapping
@@ -171,8 +165,8 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
                                      mixture_weights[peak_area])))
 
         if(new_opti > opti_criterion &
-           max(abs(deformed_grid - pure_lib$grid[peak_area])) +
-           shift[idx_to_deform] < max.shift){
+           max(abs(deformed_grid - pure_lib$grid[peak_area] +
+                   shift[idx_to_deform])) < max.shift){
           to_deform <- deformed_spectrum_small
           opti_criterion <- new_opti
         }

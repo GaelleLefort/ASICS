@@ -9,7 +9,7 @@
 #'
 #' @return A list containing \code{ASICS} results for each spectrum.
 #'
-#' @importFrom utils setTxtProgressBar txtProgressBar
+#' @importFrom BiocParallel bplapply MulticoreParam
 #'
 #' @export
 #'
@@ -31,11 +31,10 @@
 #' cur_path <- system.file("extdata", "example_spectra", package = "ASICS")
 #' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
 #' res_multi <- ASICS_multiFiles(name.dir = cur_path,
-#'                               exclusion.areas = to_exclude,
-#'                               ncores = 1)
+#'                               exclusion.areas = to_exclude)
 #' }
 
-ASICS_multiFiles <- function(name.dir, ncores = 1, ...){
+ASICS_multiFiles <- function(name.dir, ...){
   ## ASICS parameters
   param.args <- list(...)
 
@@ -44,51 +43,16 @@ ASICS_multiFiles <- function(name.dir, ncores = 1, ...){
     stop("Path of the Bruker file doesn't exist!")
   }
 
-  cur_dir <- dir(name.dir)
+  cur_dir <- as.list(file.path(name.dir, dir(name.dir)))
 
-  # Progress bar
-  pb <- txtProgressBar(max = length(cur_dir), style = 3)
+  res_estimation <- bplapply(cur_dir,
+                             function(x) suppressWarnings(
+                               try(do.call("ASICS", c(x, param.args)),
+                                                              silent = TRUE)),
+                             BPPARAM = MulticoreParam(progressbar = TRUE,
+                                                      tasks = length(cur_dir)))
 
-  # Parallel environment
-  if(ncores > 1) {
-    cl <- snow::makeCluster(ncores)
-    doSNOW::registerDoSNOW(cl)
-    `%dopar%` <- foreach::`%dopar%`
-
-    # Progress bar
-    progress <- function(n) setTxtProgressBar(pb, n)
-    opts <- list(progress = progress)
-  } else {
-    `%dopar%` <- foreach::`%do%`
-
-    # Progress bar
-    opts <- NULL
-  }
-
-  # ASICS for each spectrum
-  i <- NULL
-  res_estimation <- foreach::foreach(i = 1:length(cur_dir),
-                                     .options.snow = opts,
-                                     .packages = "ASICS") %dopar% {
-     path <- file.path(name.dir, cur_dir[i])
-     res <- NULL
-     res <- suppressWarnings(try(do.call("ASICS", c(path, param.args)),
-                                 silent = TRUE))
-
-     if(ncores == 1){
-       setTxtProgressBar(pb, i)
-     }
-
-     res
-  }
-
-  # Close parallel environment
-  if(ncores != 1) {
-    close(pb)
-    snow::stopCluster(cl)
-  }
-
-  names(res_estimation) <- cur_dir
+  names(res_estimation) <- dir(name.dir)
   return(res_estimation)
 }
 

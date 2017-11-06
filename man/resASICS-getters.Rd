@@ -11,6 +11,8 @@
 \alias{reconstituted_mixture}
 \alias{ppm_grid,resASICS-method}
 \alias{ppm_grid}
+\alias{deformed_library,resASICS-method}
+\alias{deformed_library}
 \title{S4 methods to represent results of ASICS.}
 \usage{
 \S4method{present_metabolites}{resASICS}(object)
@@ -20,6 +22,8 @@
 \S4method{reconstituted_mixture}{resASICS}(object)
 
 \S4method{ppm_grid}{resASICS}(object)
+
+\S4method{deformed_library}{resASICS}(object)
 }
 \arguments{
 \item{object}{an object of class resASICS}

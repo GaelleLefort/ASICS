@@ -19,6 +19,8 @@ concentrations}
 
 \item{\code{present_metabolites}}{a data frame with identified metabolites and their
 relative concentrations}
+
+\item{\code{deformed_library}}{a list containing the deformed library of pure spectra}
 }}
 
 \note{
