@@ -21,6 +21,7 @@ Imports:
     quadprog,
     speaq,
     stats,
+    SummarizedExperiment,
     utils,
     zoo
 License: GPL (>= 2)
@@ -31,3 +32,16 @@ Suggests: knitr,
     rmarkdown,
     BiocStyle
 VignetteBuilder: knitr
+Collate: 
+    'ASICS.R'
+    'Spectra-class.R'
+    'ASICSResults-class.R'
+    'PureLibrary-class.R'
+    'baseline_correction.R'
+    'concentration_optimisation.R'
+    'data.R'
+    'library_transformation.R'
+    'load_data.R'
+    'plot_spectrum.R'
+    'user_guide.R'
+    'utils.R'

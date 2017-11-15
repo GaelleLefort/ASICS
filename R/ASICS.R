@@ -1,27 +1,22 @@
 #' Automatic Statistical Identification in Complex Spectra
 #'
-#' Quantification of 1D 1H NMR spectrum with ASICS method using a library of 175
+#' Quantification of 1D 1H NMR spectra with ASICS method using a library of 175
 #' pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 #'
-#' @param path folder path of the Bruker files
+#' @param spectra_obj an object of class \linkS4class{Spectra} obtained with the
+#' function \link{preprocessing_spectra}
 #' @param exclusion.areas definition domain of spectra to exclude (ppm)
 #' @param max.shift maximum chemical shift allowed (in ppm)
-#' @param which.spectra if more than one spectra by sample, spectra used to
-#' perform the quantification (either \code{"first"}, \code{"last"} or its
-#' number). Default to \code{"last"}
-#' @param library.metabolites path of the library containing the references
-#' (pure metabolite spectra). If \code{NULL}, the library included in the
-#' package is used
+#' @param pure.library an object of class \linkS4class{PureLibrary} containing
+#' the references (pure metabolite spectra). If \code{NULL}, the library
+#' included in the package is used
 #' @param threshold.noise threshold for signal noise
 #' @param seed random seed to control randomness in the algorithm (used in the
 #' estimation of significativity of a given metabolite concentration)
-#' @param nb.iter.signif number of iterations for the estimation of
-#' significativity of a given metabolite concentration. Default to 400
 #'
-#' @return An object of type \code{\link{resASICS-class}}
+#' @return An object of type \code{\link{ASICSResults}}.
 #'
-#' @importFrom methods new
-#' @importFrom stats relevel
+#' @importFrom BiocParallel bplapply MulticoreParam
 #' @export
 #'
 #' @seealso \code{\link{resASICS-class}} \code{\link{ASICS_multiFiles}}
@@ -33,33 +28,11 @@
 #' spectra. \emph{Metabolomics}, \strong{13}(10): 109.
 #' \url{https://doi.org/10.1007/s11306-017-1244-5}
 #'
-#' @examples
-#' \dontshow{
-#' lib_file <- system.file("extdata", "library_for_examples.rda",
-#'                         package = "ASICS")
-#' cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
-#'                         package = "ASICS")
-#' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-#' result <- ASICS(path = cur_path, exclusion.areas = to_exclude,
-#'                 nb.iter.signif = 10, library.metabolites = lib_file)
-#' }
-#' \dontrun{
-#' cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
-#'                         package = "ASICS")
-#' to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-#' result <- ASICS(path = cur_path, exclusion.areas = to_exclude)
-#' }
 
-
-ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
-                  max.shift = 0.02, which.spectra = "last",
-                  library.metabolites = NULL, threshold.noise = 0.02,
-                  seed = 1234, nb.iter.signif = 400){
-
-  ## checking the validity of the parameters
-  if(!dir.exists(path)){
-    stop("Path of the Bruker file doesn't exist!")
-  }
+ASICS <- function(spectra_obj,
+                  exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
+                  max.shift = 0.02, pure.library = NULL,
+                  threshold.noise = 0.02, seed = 1234) {
 
   if(!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2){
     stop("'exclusion.areas' needs to be a matrix with 2 columns.")
@@ -73,79 +46,115 @@ ASICS <- function(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
     stop("'threshold.noise' must be non negative.")
   }
 
-  ##Seed and variables declaration
+  if(class(pure.library) != "PureLibrary" & !is.null(pure.library)){
+    stop(paste("'pure.library' needs to be either NULL or an object of class",
+               "'PureLibrary'."))
+  }
+
+  list_spec <- lapply(seq_along(spectra_obj), function(x) spectra_obj[x])
+
+  res_estimation_list <- bplapply(list_spec,
+                          ASICS.internal, exclusion.areas, max.shift,
+                          pure.library, threshold.noise, seed,
+                          BPPARAM = MulticoreParam(progressbar = TRUE,
+                                                   tasks = length(spectra_obj)))
+
+  res_estimation <- do.call(c, res_estimation_list)
+
+  return(res_estimation)
+
+}
+
+
+#' @importFrom methods new
+ASICS.internal <- function(spectrum_obj,
+                           exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
+                           max.shift = 0.02, pure.library = NULL,
+                           threshold.noise = 0.02, seed = 1234){
+
+  ##Seed
   set.seed(seed)
 
 
   #-----------------------------------------------------------------------------
-  #### Import complexe mixture and pure spectra library ####
-  import <- load_data(path = path, exclusion.areas = exclusion.areas,
-                      max.shift = max.shift, which.spectra = which.spectra,
-                      library.metabolites = library.metabolites)
+  #### Remove areas from spectrum and library ####
+  cleaned_obj <- remove_areas(spectrum_obj, exclusion.areas = exclusion.areas,
+                              pure.library = pure.library)
 
-  mixture <- import$mixture
-  pure_library <- import$pure_library
+  cleaned_spectrum <- cleaned_obj$cleaned_spectrum
+  cleaned_library <- cleaned_obj$cleaned_library
 
   #number of points on library grid corresponding to maximum shift
-  nb_points_shift <- floor(max.shift / (pure_library$grid[2] -
-                                          pure_library$grid[1]))
+  nb_points_shift <- floor(max.shift / (cleaned_library@ppm.grid[2] -
+                                          cleaned_library@ppm.grid[1]))
 
 
   #-----------------------------------------------------------------------------
   #### Cleaning step: remove metabolites that cannot belong to the mixture ####
-  pure_lib_clean <- clean_library(mixture, pure_library, threshold.noise,
-                                  nb_points_shift)
+  cleaned_library <- clean_library(cleaned_spectrum, cleaned_library,
+                                   threshold.noise, nb_points_shift)
 
 
   #-----------------------------------------------------------------------------
   #### Find the best translation between each pure spectra and mixture ####
   #and sort metabolites by regression residuals
-  res_translation <- translate_library(mixture, pure_lib_clean, nb_points_shift)
 
-  pure_lib_sorted <- res_translation$pure_lib_sorted
+  #Compute weights
+  s1 <- 0.172 #standard deviation of multiplicative noise
+  s2 <- 0.15 #standard deviation of additive noise
+  noises <- abs(cleaned_spectrum@spectra) * s1 ^ 2 + s2 ^ 2
+  mixture_weights <- as.numeric(1 / noises)
+
+  res_translation <- translate_library(cleaned_spectrum, cleaned_library,
+                                       mixture_weights, nb_points_shift)
+
+  sorted_library <- res_translation$sorted_library
   shift <- res_translation$shift
 
 
   #-----------------------------------------------------------------------------
   #### Localized deformations of pure spectra ####
-  pure_lib_deformed <- deform_library(mixture, pure_lib_sorted, nb_points_shift,
+  deformed_library <- deform_library(cleaned_spectrum, sorted_library,
+                                     mixture_weights, nb_points_shift,
                                      max.shift, shift)
 
 
   #-----------------------------------------------------------------------------
   #### Threshold and concentration optimisation for each metabolites ####
-  res_opti <- concentration_opti(mixture, pure_lib_deformed, nb.iter.signif)
-  pure_lib_final <- res_opti$pure_lib_final
+  system.time(res_opti <- concentration_opti(cleaned_spectrum, deformed_library,
+                                 noises, mixture_weights))
+  final_library <- res_opti$final_library
 
 
   #-----------------------------------------------------------------------------
   #### Results ####
 
   #Reconstituted mixture with estimated coefficents and
-  est_mixture <- as.numeric(pure_lib_final$spectra %*% res_opti$B_final)
-  pure_lib_final_conc <- pure_lib_final
-  pure_lib_final_conc$spectra <- pure_lib_final$spectra %*%
+  est_mixture <- final_library@spectra %*% res_opti$B_final
+  pure_lib_final_conc <- final_library
+  pure_lib_final_conc@spectra <- final_library@spectra %*%
     diag(res_opti$B_final)
 
   #Compute relative concentration of identified metabolites
-  relative_concentration <- res_opti$B_final / pure_lib_final$nb_protons
+  relative_concentration <- res_opti$B_final / final_library@nb.protons
   #Sort library according to relative concentration
   sorted_idx <- sort(relative_concentration, decreasing = TRUE,
                      index.return = TRUE)$ix
-  pure_lib_final_sorted <- subset_library(pure_lib_final, sorted_idx)
+  pure_lib_final_sorted <- pure_lib_final_conc[sorted_idx]
 
-  present_metab <- data.frame(Name = pure_lib_final_sorted$name,
-                              Relative_Concentration =
-                                relative_concentration[sorted_idx])
+  present_metab <- data.frame(Metabolites = pure_lib_final_sorted@sample.name,
+                              relative_concentration[sorted_idx])
+  colnames(present_metab)[2] <- spectrum_obj@sample.name
 
 
   #List to return
-  res_object <- new(Class = "resASICS",
-                    original_mixture = mixture,
-                    reconstituted_mixture = est_mixture,
-                    ppm_grid = pure_lib_final$grid,
-                    present_metabolites = present_metab,
-                    deformed_library = pure_lib_final_conc)
+  res_object <- new(Class = "ASICSResults",
+                    sample.name = spectrum_obj@sample.name,
+                    ppm.grid = spectrum_obj@ppm.grid,
+                    spectra = spectrum_obj@spectra,
+                    recomposed.spectra = est_mixture,
+                    quantification = present_metab,
+                    deformed.library = list(pure_lib_final_sorted))
 
   return(res_object)
 }

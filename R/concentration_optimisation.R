@@ -2,15 +2,11 @@
 #' @importFrom stats rnorm runif
 #' @importFrom methods is
 #' @keywords internal
-concentration_opti <- function(mixture, pure_lib_deformed, nb.iter.signif){
-  #noises and weights
-  s1 <- 0.172 #standard deviation of multiplicative noise
-  s2 <- 0.15 #standard deviation of additive noise
-  noises <- abs(mixture) * s1 ^ 2 + s2 ^ 2
-  mixture_weights <- 1 / noises
+concentration_opti <- function(cleaned_spectrum, deformed_library,
+                               noises, mixture_weights){
 
   #Variance matrix of maximum likelihood
-  A <- 1 / sqrt(noises) * pure_lib_deformed$spectra
+  A <- as.numeric(1 / sqrt(noises)) * deformed_library@spectra
   VMLE <- solve(t(A)%*%A)
 
   #First threshold minimisation
@@ -31,7 +27,7 @@ concentration_opti <- function(mixture, pure_lib_deformed, nb.iter.signif){
   a_min <- sum(compute_threshold(delta0, ZMLE, se)) #threshold sum by metabolite
   err <- 0.4
 
-  for(i in 1:nb.iter.signif) {
+  for(i in 1:400) {
     err <- 0.99 * err
     W <- matrix(delta0 + err * c(runif(p * nb_draw, -1, 1)), nrow = nb_draw,
                 byrow = TRUE)
@@ -46,10 +42,10 @@ concentration_opti <- function(mixture, pure_lib_deformed, nb.iter.signif){
   }
 
   #Pseudo MLE estimation
-  B2 <- try(lm_constrained(mixture, pure_lib_deformed$spectra,
+  B2 <- try(lm_constrained(cleaned_spectrum@spectra, deformed_library@spectra,
                            mixture_weights)$coefficients, silent = TRUE)
   if(is(B2, "try-error")){
-    B2 <- lm_constrained(mixture, pure_lib_deformed$spectra,
+    B2 <- lm_constrained(cleaned_spectrum@spectra, deformed_library@spectra,
                              mixture_weights, 10e-3)$coefficients
   }
 
@@ -59,23 +55,24 @@ concentration_opti <- function(mixture, pure_lib_deformed, nb.iter.signif){
 
   #Concentration lasso estimation with positive constraints
   identified_metab <- (B2 > tuning(delta0, ZMLE) / delta0) & (B2 > 0)
-  pure_lib_identified <- subset_library(pure_lib_deformed,
-                                        which(identified_metab))
+  identified_library <- deformed_library[which(identified_metab)]
 
-  B_final_tot <- try(lm_constrained(mixture, pure_lib_identified$spectra,
+  B_final_tot <- try(lm_constrained(cleaned_spectrum@spectra,
+                                    identified_library@spectra,
                                     mixture_weights)$coefficients,
                      silent = TRUE)
   if(is(B_final_tot,"try-error")){
-    B_final_tot <- lm_constrained(mixture, pure_lib_identified$spectra,
-                                 mixture_weights, 10e-3)$coefficients
+    B_final_tot <- lm_constrained(cleaned_spectrum@spectra,
+                                  identified_library@spectra,
+                                  mixture_weights, 10e-3)$coefficients
   }
 
   #Test of coefficients positivity
   B_final <- B_final_tot[B_final_tot > 0]
   identified_metab[identified_metab][B_final_tot < 0] <- FALSE
-  pure_lib_final <- subset_library(pure_lib_deformed, which(identified_metab))
+  final_library <- deformed_library[which(identified_metab)]
 
-  return(list(pure_lib_final = pure_lib_final, B_final = B_final,
+  return(list(final_library = final_library, B_final = B_final,
               threshold = compute_threshold(delta0, ZMLE, se),
               identified_metab = identified_metab))
 }
