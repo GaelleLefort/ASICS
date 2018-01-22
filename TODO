@@ -25,12 +25,9 @@
   sélection d'un sous-ensemble, création d'une nouvelle librarie...)
   - ajout de fonctions d'analyses de données ?
   - ajout d'une interface graphique comme dans le package ideal
-  - résolution bug si 1 seul standard
 
   - problème avec la barre de progression : voir si le package de bioconductor
   permettrait de résoudre ça --> résolu avec le package BioParallel
-
-  - gérer les poids dans le main
 
 
 ********* A ajouter au package

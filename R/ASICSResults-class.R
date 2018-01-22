@@ -31,7 +31,7 @@ setClass(
   slots = list(
     recomposed.spectra = "matrix",
     quantification = "data.frame",
-    deformed.library = "list"
+    deformed.library = "data.frame"
   ),
   contains = "Spectra"
 )
@@ -90,10 +90,10 @@ setMethod(
     cat("An object of class", class(object), "\n")
     cat("It contains", length(object@sample.name), "spectra of",
         length(object@ppm.grid), "points. \n\n")
-    cat("ASICS results:", nrow(object@quantification),
+    cat("ASICS results: \n", nrow(object@quantification),
         "metabolites are identified for this set of spectra. \n")
-    cat("Most concentrated metabolites are \n")
-    print(head(object@quantification$Metabolites))
+    cat("Most concentrated metabolites are:",
+        paste(head(rownames(object@quantification)), collapse = ", "))
   }
 )
 
@@ -109,13 +109,25 @@ setMethod(
   f = "[",
   signature(x = "ASICSResults", i = "ANY"),
   function (x, i){
+
+    # if (length(i) == 1) {
+    #   deformed_library <- list(x@deformed.library[i])
+    # } else {
+    #   deformed_library <-
+    # }
+
+    quantification <- as.data.frame(x@quantification[, i])
+    colnames(quantification) <- x@sample.name[i]
+    rownames(quantification) <- rownames(x@quantification)
+
     return(new("ASICSResults",
                sample.name = x@sample.name[i],
                ppm.grid = x@ppm.grid,
-               spectra = x@spectra[, i],
-               recomposed.spectra = x@recomposed.spectra[, i],
-               quantification = x@quantification[, i + 1],
-               deformed.library = x@deformed.library[[i]]))
+               spectra = as.matrix(x@spectra[, i]),
+               recomposed.spectra = as.matrix(x@recomposed.spectra[, i]),
+               quantification = quantification,
+               deformed.library = x@deformed.library[x@deformed.library$sample
+                                                     %in% x@sample.name[i], ]))
   }
 )
 
@@ -131,19 +143,27 @@ setMethod(
     elements <- list(x, ...)
 
     # first grid for all objects
-    for(i in 2:length(elements)){
-      if(!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)){
-        elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, change_grid,
-                                       elements[[i]]@ppm.grid,
-                                       elements[[1]]@ppm.grid)
+    if(length(elements) > 1){
+      for(i in 2:length(elements)){
+        if(!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)){
+          elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, change_grid,
+                                         elements[[i]]@ppm.grid,
+                                         elements[[1]]@ppm.grid)
+        }
       }
     }
 
     # merge quantification
     extract_quantif_list <- lapply(elements, get_quantification)
+    extract_quantif_list <- lapply(extract_quantif_list,
+                                   function(x) cbind(id = rownames(x), x))
 
     all_quantification <- join_all(extract_quantif_list,
-                                   by = "Metabolites", type = "full")
+                                   by = "id", type = "full")
+    rownames(all_quantification) <- all_quantification$id
+    all_quantification$id <- NULL
+
+    all_quantification[is.na(all_quantification)] <- 0
 
     return(new("ASICSResults",
                sample.name = do.call("c", lapply(elements, get_sample_name)),
@@ -153,7 +173,7 @@ setMethod(
                  do.call("cbind", lapply(elements, get_recomposed_spectra)),
                quantification = all_quantification,
                deformed.library =
-                 do.call("c", lapply(elements, get_deformed_library))))
+                 do.call("rbind", lapply(elements, get_deformed_library))))
   }
 )
 

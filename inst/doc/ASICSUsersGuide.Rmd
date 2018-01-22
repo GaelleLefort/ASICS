@@ -7,8 +7,10 @@ output:
     toc_float: true
 vignette: |
   %\VignetteIndexEntry{ASICS}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -21,13 +23,17 @@ by quickly and accurately helping experts to obtain metabolic profiles.
 library(ASICS)
 ```
 
+# Data
+
+TODO: recopier article
+
 # Library of pure NMR metabolite spectra
 
-An object of class `PureLibrary` with spectra of 175 pure metabolites is 
+An object of class `PureLibrary` with spectra of 174 pure metabolites is 
 available in the package. It is automatically loaded at package start and 
 available metabolites are displayed with:
 ```{r lib}
-head(get_sample_name(pure_library), n = 20)
+head(get_sample_name(pure_library), n = 8)
 ```
 
 Pure spectra can be imported from Bruker files and a new library can be created
@@ -35,7 +41,8 @@ with:
 ```{r import_create_lib, results='hide'}
 pure_spectra <- import_spectra_bruker(system.file("extdata", "example_library", 
                                                   package = "ASICS"))
-new_pure_library <- create_pure_library(pure_spectra, nb.protons = c(5,4,9,9))
+new_pure_library <- create_pure_library(pure_spectra, 
+                                        nb.protons = c(5, 4, 9, 9))
 ```
 
 New library can be used for quantification or merge with another one:
@@ -50,28 +57,34 @@ default library and the four spectra imported above.
 # Identification and quantification of metabolites on Bruker files with ASICS
 
 First, data are imported in a data frame from Bruker files with the 
-`import_spectra_bruker` function. It also possible to import data from other 
-file types with usual `R` function. The only constraint is to have a data frame 
-with spectra in colums (colnames are sample names) and chemical shifts in rows 
-(rownames correspond to the ppm grid).
+`import_spectra_bruker` function. These spectra are baseline corrected 
+(Wang *et al*, 2013) and normalised by the area under the curve.
+It also possible to import data already cleaned from other file types with usual 
+`R` function. The only constraint is to have a data frame with spectra in colums 
+(colnames are sample names) and chemical shifts in rows (rownames correspond to 
+the ppm grid).
 ```{r import_from_Bruker, results='hide'}
-spectra_data <- import_spectra_bruker(system.file("extdata", "brain_mice", 
+spectra_data <- import_spectra_bruker(system.file("extdata", 
+                                                  "Human_diabetes_example", 
                                                   package = "ASICS"))
 ```
 
-Then, from the data frame, a `Spectra` object is created. In this object, 
-spectra are baseline corrected (Wang *et al*, 2013) and normalised by the area 
-under the curve. This is required step for the quantification.
+Then, from the data frame, a `Spectra` object is created. This is a required 
+step for the quantification.
 ```{r create_spectra, results='hide'}
-spectra_obj <- preprocessing_spectra(spectra_data)
+spectra_obj <- create_spectra(spectra_data)
 ```
 
 It is now possible to carry out the identification and quantification using only 
-the function `ASICS`:
-```{r ASICS, results='hide', cache = TRUE}
-# part of the spectrum to exclude (water)
-to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-ASICS_results <- ASICS(spectra_obj, exclusion.areas = to_exclude)
+the function `ASICS`. This function can take some times (about 1min30 by 
+spectrum) thus, execpt on Windows, a parallel environment with the number of 
+CPU cores on the current host - 2 is created by default. This also applies for 
+data import. If you don't want a parallel environment, you can set `parallel` 
+parameter to `FALSE`.
+```{r ASICS, results='hide', cache = TRUE, dependson='import_from_Bruker'}
+# part of the spectrum to exclude (water and urea)
+to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2, byrow = TRUE)
+system.time(ASICS_results <- ASICS(spectra_obj[1], exclusion.areas = to_exclude))
 ```
 
 Summary of ASICS results:
@@ -87,14 +100,53 @@ added for visual comparison. For example, the first spectrum with Lactate:
 plot_spectrum(ASICS_results, idx = 1, xlim = c(1, 1.5), add.metab = "Lactate")
 ```
 
-Relative concentrations of identified metabolites are saved in a data frame:
+Relative concentrations of identified metabolites are saved in a data frame
+accessible via the `get_quantification` function:
 ```{r rel_conc}
-head(get_quantification(ASICS_results), 10)[, 1:3]
+head(get_quantification(ASICS_results), 10)[, 1:2]
+```
+
+# Analysis on quantification (PCA, OPLS/OPLS-DA and tests)
+
+
+
+```{r}
+design <- read.table(system.file("extdata", "design_diabete_example.txt", 
+                                 package = "ASICS"), header = TRUE)
+```
+
+
+```{r}
+analysis_data <- format_for_analysis(get_quantification(ASICS_results),
+                                     design = design, zero.threshold = 0.5, 
+                                     outliers = c("ADG10003u_007", "ADG19007u_163"))
+```
+
+
+PCA : 
+```{r, fig.width=10}
+resPCA <- PCA(analysis_data)
+plot_PCA(resPCA, graph = "ind", col.ind = "condition")
+plot_PCA(resPCA, graph = "var")
+```
+
+
+OPLS-DA:
+```{r}
+resOPLSDA <- OPLSDA(analysis_data, condition = "condition")
+plot_OPLSDA(resOPLSDA)
+```
+
+Tests:
+```{r}
+kruskal_on_quantification(analysis_data, "condition")
 ```
 
 
 
-# Reference 
+
+# References 
+
 
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer L., Concordet 
 D., Servien R. (2017). ASICS: an automatic method for identification and 

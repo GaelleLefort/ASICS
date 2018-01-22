@@ -25,7 +25,7 @@ A dataset with spectra of 175 pure metabolites is available in the package. It
 is automatically loaded at package start and available metabolites are displayed
 with:
 ```{r lib}
-head(pure_library$name, n = 20)
+head(pure_library@sample.name, n = 20)
 ```
 
 ## Identification and quantification of metabolites on one or more Bruker files with ASICS
@@ -34,23 +34,23 @@ The identification and the quantification are carried out using only one
 function `ASICS` directly from raw files (Bruker files):
 ```{r ASICS_onefile}
 # part of the spectrum to exclude (water)
-to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-result <- ASICS(path = system.file("extdata", "example_spectra",
-                                   "AG_faq_Beck01", package = "ASICS"),
-                exclusion.areas = to_exclude)
-result
+# to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
+# result <- ASICS(path = system.file("extdata", "example_spectra",
+#                                    "AG_faq_Beck01", package = "ASICS"),
+#                 exclusion.areas = to_exclude)
+# result
 ```
 
 The quality of the results can be assessed by stacking the original and 
 the recomposed spectrum on one plot. A pure metabolite spectrum can also be 
 added for visual comparison.
 ```{r plot_spectrum, warning=FALSE, fig.width=8, fig.height=5}
-plot(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
+#plot(result, xmin = 1, xmax = 1.5, ymax = 10, add_metab = "Lactate")
 ```
 
 Relative concentrations of identified metabolites are saved in:
 ```{r rel_conc}
-present_metabolites(result)
+#present_metabolites(result)
 ```
 
 

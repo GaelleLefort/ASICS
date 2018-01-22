@@ -39,6 +39,57 @@ change_grid <- function(old_spectrum, old_grid, new_grid) {
 }
 
 
+
+## Main function to load library, import a spectrum from Bruker files and
+#perform the first preprocessing
+#' @importFrom plyr alply
+remove_areas <- function(spectrum_obj, exclusion.areas, pure.library){
+
+  #default library or not
+  if(is.null(pure.library)){
+    cleaned_library <- pure_library
+  } else {
+    cleaned_library <- pure.library
+  }
+
+  #adapt spectrum grid to have the same than library
+  cleaned_spectrum <- new("Spectra",
+                          sample.name = spectrum_obj@sample.name,
+                          ppm.grid = cleaned_library@ppm.grid,
+                          spectra = apply(spectrum_obj@spectra, 2,
+                                          change_grid,
+                                          spectrum_obj@ppm.grid,
+                                          cleaned_library@ppm.grid))
+
+
+  #for signal in exclusion.areas, intensity is null (mixture and library)
+  idx_to_remove <-
+    unlist(alply(exclusion.areas, 1,
+                 function(x) which(cleaned_library@ppm.grid >= x[[1]] &
+                                     cleaned_library@ppm.grid <= x[[2]])),
+           use.names = FALSE)
+
+  cleaned_spectrum@spectra[idx_to_remove, ] <- 0
+  cleaned_library@spectra[idx_to_remove, ] <- 0
+
+  #remove metabolite without any signal
+  with_signal <- as.numeric(which(colSums(cleaned_library@spectra) > 0))
+  cleaned_library <- cleaned_library[with_signal]
+
+  #re-normalisation of mixture and pure spectra library
+  cleaned_library@spectra <- apply(cleaned_library@spectra, 2,
+                                   function(x)
+                                     t(x / AUC(cleaned_library@ppm.grid, x)))
+  cleaned_spectrum@spectra <- apply(cleaned_spectrum@spectra, 2,
+                                    function(x)
+                                      t(x / AUC(cleaned_library@ppm.grid, x)))
+
+  return(list("cleaned_spectrum" = cleaned_spectrum,
+              "cleaned_library" = cleaned_library))
+
+}
+
+
 ## remove metabolites that cannot belong to the mixture
 #' @importFrom plyr aaply
 clean_library <- function(cleaned_spectrum, cleaned_library,

@@ -1,13 +1,14 @@
 #' Import from Bruker files
 #'
 #' Import spectra from Bruker files contained in a unique folder. This folder
-#' contains subfolders for each sample.
+#' contains subfolders for each sample. Spectra are baseline corrected and
+#' normalized by the area under the curve.
 #'
 #' @param name.dir Path of the folder containing one subfolder by sample. Each
 #' subfolder contains Bruker files.
 #' @param which.spectra If more than one spectra by sample, spectra to import
 #' (either \code{"first"}, \code{"last"} or its number). Default to
-#' \code{"last"}
+#' \code{"last"}.
 #' @param ppm.grid Numeric vector of a unique grid (definition domain) for all
 #' spectra (in ppm). Default to \code{NULL} (grid of default pure library is
 #' used).
@@ -142,6 +143,13 @@ read_NMR_bruker <- function(path, ppm.grid){
   ppmseq <- seq(from = pmin, to = pmax, by = dppm)
   signal <- 100 * signal / max(signal)
 
+  # baseline correction
+  signal <- baseline_corrector(signal)
+  signal[signal < 0] <- 0
+
+  # normalisation by area under the curve
+  signal <- signal / AUC(ppm.grid, signal)
+
   #adapt the grid
   new_signal <- change_grid(signal, ppmseq, ppm.grid)
 
@@ -167,7 +175,7 @@ get_bruker_param <- function(file, paramStr){
 #' Colnames of this data frame correspond to pure metabolite names and rownames
 #' to chemical shift grid (in p.p.m).
 #' @param threshold Numeric value below which pure spectrum values are
-#' considered null.
+#' considered null. Default to 1.
 #' @param nb.protons Numeric vector of the number of protons of each pure
 #' metabolite spectra contained in \code{spectra} data frame.
 #'
@@ -177,7 +185,7 @@ get_bruker_param <- function(file, paramStr){
 #' @export
 #'
 # nb.protons c(5,4,9,9)
-create_pure_library <- function(spectra, threshold = 5, nb.protons){
+create_pure_library <- function(spectra, threshold = 1, nb.protons){
   # create a new object PureLibrary with a data frame of intensities and a
   # vector of the muber of protons
   new_library <- new("PureLibrary",
@@ -196,16 +204,13 @@ create_pure_library <- function(spectra, threshold = 5, nb.protons){
 
 
 
-#' Preprocessing on spectra
+#' Create a \linkS4class{Spectra} object
 #'
-#' Create a new pure spectra object used for quantification. New spectra are
-#' baseline corrected and normalized by the area under the curve.
-#' @name preprocessing_spectra
+#' Create a new spectra object used for quantification.
+#'
 #' @param spectra Data frame with spectra in column and chemical shift in row.
 #' Colnames of this data frame correspond to pure metabolite names and rownames
 #' to chemical shift grid (in p.p.m).
-#' @param parallel if \code{TRUE}, apply function in parallel. Default to
-#' \code{TRUE}.
 #'
 #' @return A \linkS4class{Spectra} object with baseline corrected and normalized
 #' spectra.
@@ -215,7 +220,7 @@ create_pure_library <- function(spectra, threshold = 5, nb.protons){
 #'
 # ref à publi de correction
 # spec_obj <- preprocessing_spectra(spectra_dat)
-preprocessing_spectra <- function(spectra, parallel = TRUE){
+create_spectra <- function(spectra, parallel = TRUE){
 
   # create a new object Spectra with a data frame of intensities
   new_spectra <- new("Spectra",
@@ -223,84 +228,9 @@ preprocessing_spectra <- function(spectra, parallel = TRUE){
                      ppm.grid = as.numeric(rownames(spectra)),
                      spectra = as.matrix(spectra))
 
-  # number of cores
-  if (parallel) {
-    ncores <- multicoreWorkers()
-  } else {
-    ncores <- 1
-  }
-
-  new_spectra@spectra <-
-    do.call(cbind,
-            bplapply(as.list(seq_along(new_spectra)), internal_preprocessing,
-                     new_spectra@spectra, new_spectra@ppm.grid,
-                     BPPARAM = MulticoreParam(workers = ncores,
-                                              progressbar = TRUE,
-                                              tasks = length(new_spectra))))
   rownames(new_spectra@spectra) <- NULL
+  colnames(new_spectra@spectra) <- NULL
 
   return(new_spectra)
 }
 
-## internal function for preprocessing
-internal_preprocessing <- function(idx, spectra, ppm.grid) {
-  # baseline correction
-  new_spectra <- baseline_corrector(spectra[, idx])
-  new_spectra[new_spectra < 0] <- 0
-
-  # normalisation by area under the curve
-  new_spectra <- new_spectra / AUC(ppm.grid, new_spectra)
-
-  return(new_spectra)
-}
-
-
-
-## Main function to load library, import a spectrum from Bruker files and
-#perform the first preprocessing
-#' @importFrom plyr alply
-remove_areas <- function(spectrum_obj, exclusion.areas, pure.library){
-
-  #default library or not
-  if(is.null(pure.library)){
-    cleaned_library <- pure_library
-  } else {
-    cleaned_library <- pure.library
-  }
-
-  #adapt spectrum grid to have the same than library
-  cleaned_spectrum <- new("Spectra",
-                          sample.name = spectrum_obj@sample.name,
-                          ppm.grid = cleaned_library@ppm.grid,
-                          spectra = apply(spectrum_obj@spectra, 2,
-                                          change_grid,
-                                          spectrum_obj@ppm.grid,
-                                          cleaned_library@ppm.grid))
-
-
-  #for signal in exclusion.areas, intensity is null (mixture and library)
-  idx_to_remove <-
-    unlist(alply(exclusion.areas, 1,
-                 function(x) which(cleaned_library@ppm.grid >= x[[1]] &
-                                     cleaned_library@ppm.grid <= x[[2]])),
-           use.names = FALSE)
-
-  cleaned_spectrum@spectra[idx_to_remove, ] <- 0
-  cleaned_library@spectra[idx_to_remove, ] <- 0
-
-  #remove metabolite without any signal
-  with_signal <- as.numeric(which(colSums(cleaned_library@spectra) > 0))
-  cleaned_library <- cleaned_library[with_signal]
-
-  #re-normalisation of mixture and pure spectra library
-  cleaned_library@spectra <- apply(cleaned_library@spectra, 2,
-                                   function(x)
-                                     t(x / AUC(cleaned_library@ppm.grid, x)))
-  cleaned_spectrum@spectra <- apply(cleaned_spectrum@spectra, 2,
-                                    function(x)
-                                      t(x / AUC(cleaned_library@ppm.grid, x)))
-
-  return(list("cleaned_spectrum" = cleaned_spectrum,
-              "cleaned_library" = cleaned_library))
-
-}

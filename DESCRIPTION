@@ -16,9 +16,11 @@ Depends: R (>= 3.4)
 Imports:
     BiocParallel,
     ggplot2,
+    gridExtra,
     methods,
     plyr,
     quadprog,
+    ropls,
     speaq,
     stats,
     SummarizedExperiment,
@@ -37,6 +39,7 @@ Collate:
     'Spectra-class.R'
     'ASICSResults-class.R'
     'PureLibrary-class.R'
+    'analysis_on_quantification.R'
     'baseline_correction.R'
     'concentration_optimisation.R'
     'data.R'

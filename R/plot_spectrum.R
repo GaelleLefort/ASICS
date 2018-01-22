@@ -4,7 +4,7 @@
 #' It is possible to add one pure metabolite spectrum.
 #'
 #' @param ASICS.results an object of class \linkS4class{ASICSResults}.
-#' @param idx index of the spectrum to plot.
+#' @param idx index of the spectrum to plot. Default to 1.
 #' @param xlim,ylim boundaries for x and y, respectively.
 #' @param pure.library pure library used for quantification. Default to
 #' \code{NULL} (the library included in the package is used).
@@ -17,7 +17,7 @@
 #' @importFrom ggplot2 ggplot aes_string geom_line theme_bw labs
 #' @importFrom ggplot2 scale_x_reverse ylim scale_color_manual
 #' @export
-plot_spectrum <- function(ASICS.results, idx, xlim = c(0, 10), ylim = NULL,
+plot_spectrum <- function(ASICS.results, idx = 1, xlim = c(0, 10), ylim = NULL,
                           pure.library = NULL, add.metab = NULL) {
 
   # Original spectrum and reconstituted one
@@ -38,7 +38,7 @@ plot_spectrum <- function(ASICS.results, idx, xlim = c(0, 10), ylim = NULL,
   }
 
   # Add a pure spectrum if the user wants
-  if (!is.null(add.metab) & add.metab %in% pure_lib@sample.name) {
+  if (!is.null(add.metab) && add.metab %in% pure_lib@sample.name) {
 
     # original pure spectra
     metab_to_add_pure <-
@@ -53,15 +53,22 @@ plot_spectrum <- function(ASICS.results, idx, xlim = c(0, 10), ylim = NULL,
                        which_mix  = rep(add.metab,
                                         length(ASICS.results@ppm.grid))))
 
-    if (add.metab %in% ASICS.results@deformed.library[[idx]]@sample.name) {
-      metab_to_add_def <-
-        ASICS.results@deformed.library[[idx]]@spectra[,
-           ASICS.results@deformed.library[[idx]]@sample.name == add.metab]
+    if (add.metab %in% ASICS.results@deformed.library$metabolite_name[
+      ASICS.results@deformed.library$sample == ASICS.results@sample.name[idx]]) {
+
+      metab_to_add_def_without0 <- ASICS.results@deformed.library[
+        ASICS.results@deformed.library$sample == ASICS.results@sample.name[idx] &
+          ASICS.results@deformed.library$metabolite_name == add.metab , ]
+
+      metab_to_add_def <- merge(data.frame(ppm_grid = as.character(ASICS.results@ppm.grid)),
+                                metab_to_add_def_without0[, c("intensity", "ppm_grid")],
+                                all.x = TRUE)
+      metab_to_add_def[is.na(metab_to_add_def)] <- 0
 
       spectra <-
         rbind(spectra,
               data.frame(grid = ASICS.results@ppm.grid,
-                         mixture = metab_to_add_def,
+                         mixture = metab_to_add_def$intensity,
                          which_mix  = rep(paste(add.metab, "deformed"),
                                           length(ASICS.results@ppm.grid))))
     }

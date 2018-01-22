@@ -49,23 +49,24 @@ translate_library <- function(cleaned_spectrum, cleaned_library,
 
 
 
+
 ##Localized deformations of pure spectra
 #' @importFrom methods is
 #' @importFrom plyr laply
 #' @keywords internal
-deform_library <- function(cleaned_spectrum, cleaned_library,
+deform_library <- function(cleaned_spectrum, sorted_library,
                            mixture_weights, nb_points_shift,
                            max.shift, shift){
+
   #Shifted library
-  deformed_library <- cleaned_library
+  deformed_library <- sorted_library
 
   #Algorithm parameters
-  nb_iter_by_library <- 5
+  nb_iter_by_library <- 1
 
   nb_iter_lib <- 0
 
   while(nb_iter_lib < nb_iter_by_library){
-
     #Linear regression between mixture and each pure spectra
     least_square <- try(lm_constrained(as.numeric(cleaned_spectrum@spectra),
                                        deformed_library@spectra,
@@ -84,7 +85,9 @@ deform_library <- function(cleaned_spectrum, cleaned_library,
               mixture_weights, nb_points_shift, max.shift, shift))
 
     nb_iter_lib <- nb_iter_lib + 1
+
   }
+
 
   return(deformed_library)
 }
@@ -98,7 +101,7 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
   #Algorithm parameters
   peak_threshold <- 1
-  nb_iter_by_peak <- 4
+  nb_iter_by_peak <- 3
 
   #Linear regression coefficient of spectrum idx_to_deform
   LS_coeff <- max(0, as.numeric(least_square$coefficients[idx_to_deform]))
@@ -135,9 +138,9 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
     #parameter of deformation
     range_a <- seq(- (max.shift / 5) / (max(grid_to_deform) -
-                                           min(grid_to_deform)) / 0.5^2,
+                                          min(grid_to_deform)) / 0.5^2,
                    (max.shift / 5) / (max(grid_to_deform) -
-                                         min(grid_to_deform)) / 0.5^2,
+                                        min(grid_to_deform)) / 0.5^2,
                    length.out = 20)
     range_a <- range_a[range_a < 1 & range_a > -1]
 
