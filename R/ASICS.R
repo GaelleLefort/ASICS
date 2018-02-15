@@ -38,7 +38,8 @@ ASICS <- function(spectra_obj,
                   threshold.noise = 0.02, seed = 1234,
                   parallel = TRUE) {
 
-  if(!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2){
+  if(!is.null(exclusion.areas) &&
+     (!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2)){
     stop("'exclusion.areas' needs to be a matrix with 2 columns.")
   }
 
@@ -171,7 +172,7 @@ ASICS.internal <- function(spectrum_obj,
   res_object <- new(Class = "ASICSResults",
                     sample.name = spectrum_obj@sample.name,
                     ppm.grid = spectrum_obj@ppm.grid,
-                    spectra = spectrum_obj@spectra,
+                    spectra = cleaned_spectrum@spectra,
                     recomposed.spectra = est_mixture,
                     quantification = present_metab,
                     deformed.library = pure_lib_format)

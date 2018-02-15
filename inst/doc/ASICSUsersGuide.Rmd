@@ -1,6 +1,6 @@
 ---
 title: "ASICS User's Guide"
-author: "Gaëlle Lefort"
+author: "Gaëlle Lefort, Rémi Sevien, Patrick Tardivel and Nathalie Villa-Vialaneix"
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document2:
@@ -15,37 +15,50 @@ editor_options:
 
 
 This user's guide provides an overview of the package `ASICS`. `ASICS` is a 
-fully automated procedure to identify and quantify metabolites in $^1$H NMR 
+fully automated procedure to identify and quantify metabolites in $^1$H 1D-NMR 
 spectra of biological mixtures. It will enable empowering NMR-based metabolomics
-by quickly and accurately helping experts to obtain metabolic profiles.
+by quickly and accurately helping experts to obtain metabolic profiles. In this
+package, in addition to this method, several functions allowing spectrum 
+preprocessing or quantification analyses are available.
 
 ```{r ASICSload}
 library(ASICS)
 ```
 
-# Data
+TODO: note sur le parallèle
 
-TODO: recopier article
+# Context/Data
+
+TODO: voir d'abord si toute l'analyse est faisable sans pb sur ce jeu de données.
+
+Parler aussi de ASICS (reference à l'article). ici ?
 
 # Library of pure NMR metabolite spectra
 
-An object of class `PureLibrary` with spectra of 174 pure metabolites is 
-available in the package. It is automatically loaded at package start and 
-available metabolites are displayed with:
+An object of class `PureLibrary` with spectra of 180 pure metabolites is 
+available in the package. It is used for quantification. Indeed, only 
+metabolites present in the library object can be quantify with ASICS.
+
+The default one is automatically loaded at package start and available 
+metabolites are displayed with:
 ```{r lib}
 head(get_sample_name(pure_library), n = 8)
 ```
 
-Pure spectra can be imported from Bruker files and a new library can be created
-with:
+It is possible to complete this library or create another one. Pure spectra can 
+be imported from Bruker files and a new library can be created with:
 ```{r import_create_lib, results='hide'}
 pure_spectra <- import_spectra_bruker(system.file("extdata", "example_library", 
                                                   package = "ASICS"))
 new_pure_library <- create_pure_library(pure_spectra, 
                                         nb.protons = c(5, 4, 9, 9))
 ```
+New library can also be created from txt or csv file, it is just necessary to 
+obtain a data frame with samples in colums and chemical shifts in rows (see 
+help page of `create_pure_library` function for all details).
 
-New library can be used for quantification or merge with another one:
+
+Newly created library can be used for quantification or merge with another one:
 ```{r select_merge_lib}
 merged_pure_library <- c(pure_library[1:10], new_pure_library)
 ```
@@ -59,21 +72,42 @@ default library and the four spectra imported above.
 First, data are imported in a data frame from Bruker files with the 
 `import_spectra_bruker` function. These spectra are baseline corrected 
 (Wang *et al*, 2013) and normalised by the area under the curve.
-It also possible to import data already cleaned from other file types with usual 
-`R` function. The only constraint is to have a data frame with spectra in colums 
-(colnames are sample names) and chemical shifts in rows (rownames correspond to 
-the ppm grid).
 ```{r import_from_Bruker, results='hide'}
 spectra_data <- import_spectra_bruker(system.file("extdata", 
                                                   "Human_diabetes_example", 
                                                   package = "ASICS"))
 ```
 
-Then, from the data frame, a `Spectra` object is created. This is a required 
+It also possible to import data from other file types with usual `R` function. 
+The only constraint is to have a data frame with spectra in colums 
+(colnames are sample names) and chemical shifts in rows (rownames correspond to 
+the ppm grid).
+```{r import_from_txt, results='hide'}
+spectra_data_txt <- 
+  read.table(system.file("extdata", "spectra_diabetes_example.txt",
+                         package = "ASICS"), header = TRUE, row.names = 1)
+```
+
+Several functions for the preprocessing of spectra are also available: baseline 
+correction, normalisation by the AUC and alignment (Vu et al., 2011)
+```{r preprocessing, results='hide'}
+spectra_base_cor <- baseline_correction(spectra_data_txt)
+spectra_align <- alignment(spectra_base_cor)
+spectra_norm <- normalisation(spectra_align)
+```
+Note than a normalisation by the area under the curve is included in the 
+baseline correction and alignment functions. Moreover, baseline correction and
+normalisation are also included in the `import_spectra_bruker` function.
+
+
+Finally, from the data frame, a `Spectra` object is created. This is a required 
 step for the quantification.
 ```{r create_spectra, results='hide'}
-spectra_obj <- create_spectra(spectra_data)
+spectra_obj <- create_spectra(spectra_align)
 ```
+
+--- ok jusqu'ici
+
 
 It is now possible to carry out the identification and quantification using only 
 the function `ASICS`. This function can take some times (about 1min30 by 
@@ -157,7 +191,10 @@ Wang, K. C., Wang, S. Y., Kuo, C. H., Tseng, Y. J. (2013). Distribution-based
 classification method for baseline correction of metabolomic 1D proton nuclear 
 magnetic resonance spectra. *Analytical Chemistry*, **85**(2), 1231–1239.
 
-
+Vu, T. N., Valkenborg, D., Smets, K., Verwaest, K. A., Dommisse, R., Lemiere, 
+F., ... & Laukens, K. (2011). An integrated workflow for robust alignment and 
+simplified quantitative analysis of NMR spectrometry data. 
+*BMC bioinformatics*, **12**(1), 405.
 # Session information
 
 This user's guide has been created with the following system configuration

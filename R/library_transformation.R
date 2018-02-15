@@ -16,6 +16,7 @@ translate_library <- function(cleaned_spectrum, cleaned_library,
   shift <- which_shift * (cleaned_library@ppm.grid[2] -
                             cleaned_library@ppm.grid[1])
 
+
   #create a matrix of all pure spectra with shift
   spectra_all_shift <- rbind(matrix(0, nrow = nb_points_shift,
                                     ncol = ncol(cleaned_library@spectra)),
@@ -94,6 +95,7 @@ deform_library <- function(cleaned_spectrum, sorted_library,
 
 
 
+
 ## Deforme each peak of a pure spectrum to align it on the complex mixture
 deform_spectra <- function(idx_to_deform, pure_lib, least_square,
                            mixture_weights, nb_points_shift, max.shift, shift) {
@@ -101,7 +103,7 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
   #Algorithm parameters
   peak_threshold <- 1
-  nb_iter_by_peak <- 3
+  nb_iter_by_peak <- 2
 
   #Linear regression coefficient of spectrum idx_to_deform
   LS_coeff <- max(0, as.numeric(least_square$coefficients[idx_to_deform]))

@@ -63,14 +63,16 @@ remove_areas <- function(spectrum_obj, exclusion.areas, pure.library){
 
 
   #for signal in exclusion.areas, intensity is null (mixture and library)
-  idx_to_remove <-
-    unlist(alply(exclusion.areas, 1,
-                 function(x) which(cleaned_library@ppm.grid >= x[[1]] &
-                                     cleaned_library@ppm.grid <= x[[2]])),
-           use.names = FALSE)
+  if(!is.null(exclusion.areas)){
+    idx_to_remove <-
+      unlist(alply(exclusion.areas, 1,
+                   function(x) which(cleaned_library@ppm.grid >= x[[1]] &
+                                       cleaned_library@ppm.grid <= x[[2]])),
+             use.names = FALSE)
 
-  cleaned_spectrum@spectra[idx_to_remove, ] <- 0
-  cleaned_library@spectra[idx_to_remove, ] <- 0
+    cleaned_spectrum@spectra[idx_to_remove, ] <- 0
+    cleaned_library@spectra[idx_to_remove, ] <- 0
+  }
 
   #remove metabolite without any signal
   with_signal <- as.numeric(which(colSums(cleaned_library@spectra) > 0))

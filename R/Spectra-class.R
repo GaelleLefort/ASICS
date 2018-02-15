@@ -1,8 +1,8 @@
 #' Class \code{Spectra}
 #'
 #' Objects of class \code{Spectra} represent a set of NMR spectra of one study.
-#' It contains normalised and baseline corrected spectra and can be
-#' created with the function \code{\link{import_spectra}}.
+#' It contains preprocessed spectra and can be created with the function
+#' \code{\link{create_spectra}}.
 #'
 #' @name Spectra-class
 #' @exportClass Spectra
@@ -10,7 +10,7 @@
 #' @slot sample.name Character vector of sample names.
 #' @slot ppm.grid Numeric vector of a unique grid (definition domain) for all
 #' spectra (in ppm).
-#' @slot spectra Numeric matrix with all spectra in column. Columns must be in
+#' @slot spectra Numeric matrix with all spectra in columns. Columns must be in
 #' the same order as for \code{sample.name} and rows correspond to points of
 #' \code{ppm.grid}.
 #'

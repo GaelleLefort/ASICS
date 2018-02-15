@@ -55,6 +55,8 @@ concentration_opti <- function(cleaned_spectrum, deformed_library,
 
   #Concentration lasso estimation with positive constraints
   identified_metab <- (B2 > tuning(delta0, ZMLE) / delta0) & (B2 > 0)
+
+
   identified_library <- deformed_library[which(identified_metab)]
 
   B_final_tot <- try(lm_constrained(cleaned_spectrum@spectra,

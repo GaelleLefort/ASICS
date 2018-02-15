@@ -2,8 +2,8 @@
 #'
 #' Objects of class \code{PureLibrary} represent a set of pure metabolite NMR
 #' spectra.
-#' It an extension of class \linkS4class{Spectra} with an additional slot needed for
-#' spectrum quantification.
+#' It an extension of class \linkS4class{Spectra} with an additional slot
+#' (number of protons of each metabolite) needed for spectrum quantification.
 #'
 #'
 #' @slot nb.protons Numeric vector of the number of protons of each pure
@@ -60,10 +60,10 @@ setGeneric("get_nb_protons",
 )
 
 
-#' @export
-#' @param object an object of class \code{PureLibrary}
 #' @describeIn PureLibrary extract number of protons of the \code{PureLibrary}
 #' object.
+#' @export
+#' @param object an object of class \code{PureLibrary}
 setMethod("get_nb_protons", "PureLibrary",
           function(object) return(object@nb.protons)
 )
@@ -91,6 +91,7 @@ setMethod(
 
 
 #' @describeIn PureLibrary combine \code{PureLibrary} objects.
+#' @param ... currently not used
 #' @aliases c.PureLibrary
 #' @export
 setMethod(

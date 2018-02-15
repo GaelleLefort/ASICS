@@ -32,9 +32,10 @@ LazyData: true
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
-    BiocStyle
+    BiocStyle,
+    testthat
 VignetteBuilder: knitr
-Collate: 
+Collate:
     'ASICS.R'
     'Spectra-class.R'
     'ASICSResults-class.R'
