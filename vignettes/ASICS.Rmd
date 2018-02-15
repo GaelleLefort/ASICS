@@ -14,9 +14,9 @@ vignette: >
 The **R** package `ASICS` is a fully automated procedure to identify and 
 quantify metabolites in $^1$H 1D-NMR spectra of biological mixtures 
 (Tardivel *et al.*, 2017). It will enable empowering NMR-based metabolomics by 
-quickly and accurately helping experts to obtain metabolic profiles. In this 
-package, in addition to this method, several functions allowing spectrum 
-preprocessing or quantification analyses are available.
+quickly and accurately helping experts to obtain metabolic profiles. In addition
+to the quantification method, several functions allowing spectrum 
+preprocessing or statistical analyses of quantified metabolites are available.
 
 The full ASICS User's Guide is available after installing the package. It can be
 opened with:
