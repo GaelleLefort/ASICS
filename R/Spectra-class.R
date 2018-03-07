@@ -1,11 +1,13 @@
-#' Class \code{Spectra}
+#' Class \linkS4class{Spectra}
 #'
-#' Objects of class \code{Spectra} represent a set of NMR spectra of one study.
+#' Objects of class \linkS4class{Spectra} represent a set of NMR spectra of
+#' one study.
 #' It contains preprocessed spectra and can be created with the function
-#' \code{\link{create_spectra}}.
+#' \code{\link{createSpectra}}.
 #'
 #' @name Spectra-class
 #' @exportClass Spectra
+#'
 #'
 #' @slot sample.name Character vector of sample names.
 #' @slot ppm.grid Numeric vector of a unique grid (definition domain) for all
@@ -13,6 +15,19 @@
 #' @slot spectra Numeric matrix with all spectra in columns. Columns must be in
 #' the same order as for \code{sample.name} and rows correspond to points of
 #' \code{ppm.grid}.
+#'
+#' @section Methods:
+#'   Multiple methods can be applied on \linkS4class{Spectra} objects.
+#'   \itemize{
+#'     \item As usual for S4 object, show and summary methods are available, see
+#'     \link[=summary-methods]{Object summary}
+#'     \item All slots have an accessor \code{get_slot name}, see
+#'     \link[=accessors-methods]{Accessors}
+#'     \item Two objects can be combine or a subset can be extract, see
+#'     \link[=combineAndSubset-methods]{Combine and subset methods}
+#'     \item All spectra contained in an object can be represent in a plot, see
+#'     \link[=visualization-methods-spectra]{Visualization methods}
+#'   }
 #'
 setClass(
   Class = "Spectra",
@@ -50,32 +65,59 @@ setValidity(
 
 #### Accessors
 
-setGeneric("get_sample_name",
-           function(object) standardGeneric("get_sample_name")
+setGeneric("getSampleName",
+           function(object) standardGeneric("getSampleName")
 )
-setGeneric("get_ppm_grid",
-           function(object) standardGeneric("get_ppm_grid")
+setGeneric("getPpmGrid",
+           function(object) standardGeneric("getPpmGrid")
 )
-setGeneric("get_spectra",
-           function(object) standardGeneric("get_spectra")
+setGeneric("getSpectra",
+           function(object) standardGeneric("getSpectra")
 )
 
+
+#' Accessors
+#'
+#' List of available accessors for each slots of all S4 classes present in the
+#' package.
+#'
+#' @name accessors-methods
+#' @param object an object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary}, \linkS4class{ASICSResults} or
+#' \linkS4class{AnalysisResults}.
+#'
+#' @return The wanted accessor
+#'
+#' @examples
+#' # Import data and create object
+#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' spectra_data <- importSpectraBruker(current_path)
+#' spectra_obj <- createSpectra(spectra_data)
+#'
+#' # Sample names
+#' getSampleName(spectra_obj)
+#' # Spectra
+#' getSpectra(spectra_obj)
+NULL
 
 #' @export
-#' @describeIn Spectra extract sample names of the \code{Spectra} object.
-setMethod("get_sample_name", "Spectra",
+#' @aliases getSampleName
+#' @rdname accessors-methods
+setMethod("getSampleName", "Spectra",
           function(object) return(object@sample.name)
 )
 
 #' @export
-#' @describeIn Spectra extract p.p.m grid of the \code{Spectra} object.
-setMethod("get_ppm_grid", "Spectra",
+#' @aliases getPpmGrid
+#' @rdname accessors-methods
+setMethod("getPpmGrid", "Spectra",
           function(object) return(object@ppm.grid)
 )
 
-#' @describeIn Spectra extract spectra matrix of the \code{Spectra} object.
+#' @rdname accessors-methods
+#' @aliases getSpectra
 #' @export
-setMethod("get_spectra", "Spectra",
+setMethod("getSpectra", "Spectra",
           function(object) {
             spectra <- object@spectra
             rownames(spectra) <- object@ppm.grid
@@ -88,10 +130,32 @@ setMethod("get_spectra", "Spectra",
 
 #### Basic methods
 
-#' @describeIn Spectra show a summary of the \code{Spectra} object.
-#' @param object an object of class \code{Spectra}
+#' Summary methods
+#'
+#' Methods available to summarize the various S4 objects of ASICS package.
+#'
+#' @name summary-methods
+#' @param object an object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary}, \linkS4class{ASICSResults} or
+#' \linkS4class{AnalysisResults}.
+#'
+#' @return A summary of the object or its length.
+#'
+#' @examples
+#' # Import data and create object
+#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' spectra_data <- importSpectraBruker(current_path)
+#' spectra_obj <- createSpectra(spectra_data)
+#'
+#' # Summary
+#' summary(spectra_obj)
+#' # Length
+#' length(spectra_obj)
+NULL
+
 #' @aliases show.Spectra
 #' @export
+#' @rdname summary-methods
 setMethod(
   f = "show",
   signature = "Spectra",
@@ -102,18 +166,50 @@ setMethod(
   }
 )
 
-#' @describeIn Spectra show a summary of the \code{Spectra} object.
-#' @aliases summary.Spectra
+#' @rdname summary-methods
 #' @export
+#' @aliases summary.Spectra
 setMethod(
   f = "summary",
   signature = "Spectra",
   definition = function(object) object
 )
 
+#' @rdname summary-methods
+#' @param x an object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
+#' @export
+#' @aliases length.Spectra
+setMethod(f = "length", signature(x = "Spectra"),
+          function(x) return(length(x@sample.name))
+)
 
-#' @describeIn Spectra extract some samples from a \code{Spectra} object.
+
+#' Combine or subset functions
+#'
+#' Methods available to combine multiple object or extract a subset of one
+#' object in ASICS package.
+#'
+#' @name combineAndSubset-methods
+#' @param x an object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
 #' @param i indices specifying elements to extract
+#' @param ... objects to be concatenated.
+#'
+#' @return A subset of the original object or an single object containing all
+#' original objects
+#'
+#' @examples
+#' # Import data and create object
+#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' spectra_data <- importSpectraBruker(current_path)
+#' spectra_obj <- createSpectra(spectra_data)
+#'
+#' # Extract the first sample
+#' spectra_obj[1]
+NULL
+
+#' @rdname combineAndSubset-methods
 #' @aliases [.Spectra
 #' @export
 setMethod(
@@ -128,59 +224,75 @@ setMethod(
 )
 
 
-
-#' @describeIn Spectra number of samples in a \code{Spectra} object.
-#' @aliases length.Spectra
+#' @rdname combineAndSubset-methods
 #' @export
-setMethod(f = "length", signature(x = "Spectra"),
-  function(x) return(length(x@sample.name))
-)
-
-
-#' @describeIn Spectra combine \code{Spectra} objects.
 #' @aliases c.Spectra
-#' @export
 setMethod(
   "c",
   signature(x = "Spectra"),
   function(x, ...) {
     elements <- list(x, ...)
 
-    if(any(duplicated(do.call("c", lapply(elements, get_sample_name))))){
+    if(any(duplicated(do.call("c", lapply(elements, getSampleName))))){
       stop("Sample names need to be unique.")
     }
 
     # first grid for all objects
     for(i in 2:length(elements)){
       if(!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)){
-        elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, change_grid,
+        elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, .changeGrid,
                                        elements[[i]]@ppm.grid,
                                        elements[[1]]@ppm.grid)
       }
     }
 
     return(new("Spectra",
-               sample.name = do.call("c", lapply(elements, get_sample_name)),
+               sample.name = do.call("c", lapply(elements, getSampleName)),
                ppm.grid = x@ppm.grid,
-               spectra = do.call("cbind", lapply(elements, get_spectra))))
+               spectra = do.call("cbind", lapply(elements, getSpectra))))
   }
 )
 
 
 
-#' @describeIn Spectra plot all spectra (or a subset) on the same figure.
-#' Legend only appears if there is less than ten spectra to plot.
-#' @aliases plot.Spectra
+#' Visualization methods
 #'
-#' @param x an object of class \code{Spectra}
+#' Methods available to plot one object in ASICS package.
+#'
+#' @name visualization-methods-spectra
+#' @param x an object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
 #' @param xlim,ylim boundaries for x and y, respectively
 #' @param y currently not used
 #' @param ... currently not used
 #'
+#' @return
+#' \itemize{
+#' \item A ggplot plot all spectra (or a subset) on the same figure for
+#' \linkS4class{Spectra} and \linkS4class{PureLibrary} object.
+#' \item A ggplot plot original and recomposed spectra of one sample in one
+#' figure for \linkS4class{ASICSResults} object. In addition, one pure
+#' metabolite spectrum (as provided in the reference library) and the deformed
+#' one can be superimposed to the plot.
+#' }
+#'
+#' @examples
+#' # Import data and create object
+#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' spectra_data <- importSpectraBruker(current_path)
+#' spectra_obj <- createSpectra(spectra_data)
+#'
+#' # Plot the spectra
+#' plot(spectra_obj)
+NULL
+
+
+#' @aliases plot.Spectra
+#'
 #' @importFrom stats reshape
-#' @importFrom ggplot2 ggplot aes_string geom_line theme_bw labs
-#' @importFrom ggplot2 scale_x_reverse ylim guides
+#' @import ggplot2
 #' @export
+#' @rdname visualization-methods-spectra
 setMethod(
   f = "plot",
   signature = "Spectra",
@@ -188,12 +300,12 @@ setMethod(
 
     # reshape data
     data_to_plot <- reshape(as.data.frame(x@spectra),
-                            varying = 1:ncol(x@spectra),
+                            varying = seq_len(ncol(x@spectra)),
                             times = x@sample.name,
                             ids = as.numeric(x@ppm.grid),
                             v.names = "intensity", timevar = "sample_name",
                             idvar = "ppm_grid", direction = "long",
-                            new.row.names = 1:(ncol(x@spectra) *
+                            new.row.names = seq_len(ncol(x@spectra) *
                                                  nrow(x@spectra)))
 
     # set y boundaries if ylim is NULL

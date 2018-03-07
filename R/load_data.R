@@ -32,13 +32,13 @@
 #' @importFrom utils head tail
 #' @export
 #'
-#' @seealso \code{\link{baseline_correction}} \code{\link{normalisation}}
+#' @seealso \code{\link{baselineCorrection}} \code{\link{normalisation}}
 #' \code{\link{alignment}}
 #'
 #' @examples
 #' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
-#' spectra_data <- import_spectra_bruker(current_path)
-import_spectra_bruker <- function(name.dir, which.spectra = "last",
+#' spectra_data <- importSpectraBruker(current_path)
+importSpectraBruker <- function(name.dir, which.spectra = "last",
                                   baseline.correction = TRUE,
                                   ppm.grid = NULL, sample.names = NULL,
                                   parallel = TRUE){
@@ -98,7 +98,7 @@ import_spectra_bruker <- function(name.dir, which.spectra = "last",
   #import spectra
   if (ncores > 1) {
     imported_spectra <-
-      bptry(bplapply(cur_dir_spec, read_NMR_bruker, ppm.grid,
+      bptry(bplapply(cur_dir_spec, .readNMRBruker, ppm.grid,
                      baseline.correction,
                      BPPARAM = MulticoreParam(workers = ncores,
                                               progressbar = TRUE,
@@ -108,7 +108,7 @@ import_spectra_bruker <- function(name.dir, which.spectra = "last",
     suppressWarnings(
       imported_spectra <- llply(cur_dir_spec,
                                 function(x, ppm, bc)
-                                  try(read_NMR_bruker(x, ppm, bc), silent=TRUE),
+                                  try(.readNMRBruker(x, ppm, bc), silent=TRUE),
                                 ppm.grid, baseline.correction,
                                 .progress = "text"))
   }
@@ -139,7 +139,7 @@ import_spectra_bruker <- function(name.dir, which.spectra = "last",
 
 
 ## Extract a spectrum from Bruker files
-read_NMR_bruker <- function(path, ppm.grid, baseline.correction){
+.readNMRBruker <- function(path, ppm.grid, baseline.correction){
 
   #file paths
   acq_file <- file.path(path, "acqus")
@@ -148,18 +148,18 @@ read_NMR_bruker <- function(path, ppm.grid, baseline.correction){
 
   #meta-data in acq_file
   ACQ <- readLines(acq_file)
-  TD <- get_bruker_param(ACQ, "TD")
-  SW <- get_bruker_param(ACQ, "SW")
-  SWH <- get_bruker_param(ACQ, "SW_h")
-  DTYPA <- get_bruker_param(ACQ, "DTYPA")
-  BYTORDA <- get_bruker_param(ACQ, "BYTORDA")
+  TD <- .getBrukerParam(ACQ, "TD")
+  SW <- .getBrukerParam(ACQ, "SW")
+  SWH <- .getBrukerParam(ACQ, "SW_h")
+  DTYPA <- .getBrukerParam(ACQ, "DTYPA")
+  BYTORDA <- .getBrukerParam(ACQ, "BYTORDA")
   ENDIAN <- "little"
   SIZE <- ifelse(DTYPA == 0, 4, 8)
 
   #meta-data in proc_file
   PROC <- readLines(proc_file)
-  OFFSET <- get_bruker_param(PROC, "OFFSET")
-  SI <- get_bruker_param(PROC, "SI")
+  OFFSET <- .getBrukerParam(PROC, "OFFSET")
+  SI <- .getBrukerParam(PROC, "SI")
 
   #meta-data in spec_file
   to.read <- file(spec_file, "rb")
@@ -178,21 +178,21 @@ read_NMR_bruker <- function(path, ppm.grid, baseline.correction){
 
   # baseline correction
   if (baseline.correction) {
-    signal <- baseline_corrector(signal)
+    signal <- .baselineCorrector(signal)
     signal[signal < 0] <- 0
   }
 
   #adapt the grid
-  new_signal <- change_grid(signal, ppmseq, ppm.grid)
+  new_signal <- .changeGrid(signal, ppmseq, ppm.grid)
 
   # normalisation by area under the curve
-  new_signal <- new_signal / AUC(ppm.grid, new_signal)
+  new_signal <- new_signal / .AUC(ppm.grid, new_signal)
 
   return(new_signal)
 }
 
 # find parameter in a bruker file
-get_bruker_param <- function(file, paramStr){
+.getBrukerParam <- function(file, paramStr){
   regexpStr <- paste0("^...", paramStr, "=")
   as.numeric(gsub("^[^=]+= ", "" ,
                   file[which(simplify2array(regexpr(regexpStr, file)) > 0)]))
@@ -225,7 +225,9 @@ normalisation <- function(spectra){
   }
 
   spectra_norm <- data.frame(apply(spectra, 2, function(x)
-    t(x / AUC(as.numeric(rownames(spectra)), x))))
+    t(x / .AUC(as.numeric(rownames(spectra)), x))))
+  rownames(spectra_norm) <- rownames(spectra)
+  colnames(spectra_norm) <- colnames(spectra)
 
   return(spectra_norm)
 }
@@ -257,8 +259,8 @@ normalisation <- function(spectra){
 #' current_path <- file.path(system.file("extdata", package = "ASICS"),
 #'                           "spectra_example.txt")
 #' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-#' spectra_base_cor <- baseline_correction(spectra_data)
-baseline_correction <- function(spectra, parallel = TRUE){
+#' spectra_base_cor <- baselineCorrection(spectra_data)
+baselineCorrection <- function(spectra, parallel = TRUE){
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
     stop("Rownames of spectra data frame don't contain ppm grid.")
@@ -276,7 +278,7 @@ baseline_correction <- function(spectra, parallel = TRUE){
   #baseline correction
   if (ncores > 1) {
     spectra_bc_list <-
-      bptry(bplapply(spectra_list, baseline_corrector,
+      bptry(bplapply(spectra_list, .baselineCorrector,
                      BPPARAM = MulticoreParam(workers = ncores,
                                               progressbar = TRUE,
                                               stop.on.error = FALSE,
@@ -285,7 +287,7 @@ baseline_correction <- function(spectra, parallel = TRUE){
     suppressWarnings(
       spectra_bc_list <- llply(spectra_list,
                                 function(x)
-                                  try(baseline_corrector(x), silent=TRUE),
+                                  try(.baselineCorrector(x), silent=TRUE),
                                 .progress = "text"))
   }
 
@@ -304,14 +306,13 @@ baseline_correction <- function(spectra, parallel = TRUE){
                                                       "try-error"))]
 
   #convert in a data frame
-  spectra_bc <- as.data.frame(do.call(cbind, spectra_list),
-                                    row.names = as.character(spectra))
-  colnames(spectra_bc) <- colnames(spectra)
-
+  spectra_bc <- as.data.frame(do.call(cbind, spectra_list))
   spectra_bc[spectra_bc < 0] <- 0
 
   spectra_norm <- data.frame(apply(spectra_bc, 2, function(x)
-    t(x / AUC(as.numeric(rownames(spectra)), x))))
+    t(x / .AUC(as.numeric(rownames(spectra)), x))))
+  rownames(spectra_norm) <- rownames(spectra)
+  colnames(spectra_norm) <- colnames(spectra)
 
   return(spectra_norm)
 }
@@ -381,7 +382,9 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
   spectra_align <- data.frame(t(spectra_align))
 
   spectra_norm <- data.frame(apply(spectra_align, 2, function(x)
-    t(x / AUC(as.numeric(rownames(spectra_align)), x))))
+    t(x / .AUC(as.numeric(rownames(spectra_align)), x))))
+  rownames(spectra_norm) <- rownames(spectra)
+  colnames(spectra_norm) <- colnames(spectra)
 
   return(spectra_norm)
 }
@@ -404,13 +407,13 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
 #' @export
 #'
 #' @examples
-#' pure_spectra <- import_spectra_bruker(system.file("extdata",
+#' pure_spectra <- importSpectraBruker(system.file("extdata",
 #'                                                   "example_library",
 #'                                                    package = "ASICS"))
-#' new_pure_library <- create_pure_library(pure_spectra,
+#' new_pure_library <- createPureLibrary(pure_spectra,
 #'                                         nb.protons = c(5, 4, 9, 9))
 #'
-create_pure_library <- function(spectra, nb.protons, threshold = 1){
+createPureLibrary <- function(spectra, nb.protons, threshold = 1){
   # create a new object PureLibrary with a data frame of intensities and a
   # vector of the muber of protons
   new_library <- new("PureLibrary",
@@ -446,9 +449,9 @@ create_pure_library <- function(spectra, nb.protons, threshold = 1){
 #'
 #' @examples
 #' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
-#' spectra_data <- import_spectra_bruker(current_path)
-#' spectra_obj <- create_spectra(spectra_data)
-create_spectra <- function(spectra){
+#' spectra_data <- importSpectraBruker(current_path)
+#' spectra_obj <- createSpectra(spectra_data)
+createSpectra <- function(spectra){
 
   # create a new object Spectra with a data frame of intensities
   new_spectra <- new("Spectra",
@@ -462,3 +465,110 @@ create_spectra <- function(spectra){
   return(new_spectra)
 }
 
+
+
+
+#' Binning/Bucketing of NMR spectra
+#'
+#' Apply a binning function on a data frame of spectra.
+#'
+#' @param spectra Data frame with spectra in columns and chemical shift in rows.
+#' Colnames of this data frame correspond to pure metabolite names and rownames
+#' to chemical shift grid (in p.p.m).
+#' @param bin numeric specifying the bin width.
+#' @param exclusion.areas definition domain of spectra to exclude (ppm).
+#' By default, only the water region (4.5-5.1 ppm).
+#' @param parallel If \code{TRUE}, apply function in parallel. Default to
+#' \code{TRUE}.
+#'
+#' @return A data frame with normalised spectra in columns and buckets in rows
+#' (bucket names correspond to the center of the bucket).
+#'
+#' @export
+#' @importFrom plyr alply
+#' @importFrom BiocParallel multicoreWorkers
+#'
+#' @examples
+#' current_path <- file.path(system.file("extdata", package = "ASICS"),
+#'                           "spectra_example.txt")
+#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+#' spectra_bin <- binning(spectra_data, bin = 0.01)
+binning <- function(spectra, bin = 0.01,
+                    exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
+                    parallel = TRUE){
+
+  if (!is.numeric(as.numeric(rownames(spectra)))) {
+    stop("Rownames of spectra data frame don't contain ppm grid.")
+  }
+
+  if(!is.null(exclusion.areas) &&
+     (!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2)){
+    stop("'exclusion.areas' needs to be a matrix with 2 columns.")
+  }
+
+  old_grid <- as.numeric(rownames(spectra))
+
+  #for signal in exclusion.areas, intensity is null (mixture and library)
+  if(!is.null(exclusion.areas)){
+    idx_to_remove <-
+      unlist(alply(exclusion.areas, 1,
+                   function(area) which(old_grid >= area[[1]] &
+                                       old_grid <= area[[2]])),
+             use.names = FALSE)
+
+    spectra[idx_to_remove, ] <- 0
+  }
+
+  # number of cores
+  if (parallel) {
+    ncores <- multicoreWorkers()
+  } else {
+    ncores <- 1
+  }
+
+  # Compute buckets
+  buckets <- seq(max(0.5, min(trunc(old_grid * 10, 1) / 10)) + bin / 2,
+                 min(10, max(trunc(old_grid * 10, 1) / 10)) + bin / 2,
+                 by = bin)
+
+
+  spectra_list <- as.list(spectra)
+  # Buckets values for each spectrum
+  if (ncores > 1) {
+    buckets_values_list <-
+      bplapply(spectra_list, .binningSpectrum, old_grid, buckets, bin,
+                     BPPARAM = MulticoreParam(workers = ncores,
+                                              progressbar = TRUE,
+                                              stop.on.error = FALSE,
+                                              tasks = ncol(spectra)))
+  } else {
+    buckets_values_list <- llply(spectra_list, .binningSpectrum, old_grid,
+                                 buckets, bin, .progress = "text")
+  }
+  #convert in a data frame
+  buckets_values <- as.data.frame(do.call(cbind, buckets_values_list))
+
+  # Normalisation
+  spectra_norm <- data.frame(apply(buckets_values, 2, function(value)
+    t(value / .AUC(buckets, value))))
+  rownames(spectra_norm) <- buckets
+  colnames(spectra_norm) <- colnames(spectra)
+
+  return(spectra_norm)
+}
+
+
+.binningSpectrum <- function(spectrum, grid, buckets, bin){
+
+  buckets_values <-
+    sapply(buckets,
+           function(x) ifelse(length(grid[grid >= x - bin / 2 &
+                                            grid < x + bin / 2]) == 0,
+                              0,
+                              .AUC(grid[grid >= x - bin / 2 &
+                                          grid < x + bin / 2],
+                                   spectrum[grid >= x - bin / 2 &
+                                              grid < x + bin / 2])))
+
+  return(buckets_values)
+}

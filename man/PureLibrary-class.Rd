@@ -3,51 +3,34 @@
 \docType{class}
 \name{PureLibrary-class}
 \alias{PureLibrary-class}
-\alias{get_nb_protons,PureLibrary-method}
-\alias{[,PureLibrary,ANY,ANY,ANY-method}
-\alias{[.PureLibrary}
-\alias{c,PureLibrary-method}
-\alias{c.PureLibrary}
 \title{Class \code{PureLibrary}}
-\usage{
-\S4method{get_nb_protons}{PureLibrary}(object)
-
-\S4method{[}{PureLibrary,ANY,ANY,ANY}(x, i)
-
-\S4method{c}{PureLibrary}(x, ...)
-}
-\arguments{
-\item{object}{an object of class \code{PureLibrary}}
-
-\item{x}{an object of class \code{PureLibrary}}
-
-\item{i}{indices specifying metabolites to extract}
-
-\item{...}{currently not used}
-}
 \description{
 Objects of class \code{PureLibrary} represent a set of pure metabolite NMR
 spectra.
-It an extension of class \linkS4class{Spectra} with an additional slot
+It's an extension of class \linkS4class{Spectra} with an additional slot
 (number of protons of each metabolite) needed for spectrum quantification.
 }
-\section{Methods (by generic)}{
-\itemize{
-\item \code{get_nb_protons}: extract number of protons of the \code{PureLibrary}
-object.
-
-\item \code{[}: extract some metabolites from a \code{PureLibrary}
-object.
-
-\item \code{c}: combine \code{PureLibrary} objects.
-}}
-
 \section{Slots}{
 
 \describe{
 \item{\code{nb.protons}}{Numeric vector of the number of protons of each pure
 metabolite spectra.}
 }}
+
+\section{Methods}{
+
+  Multiple methods can be applied on \linkS4class{PureLibrary} objects.
+  \itemize{
+    \item As usual for S4 object, show and summary methods are available, see
+    \link[=summary-methods]{Object summary}
+    \item All slots have an accessor \code{get_slot name}, see
+    \link[=accessors-methods]{Accessors}
+    \item Two objects can be combine or a subset can be extract, see
+    \link[=combineAndSubset-methods]{Combine and subset methods}
+    \item All spectra contained in an object can be represent in a plot, see
+    \link[=visualization-methods-spectra]{Visualization methods}
+  }
+}
 
 \seealso{
 \linkS4class{Spectra}

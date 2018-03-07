@@ -21,9 +21,9 @@ preprocessing or statistical analyses of quantified metabolites are available.
 The full ASICS User's Guide is available after installing the package. It can be
 opened with:
 
-```{r userguide, eval=FALSE}
+```{r userguide}
 library(ASICS)
-ASICSUsersGuide()
+ASICSUsersGuide(view = FALSE)
 ```
 
 

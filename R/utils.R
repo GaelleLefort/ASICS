@@ -1,13 +1,13 @@
 ## Compute the area under the curve (y = f(x)) using the trapezoidal rule
 #' @importFrom zoo rollmean
-AUC <- function(x, y) {
+.AUC <- function(x, y) {
   auc <- sum(diff(x) * rollmean(y, 2))
   return(auc)
 }
 
 
 ## Linear interpolation to adapt old_spectrum on the old grid to the new grid
-change_grid <- function(old_spectrum, old_grid, new_grid) {
+.changeGrid <- function(old_spectrum, old_grid, new_grid) {
 
   #new_grid must be included in old_grid
   if (new_grid[1] < old_grid[1]) new_grid[1] <- old_grid[1]
@@ -43,23 +43,37 @@ change_grid <- function(old_spectrum, old_grid, new_grid) {
 ## Main function to load library, import a spectrum from Bruker files and
 #perform the first preprocessing
 #' @importFrom plyr alply
-remove_areas <- function(spectrum_obj, exclusion.areas, pure.library){
+.removeAreas <- function(spectrum_obj, exclusion.areas, pure.library){
 
   #default library or not
   if(is.null(pure.library)){
-    cleaned_library <- pure_library
+    cleaned_library <- ASICS::pure_library
   } else {
     cleaned_library <- pure.library
   }
+
+  #remove extremities of library grid if the spectrum is shorter
+  cleaned_library@spectra <-
+    cleaned_library@spectra[cleaned_library@ppm.grid >=
+                              min(spectrum_obj@ppm.grid) &
+                              cleaned_library@ppm.grid <=
+                              max(spectrum_obj@ppm.grid), ]
+  cleaned_library@ppm.grid <-
+    cleaned_library@ppm.grid[cleaned_library@ppm.grid >=
+                               min(spectrum_obj@ppm.grid) &
+                               cleaned_library@ppm.grid <=
+                               max(spectrum_obj@ppm.grid)]
+
 
   #adapt spectrum grid to have the same than library
   cleaned_spectrum <- new("Spectra",
                           sample.name = spectrum_obj@sample.name,
                           ppm.grid = cleaned_library@ppm.grid,
-                          spectra = apply(spectrum_obj@spectra, 2,
-                                          change_grid,
-                                          spectrum_obj@ppm.grid,
-                                          cleaned_library@ppm.grid))
+                          spectra =
+                            matrix(.changeGrid(spectrum_obj@spectra,
+                                               spectrum_obj@ppm.grid,
+                                               cleaned_library@ppm.grid),
+                                   ncol = 1))
 
 
   #for signal in exclusion.areas, intensity is null (mixture and library)
@@ -81,10 +95,10 @@ remove_areas <- function(spectrum_obj, exclusion.areas, pure.library){
   #re-normalisation of mixture and pure spectra library
   cleaned_library@spectra <- apply(cleaned_library@spectra, 2,
                                    function(x)
-                                     t(x / AUC(cleaned_library@ppm.grid, x)))
+                                     t(x / .AUC(cleaned_library@ppm.grid, x)))
   cleaned_spectrum@spectra <- apply(cleaned_spectrum@spectra, 2,
                                     function(x)
-                                      t(x / AUC(cleaned_library@ppm.grid, x)))
+                                      t(x / .AUC(cleaned_library@ppm.grid, x)))
 
   return(list("cleaned_spectrum" = cleaned_spectrum,
               "cleaned_library" = cleaned_library))
@@ -94,11 +108,11 @@ remove_areas <- function(spectrum_obj, exclusion.areas, pure.library){
 
 ## remove metabolites that cannot belong to the mixture
 #' @importFrom plyr aaply
-clean_library <- function(cleaned_spectrum, cleaned_library,
+.cleanLibrary <- function(cleaned_spectrum, cleaned_library,
                           threshold.noise, nb_points_shift){
   #support of mixture superior to threshold
   signal_mixture <- 1 * (cleaned_spectrum@spectra > threshold.noise)
-  signal_mixture_shift <- signal_with_shift(signal_mixture, nb_points_shift)
+  signal_mixture_shift <- .signalWithShift(signal_mixture, nb_points_shift)
 
   #normalize each spectra with the maximum of mixture
   norm_library <- t(aaply(cleaned_library@spectra, 2, function(x) x *
@@ -116,7 +130,7 @@ clean_library <- function(cleaned_spectrum, cleaned_library,
 
 
 ## Extend each peak in signal of nb_points_shift
-signal_with_shift <- function(signal, nb_points_shift) {
+.signalWithShift <- function(signal, nb_points_shift) {
 
   #Get indexes with a signal
   idx_signal <- which(signal == 1)
@@ -141,7 +155,7 @@ signal_with_shift <- function(signal, nb_points_shift) {
 
 ## Non-negative least square (formula : y~x with weights w)
 #' @importFrom quadprog solve.QP
-lm_constrained <- function(y, x, w = 1, precision = 1){
+.lmConstrained <- function(y, x, w = 1, precision = 1){
   #constraints
   Amat <- diag(rep(1, ncol(x)))
   b0 <- rep(0, ncol(x))

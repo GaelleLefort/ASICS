@@ -1,7 +1,7 @@
 Package: ASICS
 Type: Package
 Title: Automatic Statistical Identification in Complex Spectra
-Version: 1.0.0
+Version: 0.99.0
 Authors@R: c(
     person("Gaëlle", "Lefort", email = "gaelle.lefort@inra.fr", role = c("aut", "cre")),
     person("Rémi", "Sevien", email = "remi.servien@inra.fr", role = "aut"),
@@ -16,6 +16,7 @@ Depends: R (>= 3.4)
 Imports:
     BiocParallel,
     ggplot2,
+    grDevices,
     gridExtra,
     methods,
     plyr,
@@ -33,12 +34,14 @@ RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
     BiocStyle,
-    testthat
+    testthat,
+    ASICSdata
 VignetteBuilder: knitr
-Collate:
+Collate: 
     'ASICS.R'
     'Spectra-class.R'
     'ASICSResults-class.R'
+    'AnalysisResults-class.R'
     'PureLibrary-class.R'
     'analysis_on_quantification.R'
     'baseline_correction.R'
@@ -49,3 +52,8 @@ Collate:
     'plot_spectrum.R'
     'user_guide.R'
     'utils.R'
+biocViews:
+    Software,
+    DataImport,
+    Cheminformatics,
+    Metabolomics

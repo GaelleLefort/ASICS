@@ -1,9 +1,9 @@
-#' Class \code{ASICSResults}
+#' Class \linkS4class{ASICSResults}
 #'
-#' Objects of class \code{ASICSResults} represent results of ASICS for a set of
-#' spectra.
-#' It an extension of class \linkS4class{Spectra} with an additional slots for
-#' quantification results.
+#' Objects of class \linkS4class{ASICSResults} represent results of ASICS for a
+#' set of spectra.
+#' It an extension of class \linkS4class{Spectra} with additional slots for
+#' quantification results, recomposed spectra and deformed library.
 #'
 #'
 #' @name ASICSResults-class
@@ -23,6 +23,19 @@
 #' @slot deformed.library a list of \linkS4class{PureLibrary} containing the
 #' deformed libraries of each sample.
 #'
+#' @section Methods:
+#'   Multiple methods can be applied on \linkS4class{Spectra} objects.
+#'   \itemize{
+#'     \item As usual for S4 object, show and summary methods are available, see
+#'     \link[=summary-methods]{Object summary}
+#'     \item All slots have an accessor \code{get_slot name}, see
+#'     \link[=accessors-methods]{Accessors}
+#'     \item Two objects can be combine or a subset can be extract, see
+#'     \link[=combineAndSubset-methods]{Combine and subset methods}
+#'     \item All spectra contained in an object can be represent in a plot, see
+#'     \link[=visualization-methods-spectra]{Visualization methods}
+#'   }
+#'
 #' @include Spectra-class.R
 #' @seealso \linkS4class{Spectra}
 
@@ -40,35 +53,36 @@ setClass(
 
 #### Accessors
 
-setGeneric("get_recomposed_spectra",
-           function(object) standardGeneric("get_recomposed_spectra")
+setGeneric("getRecomposedSpectra",
+           function(object) standardGeneric("getRecomposedSpectra")
 )
-setGeneric("get_quantification",
-           function(object) standardGeneric("get_quantification")
+setGeneric("getQuantification",
+           function(object) standardGeneric("getQuantification")
 )
-setGeneric("get_deformed_library",
-           function(object) standardGeneric("get_deformed_library")
+setGeneric("getDeformedLibrary",
+           function(object) standardGeneric("getDeformedLibrary")
 )
 
 
 #' @export
-#' @describeIn ASICSResults extract recomposed spectra matrix of the
-#' \code{ASICSResults} object.
-setMethod("get_recomposed_spectra", "ASICSResults",
+#' @aliases getRecomposedSpectra
+#' @rdname accessors-methods
+setMethod("getRecomposedSpectra", "ASICSResults",
           function(object) return(object@recomposed.spectra)
 )
 
 #' @export
-#' @describeIn ASICSResults extract a data-frame with metabolite quantifications
-#' computed with ASICS for each sample of the \code{ASICSResults} object.
-setMethod("get_quantification", "ASICSResults",
+#' @aliases getQuantification
+#' @rdname accessors-methods
+setMethod("getQuantification", "ASICSResults",
           function(object) return(object@quantification)
 )
 
-#' @describeIn ASICSResults extract a list of all deformed libraries of the
-#' \code{ASICSResults} object.
+
 #' @export
-setMethod("get_deformed_library", "ASICSResults",
+#' @aliases getDeformedLibrary
+#' @rdname accessors-methods
+setMethod("getDeformedLibrary", "ASICSResults",
           function(object) return(object@deformed.library)
 )
 
@@ -78,8 +92,7 @@ setMethod("get_deformed_library", "ASICSResults",
 
 #### Basic methods
 
-#' @describeIn ASICSResults show a summary of the \code{ASICSResults} object.
-#' @param object an object of class \code{ASICSResults}
+#' @rdname summary-methods
 #' @aliases show.ASICSResults
 #' @importFrom utils head
 #' @export
@@ -99,22 +112,13 @@ setMethod(
 
 
 
-
-#' @describeIn ASICSResults extract some samples from a \code{ASICSResults}
-#' object.
-#' @param i indices specifying samples to extract
+#' @rdname combineAndSubset-methods
 #' @aliases [.ASICSResults
 #' @export
 setMethod(
   f = "[",
   signature(x = "ASICSResults", i = "ANY"),
   function (x, i){
-
-    # if (length(i) == 1) {
-    #   deformed_library <- list(x@deformed.library[i])
-    # } else {
-    #   deformed_library <-
-    # }
 
     quantification <- as.data.frame(x@quantification[, i])
     colnames(quantification) <- x@sample.name[i]
@@ -132,7 +136,7 @@ setMethod(
 )
 
 
-#' @describeIn ASICSResults combine \code{ASICSResults} objects.
+#' @rdname combineAndSubset-methods
 #' @aliases c.ASICSResults
 #' @importFrom plyr join_all
 #' @export
@@ -146,7 +150,7 @@ setMethod(
     if(length(elements) > 1){
       for(i in 2:length(elements)){
         if(!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)){
-          elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, change_grid,
+          elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, .changeGrid,
                                          elements[[i]]@ppm.grid,
                                          elements[[1]]@ppm.grid)
         }
@@ -154,7 +158,7 @@ setMethod(
     }
 
     # merge quantification
-    extract_quantif_list <- lapply(elements, get_quantification)
+    extract_quantif_list <- lapply(elements, getQuantification)
     extract_quantif_list <- lapply(extract_quantif_list,
                                    function(x) cbind(id = rownames(x), x))
 
@@ -166,14 +170,33 @@ setMethod(
     all_quantification[is.na(all_quantification)] <- 0
 
     return(new("ASICSResults",
-               sample.name = do.call("c", lapply(elements, get_sample_name)),
+               sample.name = do.call("c", lapply(elements, getSampleName)),
                ppm.grid = x@ppm.grid,
-               spectra = do.call("cbind", lapply(elements, get_spectra)),
+               spectra = do.call("cbind", lapply(elements, getSpectra)),
                recomposed.spectra =
-                 do.call("cbind", lapply(elements, get_recomposed_spectra)),
+                 do.call("cbind", lapply(elements, getRecomposedSpectra)),
                quantification = all_quantification,
                deformed.library =
-                 do.call("rbind", lapply(elements, get_deformed_library))))
+                 do.call("rbind", lapply(elements, getDeformedLibrary))))
+  }
+)
+
+
+#' @aliases plot.ASICSResults
+#' @param idx index of the spectrum to plot. Default to 1.
+#' @param pure.library pure library used for quantification. Default to
+#' \code{NULL} (the library included in the package is used).
+#' @param add.metab name of one metabolite to add to the plot. Default to
+#' \code{NULL} (no pure spectrum added to the plot).
+#' @export
+#' @rdname visualization-methods-spectra
+setMethod(
+  f = "plot",
+  signature = "ASICSResults",
+  definition = function(x, y, idx = 1, xlim = c(0.5, 10), ylim = NULL,
+                        pure.library = NULL, add.metab = NULL, ...) {
+    return(.plotSpectrum(x, idx = idx, xlim = xlim, ylim = ylim,
+                         pure.library = pure.library, add.metab = add.metab))
   }
 )
 
@@ -181,11 +204,23 @@ setMethod(
 
 #### Other methods
 
-#' @aliases diagnostics.ASICSResults
-#' @export
-diagnostics <- function(object){
-  NULL
-}
+# setGeneric("ASICSDiagnosis",
+#            function(object) standardGeneric("ASICSDiagnosis")
+# )
+
+# #' @aliases ASICSDiagnosis.ASICSResults
+# #' @export
+# setMethod(
+#   f = "ASICSDiagnosis",
+#   signature = "ASICSResults",
+#   definition = function(object) {
+#     # EQM <- colSums((object@spectra - object@recomposed.spectra)^2)
+#     #
+#     #
+#     # return(EQM)
+#   }
+# )
+
 
 
 

@@ -6,15 +6,15 @@ test_that("import from Bruker files goes well and gives a well formatted
 data frame", {
   lib_path <- system.file("extdata", "example_library",
                           package = "ASICS")
-  expect_is(import_spectra_bruker(lib_path), "data.frame")
+  expect_is(importSpectraBruker(lib_path), "data.frame")
 
   example_path <- system.file("extdata", "example_spectra",
                               package = "ASICS")
-  expect_warning(import_spectra_bruker(example_path),
+  expect_warning(importSpectraBruker(example_path),
                  regexp = "There is a problem in files for spectra:",
                  fixed = TRUE)
 
-  expect_is(as.numeric(rownames(import_spectra_bruker(lib_path))),
+  expect_is(as.numeric(rownames(importSpectraBruker(lib_path))),
             "numeric")
 })
 
@@ -24,8 +24,15 @@ test_that("preprocessing functions goes well and gives a data frame", {
                               package = "ASICS")
   spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
   expect_is(normalisation(spectra_data), "data.frame")
-  expect_is(baseline_correction(spectra_data), "data.frame")
+  expect_is(baselineCorrection(spectra_data), "data.frame")
   expect_is(alignment(spectra_data), "data.frame")
+})
+
+test_that("bucketing function goes well and gives a data frame", {
+  current_path <- system.file("extdata", "spectra_example.txt",
+                              package = "ASICS")
+  spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+  expect_is(binning(spectra_data), "data.frame")
 })
 
 
@@ -41,8 +48,8 @@ without error", {
   current_path <- system.file("extdata", "spectra_example.txt",
                               package = "ASICS")
   spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-  spectra_data <- baseline_correction(spectra_data)
-  spectra_obj <- create_spectra(spectra_data)
+  spectra_data <- baselineCorrection(spectra_data)
+  spectra_obj <- createSpectra(spectra_data)
 
   expect_s4_class(spectra_obj, "Spectra")
   expect_equal(length(spectra_obj[1]), 1)

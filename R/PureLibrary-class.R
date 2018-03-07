@@ -2,12 +2,25 @@
 #'
 #' Objects of class \code{PureLibrary} represent a set of pure metabolite NMR
 #' spectra.
-#' It an extension of class \linkS4class{Spectra} with an additional slot
+#' It's an extension of class \linkS4class{Spectra} with an additional slot
 #' (number of protons of each metabolite) needed for spectrum quantification.
 #'
 #'
 #' @slot nb.protons Numeric vector of the number of protons of each pure
 #' metabolite spectra.
+#'
+#' @section Methods:
+#'   Multiple methods can be applied on \linkS4class{PureLibrary} objects.
+#'   \itemize{
+#'     \item As usual for S4 object, show and summary methods are available, see
+#'     \link[=summary-methods]{Object summary}
+#'     \item All slots have an accessor \code{get_slot name}, see
+#'     \link[=accessors-methods]{Accessors}
+#'     \item Two objects can be combine or a subset can be extract, see
+#'     \link[=combineAndSubset-methods]{Combine and subset methods}
+#'     \item All spectra contained in an object can be represent in a plot, see
+#'     \link[=visualization-methods-spectra]{Visualization methods}
+#'   }
 #'
 #' @seealso \linkS4class{Spectra}
 #'
@@ -55,26 +68,22 @@ setValidity(
 
 #### Accessors
 
-setGeneric("get_nb_protons",
-           function(object) standardGeneric("get_nb_protons")
+setGeneric("getNbProtons",
+           function(object) standardGeneric("getNbProtons")
 )
 
 
-#' @describeIn PureLibrary extract number of protons of the \code{PureLibrary}
-#' object.
+#' @rdname accessors-methods
+#' @aliases getNbProtons
 #' @export
-#' @param object an object of class \code{PureLibrary}
-setMethod("get_nb_protons", "PureLibrary",
+setMethod("getNbProtons", "PureLibrary",
           function(object) return(object@nb.protons)
 )
 
 
 #### Basic methods
 
-#' @describeIn PureLibrary extract some metabolites from a \code{PureLibrary}
-#' object.
-#' @param x an object of class \code{PureLibrary}
-#' @param i indices specifying metabolites to extract
+#' @rdname combineAndSubset-methods
 #' @aliases [.PureLibrary
 #' @export
 setMethod(
@@ -90,8 +99,7 @@ setMethod(
 )
 
 
-#' @describeIn PureLibrary combine \code{PureLibrary} objects.
-#' @param ... currently not used
+#' @rdname combineAndSubset-methods
 #' @aliases c.PureLibrary
 #' @export
 setMethod(
@@ -100,23 +108,23 @@ setMethod(
   function(x, ...) {
     elements <- list(x, ...)
 
-    if(any(duplicated(do.call("c", lapply(elements, get_sample_name))))){
+    if(any(duplicated(do.call("c", lapply(elements, getSampleName))))){
       stop("Sample names need to be unique.")
     }
 
     # first grid for all objects
     for (i in 2:length(elements)) {
       if (!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)) {
-        elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, change_grid,
+        elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, .changeGrid,
                                        elements[[i]]@ppm.grid,
                                        elements[[1]]@ppm.grid)
       }
     }
 
     return(new("PureLibrary",
-               sample.name = do.call("c", lapply(elements, get_sample_name)),
+               sample.name = do.call("c", lapply(elements, getSampleName)),
                ppm.grid = x@ppm.grid,
-               spectra = do.call("cbind", lapply(elements, get_spectra)),
-               nb.protons = do.call("c", lapply(elements, get_nb_protons))))
+               spectra = do.call("cbind", lapply(elements, getSpectra)),
+               nb.protons = do.call("c", lapply(elements, getNbProtons))))
   }
 )

@@ -3,59 +3,13 @@
 \docType{class}
 \name{ASICSResults-class}
 \alias{ASICSResults-class}
-\alias{get_recomposed_spectra,ASICSResults-method}
-\alias{get_quantification,ASICSResults-method}
-\alias{get_deformed_library,ASICSResults-method}
-\alias{show,ASICSResults-method}
-\alias{show.ASICSResults}
-\alias{[,ASICSResults,ANY,ANY,ANY-method}
-\alias{[.ASICSResults}
-\alias{c,ASICSResults-method}
-\alias{c.ASICSResults}
-\title{Class \code{ASICSResults}}
-\usage{
-\S4method{get_recomposed_spectra}{ASICSResults}(object)
-
-\S4method{get_quantification}{ASICSResults}(object)
-
-\S4method{get_deformed_library}{ASICSResults}(object)
-
-\S4method{show}{ASICSResults}(object)
-
-\S4method{[}{ASICSResults,ANY,ANY,ANY}(x, i)
-
-\S4method{c}{ASICSResults}(x, ...)
-}
-\arguments{
-\item{object}{an object of class \code{ASICSResults}}
-
-\item{i}{indices specifying samples to extract}
-}
+\title{Class \linkS4class{ASICSResults}}
 \description{
-Objects of class \code{ASICSResults} represent results of ASICS for a set of
-spectra.
-It an extension of class \linkS4class{Spectra} with an additional slots for
-quantification results.
+Objects of class \linkS4class{ASICSResults} represent results of ASICS for a
+set of spectra.
+It an extension of class \linkS4class{Spectra} with additional slots for
+quantification results, recomposed spectra and deformed library.
 }
-\section{Methods (by generic)}{
-\itemize{
-\item \code{get_recomposed_spectra}: extract recomposed spectra matrix of the
-\code{ASICSResults} object.
-
-\item \code{get_quantification}: extract a data-frame with metabolite quantifications
-computed with ASICS for each sample of the \code{ASICSResults} object.
-
-\item \code{get_deformed_library}: extract a list of all deformed libraries of the
-\code{ASICSResults} object.
-
-\item \code{show}: show a summary of the \code{ASICSResults} object.
-
-\item \code{[}: extract some samples from a \code{ASICSResults}
-object.
-
-\item \code{c}: combine \code{ASICSResults} objects.
-}}
-
 \section{Slots}{
 
 \describe{
@@ -78,6 +32,21 @@ relative concentrations.}
 \item{\code{deformed.library}}{a list of \linkS4class{PureLibrary} containing the
 deformed libraries of each sample.}
 }}
+
+\section{Methods}{
+
+  Multiple methods can be applied on \linkS4class{Spectra} objects.
+  \itemize{
+    \item As usual for S4 object, show and summary methods are available, see
+    \link[=summary-methods]{Object summary}
+    \item All slots have an accessor \code{get_slot name}, see
+    \link[=accessors-methods]{Accessors}
+    \item Two objects can be combine or a subset can be extract, see
+    \link[=combineAndSubset-methods]{Combine and subset methods}
+    \item All spectra contained in an object can be represent in a plot, see
+    \link[=visualization-methods-spectra]{Visualization methods}
+  }
+}
 
 \seealso{
 \linkS4class{Spectra}

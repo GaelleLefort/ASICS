@@ -4,10 +4,15 @@
 \alias{ASICSUsersGuide}
 \title{View ASICS User's Guide}
 \usage{
-ASICSUsersGuide()
+ASICSUsersGuide(view = TRUE)
+}
+\arguments{
+\item{view}{if \code{TRUE}, the user's guide will be opened with default
+browser}
 }
 \value{
-Open the ASICS User's Guide
+Character string giving the file location. If \code{view = TRUE},
+the HTML viewer is started and the User’s Guide is opened, as a side effect.
 }
 \description{
 Open the ASICS User's Guide (with default browser)
@@ -23,5 +28,9 @@ given by \code{Sys.getenv("R_BROWSER")}. The HTML viewer can be changed using
 \code{Sys.setenv(R_BROWSER = )}.
 }
 \examples{
+# To get the location
+ASICSUsersGuide(view = FALSE)
+
+# To open in a HTML viewer
 \dontrun{ASICSUsersGuide()}
 }

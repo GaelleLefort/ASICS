@@ -3,7 +3,7 @@ title: "ASICS User's Guide"
 author: "Gaëlle Lefort, Rémi Sevien, Patrick Tardivel and Nathalie Villa-Vialaneix"
 date: "`r Sys.Date()`"
 output:
-  BiocStyle::html_document2:
+  BiocStyle::html_document:
     toc_float: true
 vignette: |
   %\VignetteIndexEntry{ASICS}
@@ -16,51 +16,62 @@ editor_options:
 
 This user's guide provides an overview of the package `ASICS`. `ASICS` is a 
 fully automated procedure to identify and quantify metabolites in $^1$H 1D-NMR 
-spectra of biological mixtures. It will enable empowering NMR-based metabolomics
-by quickly and accurately helping experts to obtain metabolic profiles. In 
-addition to the quantification method, several functions allowing spectrum 
-preprocessing or statistical analyses of quantified metabolites are available.
+spectra of biological mixtures (Tardivel *et al.*, 2017). It will enable 
+empowering NMR-based metabolomics by quickly and accurately helping experts to 
+obtain metabolic profiles. In addition to the quantification method, several 
+functions allowing spectrum preprocessing or statistical analyses of quantified 
+metabolites are available.
 
 ```{r ASICSload}
 library(ASICS)
+library(ASICSdata)
 ```
 
-TODO: note sur le parallèle
+# Dataset
 
-# Context/Data
+In this user's guide, a subset of the public datasets from Salek *et al.* (2007)
+is used. The experiment has been designed to improve the understanding of early 
+stage of type 2 diabetes mellitus (T2DM) development. 
+In the dataset used, $^1$H-NMR human metabolome was obtained from 25 healthy 
+volunteers and 25 T2DM patients. Raw 1D Bruker spectral data files were found in 
+the MetaboLights database (https://www.ebi.ac.uk/metabolights/, study MTBLS1). 
 
-TODO: voir d'abord si toute l'analyse est faisable sans pb sur ce jeu de données.
+# Parallel environment
 
-Parler aussi de ASICS (reference à l'article). ici ?
+For most of long time functions, a parallel implementation is available for
+unix-like OS using the BiocParallel package of Bioconductor. Parallel 
+environment is switched on/off with the option `parallel` of the relevant 
+functions.
 
 # Library of pure NMR metabolite spectra
 
 An object of class `PureLibrary` with spectra of 180 pure metabolites is 
-required to perform the quantification. These spectra are metabolite spectra used
-as a reference for quantification: only 
-metabolites present in the library object can be quantified with ASICS.
+required to perform the quantification. These spectra are metabolite spectra 
+used as a reference for quantification: only metabolites present in the library 
+object can be quantified with ASICS.
 
-A default library is available and is automatically loaded at package start. Available 
-metabolites are displayed with:
+A default library is available and is automatically loaded at package start. 
+Available metabolites are displayed with:
 ```{r lib}
-head(get_sample_name(pure_library), n = 8)
+head(getSampleName(pure_library), n = 8)
 ```
 
 This library can be complemented or another library can be created with 
 new spectra of pure metabolite. These spectra are imported from Bruker files and
 a new library can be created with:
 ```{r import_create_lib, results='hide'}
-pure_spectra <- import_spectra_bruker(system.file("extdata", "example_library", 
-                                                  package = "ASICS"))
-new_pure_library <- create_pure_library(pure_spectra, 
+pure_spectra <- importSpectraBruker(system.file("extdata", "example_library", 
+                                                package = "ASICS"))
+new_pure_library <- createPureLibrary(pure_spectra, 
                                         nb.protons = c(5, 4, 9, 9))
 ```
 A new library can also be created from txt or csv file, with samples in columns 
-and chemical shifts in rows (see help page of `create_pure_library` function for
+and chemical shifts in rows (see help page of `createPureLibrary` function for
 all details).
 
 
-The newly created library can be used for quantification or merged with another one:
+The newly created library can be used for quantification or merged with another 
+one:
 ```{r select_merge_lib}
 merged_pure_library <- c(pure_library[1:10], new_pure_library)
 ```
@@ -69,57 +80,47 @@ default library and the four newly imported spectra imported.
 
 
 
-# Identification and quantification of metabolites on Bruker files with ASICS
+# Identification and quantification of metabolites with ASICS
 
 First, data are imported in a data frame from Bruker files with the 
 `import_spectra_bruker` function. These spectra are baseline corrected 
 (Wang *et al*, 2013) and normalised by the area under the curve.
 ```{r import_from_Bruker, results='hide'}
-spectra_data <- import_spectra_bruker(system.file("extdata", 
-                                                  "Human_diabetes_example", 
-                                                  package = "ASICS"))
+spectra_data <- importSpectraBruker(system.file("extdata", 
+                                                "Human_diabetes_example", 
+                                                package = "ASICSdata"))
 ```
 
 Data can also be impored from other file types with standard `R` function. 
 The only constraint is to have a data frame with spectra in columns 
-(column names are sample names) and chemical shifts in rows (row names correspond to 
-the ppm grid).
+(column names are sample names) and chemical shifts in rows (row names 
+correspond to the ppm grid).
 ```{r import_from_txt, results='hide'}
-diabetes <- system.file("extdata", "spectra_diabetes_example.txt", package = "ASICS")
+diabetes <- system.file("extdata", "spectra_diabetes_example.txt", 
+                        package = "ASICSdata")
 spectra_data_txt <- read.table(diabetes, header = TRUE, row.names = 1)
 ```
 
 Several functions for the preprocessing of spectra are also available: baseline 
-correction, normalisation by the AUC and alignment (Vu et al., 2011).
+correction, normalisation by the AUC and alignment (Vu et al., 2011). 
+For example, here, spectra are baseline corrected:
 ```{r preprocessing, results='hide'}
-spectra_base_cor <- baseline_correction(spectra_data_txt)
-spectra_align <- alignment(spectra_base_cor)
-spectra_norm <- normalisation(spectra_align)
+spectra_base_cor <- baselineCorrection(spectra_data_txt)
 ```
-Note than a normalisation by the area under the curve is included in the 
-baseline correction and in the alignment functions. Moreover, baseline correction and
-normalisation are also included in the `import_spectra_bruker` function.
-
 
 Finally, from the data frame, a `Spectra` object is created. This is a required 
 step for the quantification.
 ```{r create_spectra, results='hide'}
-spectra_obj <- create_spectra(spectra_align)
+spectra_obj <- createSpectra(spectra_base_cor)
 ```
 
---- ok jusqu'ici
-
-
-Identification and quantification of metabolites can now be carried out using only 
-the function `ASICS`. This function takes approximately 2 minutes by 
-spectrum to run. A parallel implementation is available for unix-like OS, with the number of 
-CPU cores on the current host - 2 is created by default. Parallel environment
-for spectra importation and quantification estimation is switched on/off with
-the option `parallel`.
-```{r ASICS, results='hide', cache = TRUE, dependson='import_from_Bruker'}
+Identification and quantification of metabolites can now be carried out using 
+only the function `ASICS`. This function takes approximately 2 minutes by 
+spectrum to run. 
+```{r ASICS, results='hide', cache=TRUE}
 # part of the spectrum to exclude (water and urea)
 to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2, byrow = TRUE)
-system.time(ASICS_results <- ASICS(spectra_obj[1], exclusion.areas = to_exclude))
+ASICS_results <- ASICS(spectra_obj, exclusion.areas = to_exclude)
 ```
 
 Summary of ASICS results:
@@ -127,66 +128,113 @@ Summary of ASICS results:
 ASICS_results
 ```
 
-
 The quality of the results can be assessed by stacking the original and 
 the reconstructed spectra on one plot. A pure metabolite spectrum can also be 
-added for visual comparison. For example, the first spectrum with Lactate:
+added for visual comparison. For example, the first spectrum with Creatinine:
 ```{r plot_spectrum, warning=FALSE, fig.width=12, fig.height=8}
-plot_spectrum(ASICS_results, idx = 1, xlim = c(1, 1.5), add.metab = "Lactate")
+plot(ASICS_results, idx = 1, xlim = c(2.8, 3.3), add.metab = "Creatinine")
 ```
 
 Relative concentrations of identified metabolites are saved in a data frame
 accessible via the `get_quantification` function:
 ```{r rel_conc}
-head(get_quantification(ASICS_results), 10)[, 1:2]
+head(getQuantification(ASICS_results), 10)[, 1:2]
 ```
 
-# Analysis on quantification (PCA, OPLS/OPLS-DA and tests)
 
 
+# Analysis on relative quantifications
 
-```{r}
+Some analyses functions are available in ASICS package.
+
+First, a design data frame is imported. In this data frame, the first column 
+need to correspond to sample names of all spectra. 
+```{r design}
 design <- read.table(system.file("extdata", "design_diabete_example.txt", 
-                                 package = "ASICS"), header = TRUE)
+                                 package = "ASICSdata"), header = TRUE)
+```
+
+Then, a preprocessing is performed on relative quantification: metabolites with
+more than 75% of null quantification are removed as well as two samples.
+```{r analyses_obj}
+analysis_data <- formatForAnalysis(getQuantification(ASICS_results),
+                                   design = design, zero.threshold = 75,
+                                   zero.group = "condition", 
+                                   outliers = c("ADG10003u_007", 
+                                                "ADG19007u_163"))
+```
+
+To explore results of ASICS quantification, a PCA can be performed on results of
+preprocessing with: 
+```{r pca, fig.width=10}
+resPCA <- pca(analysis_data)
+plot(resPCA, graph = "ind", col.ind = "condition")
+plot(resPCA, graph = "var")
 ```
 
 
+It's also possible to find differences between two conditions with an OPLS-DA 
+(Thevenot *et al*, 2015) or Kruskall-Wallis tests:
+```{r oplsda}
+resOPLSDA <- oplsda(analysis_data, condition = "condition", orthoI = 1)
+resOPLSDA
+```
+
+```{r oplsda_plot, fig.width=10, results='hide'}
+plot(resOPLSDA)
+```
+
+Results of Kruskall-Wallis tests and Benjamini-Hochberg correction:
 ```{r}
-analysis_data <- format_for_analysis(get_quantification(ASICS_results),
-                                     design = design, zero.threshold = 0.5, 
-                                     outliers = c("ADG10003u_007", "ADG19007u_163"))
+resTests <- kruskalWallis(analysis_data, "condition")
+resTests
 ```
 
-
-PCA : 
-```{r, fig.width=10}
-resPCA <- PCA(analysis_data)
-plot_PCA(resPCA, graph = "ind", col.ind = "condition")
-plot_PCA(resPCA, graph = "var")
+```{r test_plot, fig.width=10, fig.height=10, results='hide'}
+plot(resTests)
 ```
 
+# Analysis on buckets
 
-OPLS-DA:
-```{r}
-resOPLSDA <- OPLSDA(analysis_data, condition = "condition")
-plot_OPLSDA(resOPLSDA)
+An analysis on buckets can also be performed. An alignment is required before 
+the spectra bucketing:
+```{r align_and_binning, cache=TRUE, results='hide'}
+spectra_align <- alignment(spectra_data_txt)
+spectra_bucket <- binning(spectra_align)
 ```
 
-Tests:
-```{r}
-kruskal_on_quantification(analysis_data, "condition")
+Then, a `SummarizedExperiment` object is created with the `formatForAnalysis` function as for quantification:
+```{r create_ana_obj}
+analysis_data_bucket <- formatForAnalysis(spectra_bucket, design = design,
+                                          zero.threshold = 75)
 ```
 
+Finally, all analyses can be carried out on this object with the parameter `type.data` equal to `buckets`. 
+For example, the OPLS-DA:
+```{r oplsda_buckets}
+resOPLSDA_buckets <- oplsda(analysis_data_bucket, condition = "condition",
+                            type.data = "buckets")
+resOPLSDA_buckets
+```
+
+Moreover, another plot with the median spectrum and OPLS-DA results can be produced with the option `graph = "buckets"`:
+```{r oplsda_buckets_plot, fig.width=10}
+plot(resOPLSDA_buckets, graph = "buckets")
+```
 
 
 
 # References 
 
-
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer L., Concordet 
 D., Servien R. (2017). ASICS: an automatic method for identification and 
 quantification of metabolites in complex 1D 1H NMR spectra. *Metabolomics*,
 **13**(10): 109. https://doi.org/10.1007/s11306-017-1244-5
+
+Salek, R. M., Maguire, M. L., Bentley, E., Rubtsov, D. V., Hough, T., 
+Cheeseman, M., ... & Connor, S. C. (2007). A metabolomic comparison of urinary 
+changes in type 2 diabetes in mouse, rat, and human. *Physiological genomics*, 
+**29**(2), 99-108.
 
 Wang, K. C., Wang, S. Y., Kuo, C. H., Tseng, Y. J. (2013). Distribution-based 
 classification method for baseline correction of metabolomic 1D proton nuclear 
@@ -197,9 +245,14 @@ F., ... & Laukens, K. (2011). An integrated workflow for robust alignment and
 simplified quantitative analysis of NMR spectrometry data. 
 *BMC bioinformatics*, **12**(1), 405.
 
+Thevenot, E.A., Roux, A., Xu, Y., Ezan, E., Junot, C. 2015. Analysis of the 
+human adult urinary metabolome variations with age, body mass index and gender 
+by implementing a comprehensive workflow for univariate and OPLS statistical 
+analyses. *Journal of Proteome Research*. **14**:3322-3335.
+
 # Session information
 
-This user's guide has been created with the following system configuration
+This user's guide has been created with the following system configuration:
 ```{r sysinfo}
 sessionInfo()
 ```

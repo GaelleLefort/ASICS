@@ -4,7 +4,7 @@
 #' @importFrom speaq findShiftStepFFT
 #' @importFrom plyr laply
 #' @keywords internal
-translate_library <- function(cleaned_spectrum, cleaned_library,
+.translateLibrary <- function(cleaned_spectrum, cleaned_library,
                               mixture_weights, nb_points_shift){
 
   #find best shift with FFT cross-correlation
@@ -27,7 +27,7 @@ translate_library <- function(cleaned_spectrum, cleaned_library,
   #shift library according to FFT cross-correlation
   shifted_library <- cleaned_library
   shifted_library@spectra <-
-    t(laply(as.list(1:ncol(cleaned_library@spectra)),
+    t(laply(as.list(seq_len(ncol(cleaned_library@spectra))),
             function(i)
               spectra_all_shift[(nb_points_shift - which_shift[i] + 1):
                                   (nb_points_shift - which_shift[i] +
@@ -35,7 +35,7 @@ translate_library <- function(cleaned_spectrum, cleaned_library,
 
   #optimal residuals
   residuals_opti <-
-    unlist(lapply(1:length(shifted_library),
+    unlist(lapply(as.list(seq_along(shifted_library)),
                   function(i) sum((lm(cleaned_spectrum@spectra~
                                         shifted_library@spectra[, i] -
                                         1)$residuals) ^ 2)))
@@ -55,40 +55,29 @@ translate_library <- function(cleaned_spectrum, cleaned_library,
 #' @importFrom methods is
 #' @importFrom plyr laply
 #' @keywords internal
-deform_library <- function(cleaned_spectrum, sorted_library,
+.deformLibrary <- function(cleaned_spectrum, sorted_library,
                            mixture_weights, nb_points_shift,
                            max.shift, shift){
 
   #Shifted library
   deformed_library <- sorted_library
 
-  #Algorithm parameters
-  nb_iter_by_library <- 1
-
-  nb_iter_lib <- 0
-
-  while(nb_iter_lib < nb_iter_by_library){
-    #Linear regression between mixture and each pure spectra
-    least_square <- try(lm_constrained(as.numeric(cleaned_spectrum@spectra),
-                                       deformed_library@spectra,
-                                       mixture_weights), silent = TRUE)
-
-    if(is(least_square, "try-error")){
-      least_square <- lm_constrained(as.numeric(cleaned_spectrum@spectra),
+  #Linear regression between mixture and each pure spectra
+  least_square <- try(.lmConstrained(as.numeric(cleaned_spectrum@spectra),
                                      deformed_library@spectra,
-                                     mixture_weights, 10e-3)
-    }
+                                     mixture_weights), silent = TRUE)
 
-    #Deform each spectrum
-    deformed_library@spectra <-
-      t(laply(as.list(1:length(deformed_library)),
-              deform_spectra, deformed_library, least_square,
-              mixture_weights, nb_points_shift, max.shift, shift))
-
-    nb_iter_lib <- nb_iter_lib + 1
-
+  if(is(least_square, "try-error")){
+    least_square <- .lmConstrained(as.numeric(cleaned_spectrum@spectra),
+                                   deformed_library@spectra,
+                                   mixture_weights, 10e-3)
   }
 
+  #Deform each spectrum
+  deformed_library@spectra <-
+    t(laply(as.list(seq_along(deformed_library)),
+            .deformSpectra, deformed_library, least_square,
+            mixture_weights, nb_points_shift, max.shift, shift))
 
   return(deformed_library)
 }
@@ -97,9 +86,8 @@ deform_library <- function(cleaned_spectrum, sorted_library,
 
 
 ## Deforme each peak of a pure spectrum to align it on the complex mixture
-deform_spectra <- function(idx_to_deform, pure_lib, least_square,
+.deformSpectra <- function(idx_to_deform, pure_lib, least_square,
                            mixture_weights, nb_points_shift, max.shift, shift) {
-
 
   #Algorithm parameters
   peak_threshold <- 1
@@ -118,7 +106,9 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
   max_extremities <- signal_peak_lib[!((signal_peak_lib + 1) %in%
                                          signal_peak_lib)] +
     floor(nb_points_shift / 10)
-  peaks_extremities <- cbind(min_extremities, max_extremities)
+  peaks_extremities <- cbind(sapply(min_extremities, max, 1),
+                             sapply(max_extremities, min,
+                                    length(pure_lib@ppm.grid)))
 
   #Remove overlapping
   long_signal <- unique(unlist(apply(peaks_extremities, 1,
@@ -129,7 +119,7 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
   peaks_extremities <- cbind(min_extremities, max_extremities)
 
   #Deform on each connected component
-  for(peak in 1:nrow(peaks_extremities)){
+  for(peak in seq_len(nrow(peaks_extremities))){
 
     #area of peak to deforme
     peak_area <- peaks_extremities[peak, 1]:peaks_extremities[peak, 2]
@@ -160,8 +150,8 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
       for(a in range_a){
         #for a shift of a:
-        deformed_spectrum_small <- deforme(grid_to_deform, to_deform, a)
-        deformed_grid <- phi(grid_to_deform, a)
+        deformed_spectrum_small <- .deforme(grid_to_deform, to_deform, a)
+        deformed_grid <- .phi(grid_to_deform, a)
 
         new_opti <- abs(sum(deformed_spectrum_small * residuals_without_idx *
                               mixture_weights[peak_area]) /
@@ -182,7 +172,7 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
   #Normalize deformed spectrum
   pure_lib@spectra[, idx_to_deform] <- pure_lib@spectra[, idx_to_deform] /
-    AUC(pure_lib@ppm.grid, pure_lib@spectra[, idx_to_deform])
+    .AUC(pure_lib@ppm.grid, pure_lib@spectra[, idx_to_deform])
 
 
 
@@ -192,13 +182,13 @@ deform_spectra <- function(idx_to_deform, pure_lib, least_square,
 
 ## Deforme grid x with parameter a and compute new spectrum on deformed grid
 #(y = old spectrum)
-deforme <- function(x, y, a) {
-  phix <- phi(x, a)
-  return(change_grid(y, x, phix))
+.deforme <- function(x, y, a) {
+  phix <- .phi(x, a)
+  return(.changeGrid(y, x, phix))
 }
 
 ## Deforme grid x with parameter a
-phi <- function(x, a) {
+.phi <- function(x, a) {
   # Put the old grid on [0,1]
   u <- min(x)
   v <- max(x) - min(x)

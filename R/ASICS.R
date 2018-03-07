@@ -4,26 +4,28 @@
 #' pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 #'
 #' @param spectra_obj an object of class \linkS4class{Spectra} obtained with the
-#' function \link{preprocessing_spectra}
-#' @param exclusion.areas definition domain of spectra to exclude (ppm)
-#' @param max.shift maximum chemical shift allowed (in ppm)
+#' function \link{createSpectra}
+#' @param exclusion.areas definition domain of spectra to exclude (ppm).
+#' By default, only the water region (4.5-5.1 ppm).
+#' @param max.shift maximum chemical shift allowed (in ppm). Default to 0.02.
 #' @param pure.library an object of class \linkS4class{PureLibrary} containing
 #' the references (pure metabolite spectra). If \code{NULL}, the library
 #' included in the package is used
-#' @param threshold.noise threshold for signal noise
+#' @param threshold.noise threshold for signal noise. Default to 0.02.
 #' @param seed random seed to control randomness in the algorithm (used in the
 #' estimation of significativity of a given metabolite concentration)
 #' @param parallel if \code{TRUE}, apply function in parallel. Default to
 #' \code{TRUE}.
 #'
-#' @return An object of type \code{\link{ASICSResults}}.
+#' @return An object of type \linkS4class{ASICSResults} containing the
+#' quantification results.
 #'
 #' @importFrom BiocParallel bplapply MulticoreParam
 #' @importFrom stats reshape
 #' @export
 #'
-#' @seealso \code{\link{resASICS-class}} \code{\link{ASICS_multiFiles}}
-#' \code{\link{pure_library}}
+#' @seealso \linkS4class{ASICSResults} \code{\link{pure_library}}
+#' \code{\link{createSpectra}}
 #'
 #' @references Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer
 #' L., Concordet D., Servien R. (2017). ASICS: an automatic method for
@@ -31,7 +33,15 @@
 #' spectra. \emph{Metabolomics}, \strong{13}(10): 109.
 #' \url{https://doi.org/10.1007/s11306-017-1244-5}
 #'
-
+#' @examples
+#' # Import data and create object
+#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' spectra_data <- importSpectraBruker(current_path)
+#' spectra_obj <- createSpectra(spectra_data)
+#'
+#' # Estimation of relative quantification
+#' to_exlude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2)
+#' resASICS <- ASICS(spectra_obj, exclusion.areas = to_exlude)
 ASICS <- function(spectra_obj,
                   exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, pure.library = NULL,
@@ -67,7 +77,7 @@ ASICS <- function(spectra_obj,
   list_spec <- lapply(seq_along(spectra_obj), function(x) spectra_obj[x])
 
   res_estimation_list <- bplapply(list_spec,
-                          ASICS.internal, exclusion.areas, max.shift,
+                          .ASICSInternal, exclusion.areas, max.shift,
                           pure.library, threshold.noise, seed,
                           BPPARAM = MulticoreParam(workers = ncores,
                                                    progressbar = TRUE,
@@ -81,7 +91,7 @@ ASICS <- function(spectra_obj,
 
 
 #' @importFrom methods new
-ASICS.internal <- function(spectrum_obj,
+.ASICSInternal <- function(spectrum_obj,
                            exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                            max.shift = 0.02, pure.library = NULL,
                            threshold.noise = 0.02, seed = 1234){
@@ -91,7 +101,7 @@ ASICS.internal <- function(spectrum_obj,
 
   #-----------------------------------------------------------------------------
   #### Remove areas from spectrum and library ####
-  cleaned_obj <- remove_areas(spectrum_obj, exclusion.areas = exclusion.areas,
+  cleaned_obj <- .removeAreas(spectrum_obj, exclusion.areas = exclusion.areas,
                               pure.library = pure.library)
 
   cleaned_spectrum <- cleaned_obj$cleaned_spectrum
@@ -103,7 +113,7 @@ ASICS.internal <- function(spectrum_obj,
 
   #-----------------------------------------------------------------------------
   #### Cleaning step: remove metabolites that cannot belong to the mixture ####
-  cleaned_library <- clean_library(cleaned_spectrum, cleaned_library,
+  cleaned_library <- .cleanLibrary(cleaned_spectrum, cleaned_library,
                                    threshold.noise, nb_points_shift)
 
   #-----------------------------------------------------------------------------
@@ -116,7 +126,7 @@ ASICS.internal <- function(spectrum_obj,
   noises <- abs(cleaned_spectrum@spectra) * s1 ^ 2 + s2 ^ 2
   mixture_weights <- as.numeric(1 / noises)
 
-  res_translation <- translate_library(cleaned_spectrum, cleaned_library,
+  res_translation <- .translateLibrary(cleaned_spectrum, cleaned_library,
                                        mixture_weights, nb_points_shift)
 
   sorted_library <- res_translation$sorted_library
@@ -124,13 +134,13 @@ ASICS.internal <- function(spectrum_obj,
 
   #-----------------------------------------------------------------------------
   #### Localized deformations of pure spectra ####
-  deformed_library <- deform_library(cleaned_spectrum, sorted_library,
+  deformed_library <- .deformLibrary(cleaned_spectrum, sorted_library,
                                      mixture_weights, nb_points_shift,
                                      max.shift, shift)
 
   #-----------------------------------------------------------------------------
   #### Threshold and concentration optimisation for each metabolites ####
-  res_opti <- concentration_opti(cleaned_spectrum, deformed_library,
+  res_opti <- .concentrationOpti(cleaned_spectrum, deformed_library,
                                  noises, mixture_weights)
   final_library <- res_opti$final_library
 
@@ -158,10 +168,11 @@ ASICS.internal <- function(spectrum_obj,
   temp_df <- as.data.frame(pure_lib_final_sorted@spectra)
   rownames(temp_df) <- pure_lib_final_sorted@ppm.grid
   colnames(temp_df) <- pure_lib_final_sorted@sample.name
-  pure_lib_format <- reshape(temp_df, idvar = "ppm_grid", ids = row.names(temp_df),
-                             times = names(temp_df), timevar = "metabolite_name",
-                             varying = list(names(temp_df)), direction = "long",
-                             v.names = "intensity")
+  pure_lib_format <-
+    reshape(temp_df, idvar = "ppm_grid", ids = row.names(temp_df),
+            times = names(temp_df), timevar = "metabolite_name",
+            varying = list(names(temp_df)), direction = "long",
+            v.names = "intensity")
   rownames(pure_lib_format) <- NULL
   pure_lib_format <- pure_lib_format[pure_lib_format$intensity != 0, ]
   pure_lib_format <- cbind(sample = rep(spectrum_obj@sample.name,
@@ -170,8 +181,8 @@ ASICS.internal <- function(spectrum_obj,
 
   #List to return
   res_object <- new(Class = "ASICSResults",
-                    sample.name = spectrum_obj@sample.name,
-                    ppm.grid = spectrum_obj@ppm.grid,
+                    sample.name = cleaned_spectrum@sample.name,
+                    ppm.grid = cleaned_spectrum@ppm.grid,
                     spectra = cleaned_spectrum@spectra,
                     recomposed.spectra = est_mixture,
                     quantification = present_metab,

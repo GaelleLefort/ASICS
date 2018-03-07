@@ -3,81 +3,13 @@
 \docType{class}
 \name{Spectra-class}
 \alias{Spectra-class}
-\alias{get_sample_name,Spectra-method}
-\alias{get_ppm_grid,Spectra-method}
-\alias{get_spectra,Spectra-method}
-\alias{show,Spectra-method}
-\alias{show.Spectra}
-\alias{summary,Spectra-method}
-\alias{summary.Spectra}
-\alias{[,Spectra,ANY,ANY,ANY-method}
-\alias{[.Spectra}
-\alias{length,Spectra-method}
-\alias{length.Spectra}
-\alias{c,Spectra-method}
-\alias{c.Spectra}
-\alias{plot,Spectra,ANY-method}
-\alias{plot.Spectra}
-\title{Class \code{Spectra}}
-\usage{
-\S4method{get_sample_name}{Spectra}(object)
-
-\S4method{get_ppm_grid}{Spectra}(object)
-
-\S4method{get_spectra}{Spectra}(object)
-
-\S4method{show}{Spectra}(object)
-
-\S4method{summary}{Spectra}(object)
-
-\S4method{[}{Spectra,ANY,ANY,ANY}(x, i)
-
-\S4method{length}{Spectra}(x)
-
-\S4method{c}{Spectra}(x, ...)
-
-\S4method{plot}{Spectra,ANY}(x, y, xlim = c(0.5, 10), ylim = NULL, ...)
-}
-\arguments{
-\item{object}{an object of class \code{Spectra}}
-
-\item{x}{an object of class \code{Spectra}}
-
-\item{i}{indices specifying elements to extract}
-
-\item{...}{currently not used}
-
-\item{y}{currently not used}
-
-\item{xlim, ylim}{boundaries for x and y, respectively}
-}
+\title{Class \linkS4class{Spectra}}
 \description{
-Objects of class \code{Spectra} represent a set of NMR spectra of one study.
+Objects of class \linkS4class{Spectra} represent a set of NMR spectra of
+one study.
 It contains preprocessed spectra and can be created with the function
-\code{\link{create_spectra}}.
+\code{\link{createSpectra}}.
 }
-\section{Methods (by generic)}{
-\itemize{
-\item \code{get_sample_name}: extract sample names of the \code{Spectra} object.
-
-\item \code{get_ppm_grid}: extract p.p.m grid of the \code{Spectra} object.
-
-\item \code{get_spectra}: extract spectra matrix of the \code{Spectra} object.
-
-\item \code{show}: show a summary of the \code{Spectra} object.
-
-\item \code{summary}: show a summary of the \code{Spectra} object.
-
-\item \code{[}: extract some samples from a \code{Spectra} object.
-
-\item \code{length}: number of samples in a \code{Spectra} object.
-
-\item \code{c}: combine \code{Spectra} objects.
-
-\item \code{plot}: plot all spectra (or a subset) on the same figure.
-Legend only appears if there is less than ten spectra to plot.
-}}
-
 \section{Slots}{
 
 \describe{
@@ -90,4 +22,19 @@ spectra (in ppm).}
 the same order as for \code{sample.name} and rows correspond to points of
 \code{ppm.grid}.}
 }}
+
+\section{Methods}{
+
+  Multiple methods can be applied on \linkS4class{Spectra} objects.
+  \itemize{
+    \item As usual for S4 object, show and summary methods are available, see
+    \link[=summary-methods]{Object summary}
+    \item All slots have an accessor \code{get_slot name}, see
+    \link[=accessors-methods]{Accessors}
+    \item Two objects can be combine or a subset can be extract, see
+    \link[=combineAndSubset-methods]{Combine and subset methods}
+    \item All spectra contained in an object can be represent in a plot, see
+    \link[=visualization-methods-spectra]{Visualization methods}
+  }
+}
 
