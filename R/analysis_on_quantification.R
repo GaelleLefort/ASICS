@@ -1,9 +1,9 @@
 #' Format data for analysis
 #'
-#' Create an useful object for analysis with omics data and informations
-#' about the omics (metabolites/buckets...) and study design.
+#' Create an useful object for analysis with the omics dataset, informations
+#' (metabolites/buckets...) and study design.
 #'
-#' @param data a data frame contaning omics data with samples in columns and
+#' @param data a data frame contaning omics dataset with samples in columns and
 #' features of interest in rows (metabolites/buckets...).
 #' @param design a data frame describing the colums of \code{data} with at
 #' least two columns and the first one corresponding to colnames of \code{data}.
@@ -106,14 +106,14 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
 }
 
 
-#' Principal Component Analysis (PCA) on \code{\link{SummarizedExperiment}}
+#' Principal Component Analysis (PCA) on a \code{\link{SummarizedExperiment}}
 #' object
 #'
 #' Perform a PCA with the function of \code{\link{ropls}} package on a
-#' \code{\link{SummarizedExperiment}} object obtains with the
+#' \code{\link{SummarizedExperiment}} object obtained with the
 #' \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtains with
+#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained with
 #' the \code{\link{formatForAnalysis}} function.
 #' @param scale.unit if \code{TRUE}, data are centered and scaled to unit
 #' variance
@@ -355,13 +355,13 @@ pca <- function(analysis_data, scale.unit = TRUE,
 }
 
 #' Orthogonal projections to latent structures discriminant analysis (OPLS-DA)
-#' on \code{\link{SummarizedExperiment}} object
+#' on a \code{\link{SummarizedExperiment}} object
 #'
-#' Perform an OPLS-DA with the function of \code{\link{ropls}} package on a
-#' \code{\link{SummarizedExperiment}} object obtains with the
+#' Perform an OPLS-DA with the function of the \code{\link{ropls}} package on a
+#' \code{\link{SummarizedExperiment}} object obtained with the
 #' \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtains with
+#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained with
 #' the \code{\link{formatForAnalysis}} function.
 #' @param condition the name of the design variable (two level factor)
 #' specifying the response to be modelled.
@@ -373,7 +373,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @param orthoI parameter of the \code{\link{opls}} function (package
 #' \code{\link{ropls}}) specifying the number of orthogonal components ; when
 #' set to NA, OPLS is performed and the number of orthogonal components is
-#' automatically computed by using the cross-validation (with a maximum of 9
+#' automatically computed by using cross-validation (with a maximum of 9
 #' orthogonal components). Default to \code{NA}.
 #' @param type.data type of data used for the analyses (\emph{e. g.}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
@@ -584,12 +584,12 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 
 
 
-#' Kruskal-Wallis rank sum test on \code{\link{SummarizedExperiment}} object
+#' Kruskal-Wallis rank sum test on a \code{\link{SummarizedExperiment}} object
 #'
 #' Perform a Kruskal-Wallis test on a \code{\link{SummarizedExperiment}} object
-#' obtains with the \code{\link{formatForAnalysis}} function
+#' obtained with the \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtains with
+#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained with
 #' the \code{\link{formatForAnalysis}} function.
 #' @param condition the name of the design variable (two level factor)
 #' specifying the group of each sample.

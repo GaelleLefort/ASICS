@@ -1,8 +1,8 @@
 #' Import from Bruker files
 #'
 #' Import spectra from Bruker files contained in a single folder. This folder
-#' contains subfolders for each sample. Spectra are baseline corrected
-#' (optionnal) and normalized by the area under the curve.
+#' contains one subfolder for each sample. Spectra are baseline corrected
+#' (optionnal) and normalised by the area under the curve.
 #'
 #' @param name.dir Path of the folder containing one subfolder by sample. Each
 #' subfolder contains Bruker files.
@@ -12,7 +12,7 @@
 #' @param baseline.correction If \code{TRUE} apply a baseline correction for
 #' each spectrum (Wang et al (2013)). Default to \code{TRUE}.
 #' @param ppm.grid Numeric vector of a unique grid (definition domain) for all
-#' spectra (in ppm). Default to \code{NULL} (grid of default pure library is
+#' spectra (in ppm). Default to \code{NULL} (grid of default of the pure library is
 #' used).
 #' @param sample.names Character vector of sample names. Default to \code{NULL}
 #' (folder names are used).
@@ -236,7 +236,7 @@ normalisation <- function(spectra){
 
 #' Baseline correction
 #'
-#' Apply a baseline correction to a data frame of spectra with the algorithm
+#' Apply a baseline correction to a spectra with the algorithm
 #' described in Wang et al. (2013).
 #'
 #' @param spectra Data frame with spectra in columns and chemical shift in rows.
@@ -328,8 +328,8 @@ baselineCorrection <- function(spectra, parallel = TRUE){
 #' to chemical shift grid (in p.p.m).
 #' @param baseline.threshold Value of baseline threshold used to identify peaks.
 #' Default to 0.02.
-#' @param reference Index of reference spectra. Default to \code{NULL},
-#' \emph{i.e.} reference spectrum is detect automatically with the
+#' @param reference Index of the reference spectrum used for the alignment. Default to \code{NULL},
+#' \emph{i.e.} the reference spectrum is detected automatically with the
 #' \code{findRef} function of package \code{speaq}
 #' @param max.shift Maximum shift allowed for the alignment. Default to 0.002.
 #'
@@ -391,14 +391,14 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
 
 #' Create a pure library
 #'
-#' Create a new pure library from a data frame containing spectra. Noise is
+#' Create a new pure library from a data frame containing different spectra of pure metabolites. The noise is
 #' removed by thresholding each spectrum.
 #'
 #' @param spectra Data frame with spectra in column and chemical shift in row.
 #' Colnames of this data frame correspond to pure metabolite names and rownames
 #' to chemical shift grid (in p.p.m).
 #' @param nb.protons Numeric vector of the number of protons of each pure
-#' metabolite spectra contained in \code{spectra} data frame.
+#' metabolite spectrum contained in \code{spectra} data frame.
 #' @param threshold Numeric value below which pure spectrum values are
 #' considered null. Default to 1.
 #' @return A \linkS4class{PureLibrary} object with the newly created library.
@@ -470,7 +470,7 @@ createSpectra <- function(spectra){
 
 #' Binning/Bucketing of NMR spectra
 #'
-#' Apply a binning function on a data frame of spectra.
+#' Apply a binning function on a spectra.
 #'
 #' @param spectra Data frame with spectra in columns and chemical shift in rows.
 #' Colnames of this data frame correspond to pure metabolite names and rownames
