@@ -20,7 +20,7 @@
 #' @return An object of type \linkS4class{ASICSResults} containing the
 #' quantification results.
 #'
-#' @importFrom BiocParallel bplapply MulticoreParam
+#' @importFrom BiocParallel bplapply MulticoreParam SnowParam snowWorkers
 #' @importFrom stats reshape
 #' @export
 #'
@@ -68,7 +68,17 @@ ASICS <- function(spectra_obj,
 
   # number of cores
   if (parallel) {
-    ncores <- multicoreWorkers()
+    if (.Platform$OS.type == "windows") {
+      ncores <- multicoreWorkers()
+      para_param <- MulticoreParam(workers = ncores,
+                                   progressbar = TRUE,
+                                   tasks = length(spectra_obj))
+    } else {
+      ncores <- snowWorkers()
+      para_param <- SnowParam(workers = ncores,
+                              progressbar = TRUE,
+                              tasks = length(spectra_obj))
+    }
   } else {
     ncores <- 1
   }
@@ -79,9 +89,7 @@ ASICS <- function(spectra_obj,
   res_estimation_list <- bplapply(list_spec,
                           .ASICSInternal, exclusion.areas, max.shift,
                           pure.library, threshold.noise, seed,
-                          BPPARAM = MulticoreParam(workers = ncores,
-                                                   progressbar = TRUE,
-                                                   tasks = length(spectra_obj)))
+                          BPPARAM = para_param)
 
   res_estimation <- do.call(c, res_estimation_list)
 
