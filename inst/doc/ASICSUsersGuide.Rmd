@@ -1,6 +1,6 @@
 ---
 title: "ASICS User's Guide"
-author: "Gaëlle Lefort, Rémi Sevien, Patrick Tardivel and Nathalie Villa-Vialaneix"
+author: "Gaëlle Lefort, Rémi Servien, Patrick Tardivel and Nathalie Villa-Vialaneix"
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
@@ -43,11 +43,11 @@ unix-like OS using the BiocParallel package of Bioconductor. Parallel
 environment is switched on/off with the option `parallel` of the relevant 
 functions.
 
-# Library of pure NMR metabolite spectra
+# Library of pure NMR metabolite spectrum
 
 An object of class `PureLibrary` with spectra of 180 pure metabolites is 
 required to perform the quantification. These spectra are metabolite spectra 
-used as a reference for quantification: only metabolites present in the library 
+used as references for quantification: only metabolites that are present in the library 
 object can be quantified with ASICS.
 
 A default library is available and is automatically loaded at package start. 
@@ -91,7 +91,7 @@ spectra_data <- importSpectraBruker(system.file("extdata",
                                                 package = "ASICSdata"))
 ```
 
-Data can also be impored from other file types with standard `R` function. 
+Data can also be imported from other file types with standard `R` function. 
 The only constraint is to have a data frame with spectra in columns 
 (column names are sample names) and chemical shifts in rows (row names 
 correspond to the ppm grid).
@@ -102,7 +102,7 @@ spectra_data_txt <- read.table(diabetes, header = TRUE, row.names = 1)
 ```
 
 Several functions for the preprocessing of spectra are also available: baseline 
-correction, normalisation by the AUC and alignment (Vu et al., 2011). 
+correction, normalisation by the AUC and alignment on a reference spectrum (Vu et al., 2011). 
 For example, here, spectra are baseline corrected:
 ```{r preprocessing, results='hide'}
 spectra_base_cor <- baselineCorrection(spectra_data_txt)

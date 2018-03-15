@@ -40,8 +40,8 @@
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Estimation of relative quantification
-#' to_exlude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2)
-#' resASICS <- ASICS(spectra_obj, exclusion.areas = to_exlude)
+#' to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2)
+#' resASICS <- ASICS(spectra_obj, exclusion.areas = to_exclude)
 ASICS <- function(spectra_obj,
                   exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, pure.library = NULL,

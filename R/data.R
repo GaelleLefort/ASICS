@@ -3,7 +3,7 @@
 #' The 1D 1H NMR spectra of 180 reference compounds were collected to build the
 #' spectral library. These compounds have been prepared and recorded using a
 #' Bruker Avance III HD spectrometer in the MetaToul - AXIOM Site at Toulouse
-#' (France).
+#' (France). For more details on the preparation please see Tardivel et al. (2017).
 #'
 #' @name pure_library
 #'
