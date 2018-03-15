@@ -625,11 +625,18 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 #' @importFrom SummarizedExperiment colData colData<-
 #' @export
 kruskalWallis <- function(analysis_data, condition,
-                          correction = "BH", alpha = 0.05,
-                          type.data = "quantifications"){
+                          correction = c("BH", "bonferroni", "BY", "fdr",
+                                         "holm", "hochberg", "hommel"),
+                          alpha = 0.05, type.data = "quantifications"){
 
   if (!(condition %in% names(colData(analysis_data)))) {
     stop("'condition' need to be a variable name of design data frame")
+  }
+
+  correction <- try(match.arg(correction), silent = TRUE)
+  if(is(correction, "try-error")) {
+    stop(paste("'correction' should be one of 'BH', 'bonferroni', 'BY', 'fdr',",
+               "'holm', 'hochberg', 'hommel'"))
   }
 
   kruskal_pval <-

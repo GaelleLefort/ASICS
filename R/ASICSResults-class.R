@@ -201,35 +201,3 @@ setMethod(
 )
 
 
-
-#### Other methods
-
-# setGeneric("ASICSDiagnosis",
-#            function(object) standardGeneric("ASICSDiagnosis")
-# )
-
-# #' @aliases ASICSDiagnosis.ASICSResults
-# #' @export
-# setMethod(
-#   f = "ASICSDiagnosis",
-#   signature = "ASICSResults",
-#   definition = function(object) {
-#     # EQM <- colSums((object@spectra - object@recomposed.spectra)^2)
-#     #
-#     #
-#     # return(EQM)
-#   }
-# )
-
-
-
-
-
-
-
-
-
-
-
-
-

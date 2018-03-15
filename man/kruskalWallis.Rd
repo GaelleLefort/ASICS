@@ -4,7 +4,8 @@
 \alias{kruskalWallis}
 \title{Kruskal-Wallis rank sum test on \code{\link{SummarizedExperiment}} object}
 \usage{
-kruskalWallis(analysis_data, condition, correction = "BH", alpha = 0.05,
+kruskalWallis(analysis_data, condition, correction = c("BH", "bonferroni",
+  "BY", "fdr", "holm", "hochberg", "hommel"), alpha = 0.05,
   type.data = "quantifications")
 }
 \arguments{
