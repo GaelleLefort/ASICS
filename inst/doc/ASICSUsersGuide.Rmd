@@ -145,17 +145,18 @@ head(getQuantification(ASICS_results), 10)[, 1:2]
 
 # Analysis on relative quantifications
 
-Some analyses functions are available in ASICS package.
+Some analysis functions are available in ASICS package.
 
 First, a design data frame is imported. In this data frame, the first column 
-need to correspond to sample names of all spectra. 
+needs to correspond to sample names of all spectra. 
 ```{r design}
 design <- read.table(system.file("extdata", "design_diabete_example.txt", 
                                  package = "ASICSdata"), header = TRUE)
 ```
 
-Then, a preprocessing is performed on relative quantification: metabolites with
-more than 75% of null quantification are removed as well as two samples.
+Then, a preprocessing is performed on relative quantifications: metabolites with
+more than 75% of null quantifications are removed as well as two samples that 
+are considered as outliers.
 ```{r analyses_obj}
 analysis_data <- formatForAnalysis(getQuantification(ASICS_results),
                                    design = design, zero.threshold = 75,
@@ -173,8 +174,8 @@ plot(resPCA, graph = "var")
 ```
 
 
-It's also possible to find differences between two conditions with an OPLS-DA 
-(Thevenot *et al*, 2015) or Kruskall-Wallis tests:
+It is also possible to find differences between two conditions with an OPLS-DA 
+(Thevenot *et al*, 2015) or with Kruskall-Wallis tests:
 ```{r oplsda}
 resOPLSDA <- oplsda(analysis_data, condition = "condition", orthoI = 1)
 resOPLSDA
@@ -185,7 +186,7 @@ plot(resOPLSDA)
 ```
 
 Results of Kruskall-Wallis tests and Benjamini-Hochberg correction:
-```{r}
+```{r perform_tests}
 resTests <- kruskalWallis(analysis_data, "condition")
 resTests
 ```
@@ -197,27 +198,29 @@ plot(resTests)
 # Analysis on buckets
 
 An analysis on buckets can also be performed. An alignment is required before 
-the spectra bucketing:
+the spectrum bucketing:
 ```{r align_and_binning, cache=TRUE, results='hide'}
 spectra_align <- alignment(spectra_data_txt)
 spectra_bucket <- binning(spectra_align)
 ```
 
-Then, a `SummarizedExperiment` object is created with the `formatForAnalysis` function as for quantification:
+Then, a `SummarizedExperiment` object is created with the `formatForAnalysis` 
+function as for quantification:
 ```{r create_ana_obj}
 analysis_data_bucket <- formatForAnalysis(spectra_bucket, design = design,
                                           zero.threshold = 75)
 ```
 
-Finally, all analyses can be carried out on this object with the parameter `type.data` equal to `buckets`. 
-For example, the OPLS-DA:
+Finally, all analyses can be carried out on this object with the parameter 
+`type.data` set to `buckets`. For example, the OPLS-DA is performed with:
 ```{r oplsda_buckets}
 resOPLSDA_buckets <- oplsda(analysis_data_bucket, condition = "condition",
                             type.data = "buckets")
 resOPLSDA_buckets
 ```
 
-Moreover, another plot with the median spectrum and OPLS-DA results can be produced with the option `graph = "buckets"`:
+Moreover, another plot with the median spectrum and OPLS-DA results can be 
+produced with the option `graph = "buckets"`:
 ```{r oplsda_buckets_plot, fig.width=10}
 plot(resOPLSDA_buckets, graph = "buckets")
 ```
@@ -229,7 +232,7 @@ plot(resOPLSDA_buckets, graph = "buckets")
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer L., Concordet 
 D., Servien R. (2017). ASICS: an automatic method for identification and 
 quantification of metabolites in complex 1D 1H NMR spectra. *Metabolomics*,
-**13**(10): 109. https://doi.org/10.1007/s11306-017-1244-5
+**13**(10), 109. https://doi.org/10.1007/s11306-017-1244-5
 
 Salek, R. M., Maguire, M. L., Bentley, E., Rubtsov, D. V., Hough, T., 
 Cheeseman, M., ... & Connor, S. C. (2007). A metabolomic comparison of urinary 
@@ -248,7 +251,7 @@ simplified quantitative analysis of NMR spectrometry data.
 Thevenot, E.A., Roux, A., Xu, Y., Ezan, E., Junot, C. 2015. Analysis of the 
 human adult urinary metabolome variations with age, body mass index and gender 
 by implementing a comprehensive workflow for univariate and OPLS statistical 
-analyses. *Journal of Proteome Research*. **14**:3322-3335.
+analyses. *Journal of Proteome Research*. **14**, 3322-3335.
 
 # Session information
 
