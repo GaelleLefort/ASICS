@@ -7,24 +7,22 @@
 baselineCorrection(spectra, parallel = TRUE)
 }
 \arguments{
-\item{spectra}{Data frame with spectra in columns and chemical shift in rows.
-Colnames of this data frame correspond to pure metabolite names and rownames
-to chemical shift grid (in p.p.m).}
+\item{spectra}{Data frame with spectra in columns and chemical shifts in 
+rows. Colnames of this data frame correspond to pure metabolite names and 
+rownames to chemical shift grid (in p.p.m).}
 
-\item{parallel}{If \code{TRUE}, apply function in parallel. Default to
-\code{TRUE}.}
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel. 
+Default to \code{TRUE}.}
 }
 \value{
 A data frame with baseline corrected spectra in columns and chemical
 shifts (in p.p.m.) in rows.
 }
 \description{
-Apply a baseline correction to a data frame of spectra with the algorithm
-described in Wang et al. (2013).
+Apply a baseline correction to a spectra with the algorithm described in 
+Wang et al. (2013).
 }
 \examples{
-current_path <- file.path(system.file("extdata", package = "ASICS"),
-                          "spectra_example.txt")
 spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
 spectra_base_cor <- baselineCorrection(spectra_data)
 }

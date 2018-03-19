@@ -2,7 +2,7 @@
 % Please edit documentation in R/load_data.R
 \name{importSpectraBruker}
 \alias{importSpectraBruker}
-\title{Import from Bruker files}
+\title{Import metabolomic spectra from Bruker files}
 \usage{
 importSpectraBruker(name.dir, which.spectra = "last",
   baseline.correction = TRUE, ppm.grid = NULL, sample.names = NULL,
@@ -10,24 +10,24 @@ importSpectraBruker(name.dir, which.spectra = "last",
 }
 \arguments{
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each
-subfolder contains Bruker files.}
+subfolder contains the Bruker files of this sample.}
 
-\item{which.spectra}{If more than one spectra by sample, spectra to import
-(either \code{"first"}, \code{"last"} or its number). Default to
-\code{"last"}.}
+\item{which.spectra}{If there is more than one spectrum by sample, number of 
+the spectrum to import (either \code{"first"}, \code{"last"} or its number). 
+Default to \code{"last"}.}
 
-\item{baseline.correction}{If \code{TRUE} apply a baseline correction for
-each spectrum (Wang et al (2013)). Default to \code{TRUE}.}
+\item{baseline.correction}{Logical. If \code{TRUE} a baseline correction is
+applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.}
 
 \item{ppm.grid}{Numeric vector of a unique grid (definition domain) for all
-spectra (in ppm). Default to \code{NULL} (grid of default pure library is
-used).}
+spectra (in ppm). Default to \code{NULL} (in which case, the default grid of 
+the pure library is used).}
 
 \item{sample.names}{Character vector of sample names. Default to \code{NULL}
-(folder names are used).}
+(in which case, folder names are used).}
 
-\item{parallel}{If \code{TRUE}, apply function in parallel. Default to
-\code{TRUE}.}
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel. 
+Default to \code{TRUE}.}
 }
 \value{
 A data frame with spectra in columns and chemical shifts (in p.p.m.)
@@ -35,8 +35,8 @@ in rows.
 }
 \description{
 Import spectra from Bruker files contained in a single folder. This folder
-contains subfolders for each sample. Spectra are baseline corrected
-(optionnal) and normalized by the area under the curve.
+contains one subfolder for each sample. Spectra are baseline corrected
+(optional) and normalised by the area under the curve.
 }
 \examples{
 current_path <- system.file("extdata", "example_spectra", package = "ASICS")

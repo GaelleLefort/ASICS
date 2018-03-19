@@ -15,9 +15,10 @@ to chemical shift grid (in p.p.m).}
 \item{baseline.threshold}{Value of baseline threshold used to identify peaks.
 Default to 0.02.}
 
-\item{reference}{Index of reference spectra. Default to \code{NULL},
-\emph{i.e.} reference spectrum is detect automatically with the
-\code{findRef} function of package \code{speaq}}
+\item{reference}{Index of the reference spectrum used for the alignment. 
+Default to \code{NULL}, \emph{i.e.} the reference spectrum is automatically 
+detected with the \code{\link[spea]{findRef}} function of the \code{speaq}
+package.}
 
 \item{max.shift}{Maximum shift allowed for the alignment. Default to 0.002.}
 }
@@ -38,5 +39,5 @@ spectra_base_cor <- alignment(spectra_data)
 Vu, T. N., Valkenborg, D., Smets, K., Verwaest, K. A., Dommisse,
 R., Lemiere, F., ... & Laukens, K. (2011). An integrated workflow for robust
 alignment and simplified quantitative analysis of NMR spectrometry data.
-\emph{BMC bioinformatics}, \strong{12}(1), 405.
+\emph{BMC Bioinformatics}, \strong{12}(1), 405.
 }
