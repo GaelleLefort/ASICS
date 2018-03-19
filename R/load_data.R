@@ -491,10 +491,10 @@ createSpectra <- function(spectra){
 #' @importFrom BiocParallel multicoreWorkers
 #'
 #' @examples
-# current_path <- file.path(system.file("extdata", package = "ASICS"),
-#                           "spectra_example.txt")
-# spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-# spectra_bin <- binning(spectra_data, bin = 0.01)
+#' current_path <- file.path(system.file("extdata", package = "ASICS"),
+#'                           "spectra_example.txt")
+#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+#' spectra_bin <- binning(spectra_data, bin = 0.01)
 binning <- function(spectra, bin = 0.01,
                     exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                     parallel = TRUE){

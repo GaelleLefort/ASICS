@@ -28,3 +28,9 @@ A data frame with normalised spectra in columns and buckets in rows
 \description{
 Apply a binning function on a spectrum.
 }
+\examples{
+current_path <- file.path(system.file("extdata", package = "ASICS"),
+                          "spectra_example.txt")
+spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+spectra_bin <- binning(spectra_data, bin = 0.01)
+}
