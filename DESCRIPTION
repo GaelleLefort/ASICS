@@ -4,7 +4,7 @@ Title: Automatic Statistical Identification in Complex Spectra
 Version: 0.99.0
 Authors@R: c(
     person("Gaëlle", "Lefort", email = "gaelle.lefort@inra.fr", role = c("aut", "cre")),
-    person("Rémi", "Sevien", email = "remi.servien@inra.fr", role = "aut"),
+    person("Rémi", "Servien", email = "remi.servien@inra.fr", role = "aut"),
     person("Patrick", "Tardivel", email = "patrick.tardivel@inra.fr", role = "aut"),
     person("Nathalie", "Villa-Vialaneix", email = "nathalie.villa-vialaneix@inra.fr", role = "aut"))
 Description: With a set of pure metabolite reference spectra, ASICS quantifies 
