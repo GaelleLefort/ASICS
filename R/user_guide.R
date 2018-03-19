@@ -7,13 +7,13 @@
 #'
 #' @description Open the ASICS User's Guide (with default browser)
 #'
-#' @param view if \code{TRUE}, the user's guide will be opened with default
-#' browser
+#' @param view logical. If \code{TRUE}, the user's guide will be opened with 
+#' system default browser
 #' @details The function \code{vignette("ASICS")} will find the short
 #' ASICS vignette that describes the main functions and how to obtain the ASICS
-#' User's Guide.
+#' User's Guide.\cr
 #' The User's Guide is not itself a true vignette because it is not
-#' automatically generated during the package build process.
+#' automatically generated during the package build process.\cr
 #' If the operating system is not Windows, then the HTML viewer used is the one
 #' given by \code{Sys.getenv("R_BROWSER")}. The HTML viewer can be changed using
 #' \code{Sys.setenv(R_BROWSER = )}.
