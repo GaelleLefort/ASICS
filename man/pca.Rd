@@ -2,20 +2,20 @@
 % Please edit documentation in R/analysis_on_quantification.R
 \name{pca}
 \alias{pca}
-\title{Principal Component Analysis (PCA) on \code{\link{SummarizedExperiment}}
+\title{Principal Component Analysis (PCA) on a \code{\link{SummarizedExperiment}}
 object}
 \usage{
 pca(analysis_data, scale.unit = TRUE, type.data = "quantifications",
   condition = NULL)
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtains with
-the \code{\link{formatForAnalysis}} function.}
+\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained 
+from the \code{\link{formatForAnalysis}} function.}
 
-\item{scale.unit}{if \code{TRUE}, data are centered and scaled to unit
-variance}
+\item{scale.unit}{logical. If \code{TRUE}, data are scaled to unit variance 
+prior PCA}
 
-\item{type.data}{type of data used for the analyses (\emph{e. g.}
+\item{type.data}{type of data used for the analysis (\emph{e.g.,}
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
 
@@ -27,8 +27,8 @@ A S4 object of class \linkS4class{AnalysisResults} containing PCA
 results.
 }
 \description{
-Perform a PCA with the function of \code{\link{ropls}} package on a
-\code{\link{SummarizedExperiment}} object obtains with the
+Perform a PCA with the function of the \code{\link{ropls}} package on a
+\code{\link{SummarizedExperiment}} object obtained from the
 \code{\link{formatForAnalysis}} function
 }
 \examples{
@@ -38,10 +38,8 @@ quantif_path <- system.file("extdata", "results_ASICS.txt",
                             package = "ASICSdata")
 quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 
-# Create object for analysis and remove features with more than 25\% of
-#zeros
-analysis_obj <- formatForAnalysis(quantification,
-                                    zero.threshold = 25)
+# Create object for analysis and remove features with more than 25\% of zeros
+analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
 res_pca <- pca(analysis_obj)
 
 }

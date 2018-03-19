@@ -3,20 +3,19 @@
 \name{oplsda}
 \alias{oplsda}
 \title{Orthogonal projections to latent structures discriminant analysis (OPLS-DA)
-on \code{\link{SummarizedExperiment}} object}
+on a \code{\link{SummarizedExperiment}} object}
 \usage{
 oplsda(analysis_data, condition, scale.unit = TRUE, cross.val = 1,
   thres.VIP = 1, orthoI = NA, type.data = "quantifications")
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtains with
-the \code{\link{formatForAnalysis}} function.}
+\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained 
+with the \code{\link{formatForAnalysis}} function.}
 
-\item{condition}{the name of the design variable (two level factor)
-specifying the response to be modelled.}
+\item{condition}{the name of the design variable (two level factor) 
+specifying the response to be explained.}
 
-\item{scale.unit}{if \code{TRUE}, data are centered and scaled to unit
-variance}
+\item{scale.unit}{logical. If \code{TRUE}, data are scaled to unit variance}
 
 \item{cross.val}{number of cross validation folds.}
 
@@ -24,12 +23,12 @@ variance}
 influential variables.}
 
 \item{orthoI}{parameter of the \code{\link{opls}} function (package
-\code{\link{ropls}}) specifying the number of orthogonal components ; when
-set to NA, OPLS is performed and the number of orthogonal components is
-automatically computed by using the cross-validation (with a maximum of 9
-orthogonal components). Default to \code{NA}.}
+\code{\link{ropls}}) specifying the number of orthogonal components. When set
+to \code{NA}, OPLS is performed and the number of orthogonal components is
+automatically tuned with cross-validation (with a maximum of 9 orthogonal 
+components). Default to \code{NA}.}
 
-\item{type.data}{type of data used for the analyses (\emph{e. g.}
+\item{type.data}{type of data used for the analyses (\emph{e.g.,}
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
 }
@@ -38,8 +37,8 @@ A S4 object of class \linkS4class{AnalysisResults} containing OPLS-DA
 results.
 }
 \description{
-Perform an OPLS-DA with the function of \code{\link{ropls}} package on a
-\code{\link{SummarizedExperiment}} object obtains with the
+Perform an OPLS-DA with the function of the \code{\link{ropls}} package on a
+\code{\link{SummarizedExperiment}} object obtained with the
 \code{\link{formatForAnalysis}} function
 }
 \examples{
@@ -53,8 +52,7 @@ quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                  package = "ASICSdata"), header = TRUE)
 
-# Create object for analysis and remove features with more than 25\% of
-#zeros
+# Create object for analysis and remove features with more than 25\% of zeros
 analysis_obj <- formatForAnalysis(quantification,
                                   zero.threshold = 25, design = design)
 res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
