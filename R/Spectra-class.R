@@ -1,8 +1,7 @@
 #' Class \linkS4class{Spectra}
 #'
-#' Objects of class \linkS4class{Spectra} represent a set of NMR spectra of
-#' one study.
-#' It contains preprocessed spectra and can be created with the function
+#' Objects of class \linkS4class{Spectra} contain a set of NMR spectra.
+#' It includes preprocessed spectra and can be created with the function
 #' \code{\link{createSpectra}}.
 #'
 #' @name Spectra-class
@@ -23,10 +22,10 @@
 #'     \link[=summary-methods]{Object summary}
 #'     \item All slots have an accessor \code{get_slot name}, see
 #'     \link[=accessors-methods]{Accessors}
-#'     \item Two objects can be combine or a subset can be extract, see
+#'     \item Two objects can be combined or a subset can be extracted, see
 #'     \link[=combineAndSubset-methods]{Combine and subset methods}
-#'     \item All spectra contained in an object can be represent in a plot, see
-#'     \link[=visualization-methods-spectra]{Visualization methods}
+#'     \item All spectra contained in an object can be represented in a plot, 
+#'     see \link[=visualization-methods-spectra]{Visualization methods}
 #'   }
 #'
 setClass(
@@ -49,7 +48,7 @@ setValidity(
       errors <- c(errors, msg)
     }
     if (ncol(object@spectra) != length(object@sample.name)) {
-      msg <- paste("Number of sample names and rows of spectra matrix must be",
+      msg <- paste("Numbers of sample names and rows of spectra matrix must be",
                    "identical.")
       errors <- c(errors, msg)
     }
@@ -78,7 +77,7 @@ setGeneric("getSpectra",
 
 #' Accessors
 #'
-#' List of available accessors for each slots of all S4 classes present in the
+#' List of available accessors for each slot of all S4 classes present in the
 #' package.
 #'
 #' @name accessors-methods
@@ -188,16 +187,16 @@ setMethod(f = "length", signature(x = "Spectra"),
 
 #' Combine or subset functions
 #'
-#' Methods available to combine multiple object or extract a subset of one
+#' Methods available to combine multiple objects or to extract a subset of one
 #' object in ASICS package.
 #'
 #' @name combineAndSubset-methods
 #' @param x an object of class \linkS4class{Spectra},
 #' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
-#' @param i indices specifying elements to extract
-#' @param ... objects to be concatenated.
+#' @param i vector of indices specifying which elements to extract
+#' @param ... objects to be concatenated
 #'
-#' @return A subset of the original object or an single object containing all
+#' @return A subset of the original object or a single object containing all
 #' original objects
 #'
 #' @examples
@@ -207,7 +206,7 @@ setMethod(f = "length", signature(x = "Spectra"),
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Extract the first sample
-#' spectra_obj[1]
+#' spectra_obj[1:3]
 NULL
 
 #' @rdname combineAndSubset-methods
@@ -220,7 +219,7 @@ setMethod(
     return(new("Spectra",
                sample.name = x@sample.name[i],
                ppm.grid = x@ppm.grid,
-               spectra = as.matrix(x@spectra[, i])))
+               spectra = as.matrix(x@spectra[ ,i])))
   }
 )
 
@@ -269,12 +268,13 @@ setMethod(
 #'
 #' @return
 #' \itemize{
-#' \item A ggplot plot all spectra (or a subset) on the same figure for
-#' \linkS4class{Spectra} and \linkS4class{PureLibrary} object.
-#' \item A ggplot plot original and recomposed spectra of one sample in one
-#' figure for \linkS4class{ASICSResults} object. In addition, one pure
-#' metabolite spectrum (as provided in the reference library) and the deformed
-#' one can be superimposed to the plot.
+#' \item A \code{\link[ggplot2]{ggplot}} plot of all spectra (or of a subset) on 
+#' the same figure for \linkS4class{Spectra} and \linkS4class{PureLibrary} 
+#' objects.
+#' \item A \code{\link[ggplot2]{ggplot}} plot of original and reconstructed 
+#' spectra of one sample in the same figure for \linkS4class{ASICSResults} 
+#' object. In addition, one pure metabolite spectrum (as provided in the 
+#' reference library) and the deformed one can be superimposed to the plot.
 #' }
 #'
 #' @examples

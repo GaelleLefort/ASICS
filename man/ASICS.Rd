@@ -12,22 +12,23 @@ ASICS(spectra_obj, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
 \item{spectra_obj}{an object of class \linkS4class{Spectra} obtained with the
 function \link{createSpectra}}
 
-\item{exclusion.areas}{definition domain of spectra to exclude (ppm).
-By default, only the water region (4.5-5.1 ppm).}
+\item{exclusion.areas}{definition domain of spectra that has to be excluded
+for the quantification (ppm). By default, the water region is excluded
+(4.5-5.1 ppm).}
 
 \item{max.shift}{maximum chemical shift allowed (in ppm). Default to 0.02.}
 
 \item{pure.library}{an object of class \linkS4class{PureLibrary} containing
-the references (pure metabolite spectra). If \code{NULL}, the library
-included in the package is used}
+the reference spectra (pure metabolite spectra). If \code{NULL}, the library
+included in the package (that contains 175 reference spectra) is used}
 
 \item{threshold.noise}{threshold for signal noise. Default to 0.02.}
 
 \item{seed}{random seed to control randomness in the algorithm (used in the
-estimation of significativity of a given metabolite concentration)}
+estimation of the significativity of a given metabolite concentration)}
 
-\item{parallel}{if \code{TRUE}, apply function in parallel. Default to
-\code{TRUE}.}
+\item{parallel}{logical. If \code{TRUE}, the function is run in parallel. 
+Default to \code{TRUE}.}
 }
 \value{
 An object of type \linkS4class{ASICSResults} containing the
@@ -44,8 +45,8 @@ spectra_data <- importSpectraBruker(current_path)
 spectra_obj <- createSpectra(spectra_data)
 
 # Estimation of relative quantification
-to_exlude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2)
-resASICS <- ASICS(spectra_obj, exclusion.areas = to_exlude)
+to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2)
+resASICS <- ASICS(spectra_obj, exclusion.areas = to_exclude)
 }
 \references{
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer

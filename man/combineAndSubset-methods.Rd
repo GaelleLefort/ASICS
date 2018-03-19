@@ -34,16 +34,16 @@
 \item{x}{an object of class \linkS4class{Spectra},
 \linkS4class{PureLibrary} or \linkS4class{ASICSResults}}
 
-\item{i}{indices specifying elements to extract}
+\item{i}{vector of indices specifying which elements to extract}
 
-\item{...}{objects to be concatenated.}
+\item{...}{objects to be concatenated}
 }
 \value{
-A subset of the original object or an single object containing all
+A subset of the original object or a single object containing all
 original objects
 }
 \description{
-Methods available to combine multiple object or extract a subset of one
+Methods available to combine multiple objects or to extract a subset of one
 object in ASICS package.
 }
 \examples{
@@ -53,5 +53,5 @@ spectra_data <- importSpectraBruker(current_path)
 spectra_obj <- createSpectra(spectra_data)
 
 # Extract the first sample
-spectra_obj[1]
+spectra_obj[1:3]
 }

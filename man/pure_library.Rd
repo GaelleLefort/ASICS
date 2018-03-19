@@ -4,18 +4,19 @@
 \name{pure_library}
 \alias{pure_library}
 \title{Pure spectra library}
-\format{A \linkS4class{PureLibrary} object of 4 elements:
+\format{A \linkS4class{PureLibrary} object with 4 entries:
 \describe{
   \item{sample.name}{names of the metabolites}
   \item{ppm.grid}{common grid for all spectra}
-  \item{spectra}{a data frame with each pure metabolite spectrum in column}
+  \item{spectra}{data frame with each pure metabolite spectrum in column}
   \item{nb.protons}{number of protons of each metabolite}
 }}
 \description{
 The 1D 1H NMR spectra of 180 reference compounds were collected to build the
-spectral library. These compounds have been prepared and recorded using a
-Bruker Avance III HD spectrometer in the MetaToul - AXIOM Site at Toulouse
-(France).
+default library of reference spectra. These compounds have been prepared and
+measured using a Bruker Avance III HD spectrometer in the MetaToul - AXIOM 
+Site at Toulouse (France). For more details on the preparation, please see 
+Tardivel et al. (2017).
 }
 \references{
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer

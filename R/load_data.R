@@ -1,23 +1,23 @@
-#' Import from Bruker files
+#' Import metabolomic spectra from Bruker files
 #'
 #' Import spectra from Bruker files contained in a single folder. This folder
 #' contains one subfolder for each sample. Spectra are baseline corrected
-#' (optionnal) and normalised by the area under the curve.
+#' (optional) and normalised by the area under the curve.
 #'
 #' @param name.dir Path of the folder containing one subfolder by sample. Each
-#' subfolder contains Bruker files.
-#' @param which.spectra If more than one spectra by sample, spectra to import
-#' (either \code{"first"}, \code{"last"} or its number). Default to
-#' \code{"last"}.
-#' @param baseline.correction If \code{TRUE} apply a baseline correction for
-#' each spectrum (Wang et al (2013)). Default to \code{TRUE}.
+#' subfolder contains the Bruker files of this sample.
+#' @param which.spectra If there is more than one spectrum by sample, number of 
+#' the spectrum to import (either \code{"first"}, \code{"last"} or its number). 
+#' Default to \code{"last"}.
+#' @param baseline.correction Logical. If \code{TRUE} a baseline correction is
+#' applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.
 #' @param ppm.grid Numeric vector of a unique grid (definition domain) for all
-#' spectra (in ppm). Default to \code{NULL} (grid of default of the pure library is
-#' used).
+#' spectra (in ppm). Default to \code{NULL} (in which case, the default grid of 
+#' the pure library is used).
 #' @param sample.names Character vector of sample names. Default to \code{NULL}
-#' (folder names are used).
-#' @param parallel If \code{TRUE}, apply function in parallel. Default to
-#' \code{TRUE}.
+#' (in which case, folder names are used).
+#' @param parallel Logical. If \code{TRUE}, the function is run in parallel. 
+#' Default to \code{TRUE}.
 #'
 #' @references Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
 #' Distribution-based classification method for baseline correction of
@@ -204,9 +204,9 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
 #'
 #' Normalise a data frame of spectra by the area under the curve.
 #'
-#' @param spectra Data frame with spectra in columns and chemical shift in rows.
-#' Colnames of this data frame correspond to pure metabolite names and rownames
-#' to chemical shift grid (in p.p.m).
+#' @param spectra Data frame with spectra in columns and chemical shifts in 
+#' rows. Colnames of this data frame correspond to pure metabolite names and 
+#' rownames to chemical shift grid (in p.p.m).
 #'
 #' @return A data frame with normalised spectra in columns and chemical shifts
 #' (in p.p.m.) in rows.
@@ -236,14 +236,14 @@ normalisation <- function(spectra){
 
 #' Baseline correction
 #'
-#' Apply a baseline correction to a spectra with the algorithm
-#' described in Wang et al. (2013).
+#' Apply a baseline correction to a spectra with the algorithm described in 
+#' Wang et al. (2013).
 #'
-#' @param spectra Data frame with spectra in columns and chemical shift in rows.
-#' Colnames of this data frame correspond to pure metabolite names and rownames
-#' to chemical shift grid (in p.p.m).
-#' @param parallel If \code{TRUE}, apply function in parallel. Default to
-#' \code{TRUE}.
+#' @param spectra Data frame with spectra in columns and chemical shifts in 
+#' rows. Colnames of this data frame correspond to pure metabolite names and 
+#' rownames to chemical shift grid (in p.p.m).
+#' @param parallel Logical. If \code{TRUE}, the function is run in parallel. 
+#' Default to \code{TRUE}.
 #'
 #' @return A data frame with baseline corrected spectra in columns and chemical
 #' shifts (in p.p.m.) in rows.
@@ -256,14 +256,14 @@ normalisation <- function(spectra){
 #' @export
 #'
 #' @examples
-#' current_path <- file.path(system.file("extdata", package = "ASICS"),
-#'                           "spectra_example.txt")
+# current_path <- file.path(system.file("extdata", package = "ASICS"),
+#                           "spectra_example.txt")
 #' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
 #' spectra_base_cor <- baselineCorrection(spectra_data)
 baselineCorrection <- function(spectra, parallel = TRUE){
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
-    stop("Rownames of spectra data frame don't contain ppm grid.")
+    stop("Rownames of spectra data frame do not contain ppm grid.")
   }
 
   # number of cores
@@ -294,7 +294,7 @@ baselineCorrection <- function(spectra, parallel = TRUE){
   #if error in a file
   if (any(!bpok(spectra_bc_list)) |
       any(sapply(spectra_bc_list, is, "try-error"))) {
-    warning(paste0("Baseline correction algorithm can't be used for spectra: ",
+    warning(paste0("The baseline correction algorithm can not be used for spectra: ",
                    paste(colnames(spectra)[!bpok(spectra_bc_list) |
                                              sapply(spectra_bc_list, is,
                                                     "try-error")],
@@ -328,9 +328,10 @@ baselineCorrection <- function(spectra, parallel = TRUE){
 #' to chemical shift grid (in p.p.m).
 #' @param baseline.threshold Value of baseline threshold used to identify peaks.
 #' Default to 0.02.
-#' @param reference Index of the reference spectrum used for the alignment. Default to \code{NULL},
-#' \emph{i.e.} the reference spectrum is detected automatically with the
-#' \code{findRef} function of package \code{speaq}
+#' @param reference Index of the reference spectrum used for the alignment. 
+#' Default to \code{NULL}, \emph{i.e.} the reference spectrum is automatically 
+#' detected with the \code{\link[spea]{findRef}} function of the \code{speaq}
+#' package.
 #' @param max.shift Maximum shift allowed for the alignment. Default to 0.002.
 #'
 #' @return A data frame with aligned spectra in columns and chemical shifts
@@ -339,7 +340,7 @@ baselineCorrection <- function(spectra, parallel = TRUE){
 #' @references Vu, T. N., Valkenborg, D., Smets, K., Verwaest, K. A., Dommisse,
 #' R., Lemiere, F., ... & Laukens, K. (2011). An integrated workflow for robust
 #' alignment and simplified quantitative analysis of NMR spectrometry data.
-#' \emph{BMC bioinformatics}, \strong{12}(1), 405.
+#' \emph{BMC Bioinformatics}, \strong{12}(1), 405.
 #'
 #' @export
 #' @importFrom speaq findRef detectSpecPeaks dohCluster
@@ -353,7 +354,7 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
                       max.shift = 0.002){
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
-    stop("Rownames of spectra data frame don't contain ppm grid.")
+    stop("Rownames of spectra data frame do not contain ppm grid.")
   }
 
   # Maximum shift
@@ -391,16 +392,16 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
 
 #' Create a pure library
 #'
-#' Create a new pure library from a data frame containing different spectra of pure metabolites. The noise is
-#' removed by thresholding each spectrum.
+#' Create a new pure library from a data frame containing different spectra of 
+#' pure metabolites. The noise is removed by thresholding each spectrum.
 #'
-#' @param spectra Data frame with spectra in column and chemical shift in row.
-#' Colnames of this data frame correspond to pure metabolite names and rownames
-#' to chemical shift grid (in p.p.m).
-#' @param nb.protons Numeric vector of the number of protons of each pure
+#' @param spectra Data frame with spectra in columns and chemical shifts in 
+#' rows. Colnames of this data frame correspond to pure metabolite names and 
+#' rownames to chemical shift grid (in p.p.m).
+#' @param nb.protons Numeric vector of the number of protons for each pure
 #' metabolite spectrum contained in \code{spectra} data frame.
 #' @param threshold Numeric value below which pure spectrum values are
-#' considered null. Default to 1.
+#' considered to be zero. Default to 1.
 #' @return A \linkS4class{PureLibrary} object with the newly created library.
 #'
 #' @importFrom methods new
@@ -408,10 +409,10 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
 #'
 #' @examples
 #' pure_spectra <- importSpectraBruker(system.file("extdata",
-#'                                                   "example_library",
-#'                                                    package = "ASICS"))
+#'                                                 "example_library",
+#'                                                 package = "ASICS"))
 #' new_pure_library <- createPureLibrary(pure_spectra,
-#'                                         nb.protons = c(5, 4, 9, 9))
+#'                                       nb.protons = c(5, 4, 9, 9))
 #'
 createPureLibrary <- function(spectra, nb.protons, threshold = 1){
   # create a new object PureLibrary with a data frame of intensities and a
@@ -436,9 +437,9 @@ createPureLibrary <- function(spectra, nb.protons, threshold = 1){
 #'
 #' Create a new spectra object used for quantification.
 #'
-#' @param spectra Data frame with spectra in column and chemical shift in row.
-#' Colnames of this data frame correspond to pure metabolite names and rownames
-#' to chemical shift grid (in p.p.m).
+#' @param spectra Data frame with spectra in columns and chemical shifts in 
+#' rows. Colnames of this data frame correspond to pure metabolite names and 
+#' rownames to chemical shift grid (in p.p.m).
 #'
 #' @return A \linkS4class{Spectra} object with spectra to quantify.
 #'
@@ -470,16 +471,17 @@ createSpectra <- function(spectra){
 
 #' Binning/Bucketing of NMR spectra
 #'
-#' Apply a binning function on a spectra.
+#' Apply a binning function on a spectrum.
 #'
-#' @param spectra Data frame with spectra in columns and chemical shift in rows.
-#' Colnames of this data frame correspond to pure metabolite names and rownames
-#' to chemical shift grid (in p.p.m).
-#' @param bin numeric specifying the bin width.
-#' @param exclusion.areas definition domain of spectra to exclude (ppm).
-#' By default, only the water region (4.5-5.1 ppm).
-#' @param parallel If \code{TRUE}, apply function in parallel. Default to
-#' \code{TRUE}.
+#' @param spectra Data frame with spectra in columns and chemical shifts in 
+#' rows. Colnames of this data frame correspond to pure metabolite names and 
+#' rownames to chemical shift grid (in p.p.m).
+#' @param bin Numeric value specifying the bin width.
+#' @param exclusion.areas Definition domain of spectra that have to be excluded 
+#' of the analysis (ppm). By default, the water region is excluded 
+#' (4.5-5.1 ppm).
+#' @param parallel Logical. If \code{TRUE}, the function is run in parallel. 
+#' Default to \code{TRUE}.
 #'
 #' @return A data frame with normalised spectra in columns and buckets in rows
 #' (bucket names correspond to the center of the bucket).

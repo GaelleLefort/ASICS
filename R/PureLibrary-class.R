@@ -1,9 +1,9 @@
 #' Class \code{PureLibrary}
 #'
-#' Objects of class \code{PureLibrary} represent a set of pure metabolite NMR
-#' spectra.
-#' It's an extension of class \linkS4class{Spectra} with an additional slot
-#' (number of protons of each metabolite) needed for spectrum quantification.
+#' Objects of class \code{PureLibrary} contain a set of pure metabolite NMR
+#' spectra, used as a reference for the quantification. This class is an 
+#' extension of the class \linkS4class{Spectra}, with an additional slot
+#' (number of protons for each metabolite) needed for spectrum quantification.
 #'
 #'
 #' @slot nb.protons Numeric vector of the number of protons of each pure
@@ -16,10 +16,10 @@
 #'     \link[=summary-methods]{Object summary}
 #'     \item All slots have an accessor \code{get_slot name}, see
 #'     \link[=accessors-methods]{Accessors}
-#'     \item Two objects can be combine or a subset can be extract, see
+#'     \item Two objects can be combined or a subset can be extracted, see
 #'     \link[=combineAndSubset-methods]{Combine and subset methods}
-#'     \item All spectra contained in an object can be represent in a plot, see
-#'     \link[=visualization-methods-spectra]{Visualization methods}
+#'     \item All spectra contained in an object can be represented in a plot, 
+#'     see \link[=visualization-methods-spectra]{Visualization methods}
 #'   }
 #'
 #' @seealso \linkS4class{Spectra}
@@ -47,7 +47,7 @@ setValidity(
       errors <- c(errors, msg)
     }
     if (ncol(object@spectra) != length(object@sample.name)) {
-      msg <- paste("Number of sample names and rows of spectra matrix must be",
+      msg <- paste("Numbers of sample names and rows of spectra matrix must be",
                    "identical.")
       errors <- c(errors, msg)
     }

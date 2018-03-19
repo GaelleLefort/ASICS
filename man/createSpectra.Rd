@@ -7,9 +7,9 @@
 createSpectra(spectra)
 }
 \arguments{
-\item{spectra}{Data frame with spectra in column and chemical shift in row.
-Colnames of this data frame correspond to pure metabolite names and rownames
-to chemical shift grid (in p.p.m).}
+\item{spectra}{Data frame with spectra in columns and chemical shifts in 
+rows. Colnames of this data frame correspond to pure metabolite names and 
+rownames to chemical shift grid (in p.p.m).}
 }
 \value{
 A \linkS4class{Spectra} object with spectra to quantify.

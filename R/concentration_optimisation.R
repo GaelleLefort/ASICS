@@ -1,4 +1,4 @@
-#### Threshold and concentration optimisation for each metabolites ####
+#### Threshold and concentration optimisation for each metabolite ####
 #' @importFrom stats rnorm runif
 #' @importFrom methods is
 #' @keywords internal

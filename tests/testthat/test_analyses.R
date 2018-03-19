@@ -20,7 +20,7 @@ test_that("PCA on quantification goes well", {
 })
 
 
-test_that("OPLS-DA on quantification goes well", {
+test_that("OPLS-DA on quantifications works well", {
   # Import quantification results
   quantif_path <- system.file("extdata", "results_ASICS.txt",
                               package = "ASICSdata")
@@ -52,7 +52,7 @@ test_that("OPLS-DA on quantification goes well", {
 })
 
 
-test_that("Kruskall-Wallis on quantification goes well", {
+test_that("Kruskall-Wallis on quantifications works well", {
   # Import quantification results
   quantif_path <- system.file("extdata", "results_ASICS.txt",
                               package = "ASICSdata")

@@ -18,31 +18,32 @@
 
 \item{...}{currently not used}
 
-\item{graph}{a vector specifying the elements to be plotted. Allowed values
-are \code{"eig"} for plot of eigen value (PCA), \code{"ind"} for plot of
-individuals (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and
-OPLS-DA), \code{"boxplot"} for boxplot of test results and \code{"buckets"}
-to show significant or influential buckets on the mean spectrum.
-Default value is NULL (\emph{i. e.} \code{c("ind", "var")} for PCA and
+\item{graph}{a vector specifying what to plot. Allowed values are 
+\code{"eig"} for the screegraph (PCA), \code{"ind"} for plot of individuals 
+(PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA), 
+\code{"boxplot"} for boxplots of test results and \code{"buckets"} to show 
+significant or influential buckets on the mean spectrum.
+Default value is \code{NULL} (\emph{i.e.,} \code{c("ind", "var")} for PCA and
 OPLS-DA and \code{c("boxplot")} for tests).}
 
 \item{add.label}{if \code{TRUE}, labels are added on individual plot.}
 
 \item{axes}{a numeric vector of length 2 specifying the dimensions to be
-plotted on individual and variable plots.}
+plotted for individual and variable plots.}
 
-\item{col.ind}{an character specifying the name of the design variable used
-for coloring the observations by groups for PCA individual plot.}
+\item{col.ind}{a character specifying the name of the design variable used
+to color the observations by groups for PCA individual plot.}
 
 \item{xlim, ylim}{boundaries for x and y, respectively.}
 }
 \value{
 \itemize{
-\item PCA: a ggplot allows the visualization of PCA results (eigen values,
-individuals and variables)
-\item OPLS-DA: a ggplot allows the visualization of OPLS-DA results
-(individuals and variables). If \code{cross.val > 1} in \code{\link{oplsda}},
-only results on the first fold are plotted.
+\item PCA: a \code{\link[ggplot2]{ggplot}} plot that allows for the 
+visualization of PCA results (eigen values, individuals and variables)
+\item OPLS-DA: a \code{\link[ggplot2]{ggplot}} plot that allows for the 
+visualization of OPLS-DA results (individuals and variables). If 
+\code{cross.val > 1} in \code{\link{oplsda}}, only results on the first fold 
+are plotted.
 }
 }
 \description{
@@ -59,8 +60,7 @@ quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                  package = "ASICSdata"), header = TRUE)
 
-# Create object for analysis and remove metabolites with more than 25\% of
-#zeros
+# Create object for analysis and remove metabolites with more than 25\% of zeros
 analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
 

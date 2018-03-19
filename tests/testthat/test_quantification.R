@@ -2,7 +2,7 @@ library(ASICS)
 
 context("Quantification of NMR spectra")
 
-test_that("quantification with ASICS goes well and gives a well formatted
+test_that("Quantification with ASICS works well and gives a well formatted
 S4 object", {
   current_path <- file.path(system.file("extdata", package = "ASICS"),
                             "spectra_example.txt")

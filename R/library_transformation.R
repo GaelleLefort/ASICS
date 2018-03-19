@@ -1,5 +1,5 @@
-## Find the best translation between each pure spectra and mixture ####
-#and sort metabolites by regression residuals
+## Find the best translation between each pure spectra and mixture and sort 
+# metabolites by regression residuals
 #' @importFrom stats lm
 #' @importFrom speaq findShiftStepFFT
 #' @importFrom plyr laply
@@ -51,7 +51,7 @@
 
 
 
-##Localized deformations of pure spectra
+##Localize deformations of pure spectra
 #' @importFrom methods is
 #' @importFrom plyr laply
 #' @keywords internal
@@ -180,7 +180,7 @@
 }
 
 
-## Deforme grid x with parameter a and compute new spectrum on deformed grid
+## Deform grid x with parameter a and compute new spectrum on deformed grid
 #(y = old spectrum)
 .deforme <- function(x, y, a) {
   phix <- .phi(x, a)
@@ -194,7 +194,7 @@
   v <- max(x) - min(x)
   z <- (x - u)/v
 
-  # New grid with deformation : phi(x) = ax(1-x) + x
+  # New grid with deformation: phi(x) = ax(1-x) + x
   tt <- z + a*z*(1 - z)
   return(u + tt*v)
 }

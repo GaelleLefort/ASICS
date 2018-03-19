@@ -26,20 +26,21 @@
 
 \item{idx}{index of the spectrum to plot. Default to 1.}
 
-\item{pure.library}{pure library used for quantification. Default to
-\code{NULL} (the library included in the package is used).}
+\item{pure.library}{pure library used for the quantification. Default to
+\code{NULL} (in which case, the library included in the package is used).}
 
 \item{add.metab}{name of one metabolite to add to the plot. Default to
-\code{NULL} (no pure spectrum added to the plot).}
+\code{NULL} (in which case, no pure spectrum added to the plot).}
 }
 \value{
 \itemize{
-\item A ggplot plot all spectra (or a subset) on the same figure for
-\linkS4class{Spectra} and \linkS4class{PureLibrary} object.
-\item A ggplot plot original and recomposed spectra of one sample in one
-figure for \linkS4class{ASICSResults} object. In addition, one pure
-metabolite spectrum (as provided in the reference library) and the deformed
-one can be superimposed to the plot.
+\item A \code{\link[ggplot2]{ggplot}} plot of all spectra (or of a subset) on 
+the same figure for \linkS4class{Spectra} and \linkS4class{PureLibrary} 
+objects.
+\item A \code{\link[ggplot2]{ggplot}} plot of original and reconstructed 
+spectra of one sample in the same figure for \linkS4class{ASICSResults} 
+object. In addition, one pure metabolite spectrum (as provided in the 
+reference library) and the deformed one can be superimposed to the plot.
 }
 }
 \description{

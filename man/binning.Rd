@@ -8,24 +8,25 @@ binning(spectra, bin = 0.01, exclusion.areas = matrix(c(4.5, 5.1), ncol =
   2), parallel = TRUE)
 }
 \arguments{
-\item{spectra}{Data frame with spectra in columns and chemical shift in rows.
-Colnames of this data frame correspond to pure metabolite names and rownames
-to chemical shift grid (in p.p.m).}
+\item{spectra}{Data frame with spectra in columns and chemical shifts in 
+rows. Colnames of this data frame correspond to pure metabolite names and 
+rownames to chemical shift grid (in p.p.m).}
 
-\item{bin}{numeric specifying the bin width.}
+\item{bin}{Numeric value specifying the bin width.}
 
-\item{exclusion.areas}{definition domain of spectra to exclude (ppm).
-By default, only the water region (4.5-5.1 ppm).}
+\item{exclusion.areas}{Definition domain of spectra that have to be excluded 
+of the analysis (ppm). By default, the water region is excluded 
+(4.5-5.1 ppm).}
 
-\item{parallel}{If \code{TRUE}, apply function in parallel. Default to
-\code{TRUE}.}
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel. 
+Default to \code{TRUE}.}
 }
 \value{
 A data frame with normalised spectra in columns and buckets in rows
 (bucket names correspond to the center of the bucket).
 }
 \description{
-Apply a binning function on a data frame of spectra.
+Apply a binning function on a spectrum.
 }
 \examples{
 current_path <- file.path(system.file("extdata", package = "ASICS"),

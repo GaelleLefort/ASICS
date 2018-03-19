@@ -67,7 +67,7 @@
 The wanted accessor
 }
 \description{
-List of available accessors for each slots of all S4 classes present in the
+List of available accessors for each slot of all S4 classes present in the
 package.
 }
 \examples{

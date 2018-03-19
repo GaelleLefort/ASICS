@@ -8,34 +8,35 @@ formatForAnalysis(data, design = NULL, feature_info = NULL,
   zero.threshold = 100, zero.group = NULL, outliers = NULL)
 }
 \arguments{
-\item{data}{a data frame contaning omics data with samples in columns and
+\item{data}{a data frame containing omics dataset with samples in columns and
 features of interest in rows (metabolites/buckets...).}
 
 \item{design}{a data frame describing the colums of \code{data} with at
-least two columns and the first one corresponding to colnames of \code{data}.
-Default to NULL (colnames of \code{data} is used for study design).}
+least two columns, the first one corresponding to the column names of 
+\code{data}. Default to NULL (in which case, the column names of \code{data} 
+are used for study design).}
 
 \item{feature_info}{a data frame describing the rows of \code{data} with
-at least two columns and the first one corresponding to rownames of
-\code{data}. Default to NULL (rownames of \code{data} is used for feature
-informations).}
+at least two columns, the first one corresponding to the row names of
+\code{data}. Default to NULL (in which case, the row names of \code{data} are
+used for feature information).}
 
-\item{zero.threshold}{remove features with more than \code{zero.threshold}
-percent of zeros. Default to \code{100}.}
+\item{zero.threshold}{remove features having a proportion of zeros larger
+than or equal to \code{zero.threshold}. Default to \code{100}.}
 
 \item{zero.group}{variable name of design data frame specifying the group
-variable used to remove features with more than \code{zero.threshold}
-percent of zeros. Default to \code{NULL}, no group.}
+variable used to remove features with a proportion of zeros larger than or 
+equal to \code{zero.threshold} within the group. Default to \code{NULL}, no 
+group.}
 
-\item{outliers}{names of outliers to remove.}
+\item{outliers}{names of the outliers (samples) to remove.}
 }
 \value{
-An object of type \code{\link{SummarizedExperiment}} useful for
-further analysis.
+An object of type \code{\link{SummarizedExperiment}}.
 }
 \description{
-Create an useful object for analysis with omics data and informations
-about the omics (metabolites/buckets...) and study design.
+Create a useful object for analysis with the omics dataset, informations
+(metabolites/buckets...) and study design.
 }
 \examples{
 # Import quantification results
@@ -48,8 +49,7 @@ quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                  package = "ASICSdata"), header = TRUE)
 
-# Create object for analysis and remove features with more than 25\% of
-#zeros
+# Create object for analysis and remove features with more than 25\% of zeros
 analysis_obj <- formatForAnalysis(quantification,
                                   design = design,
                                   zero.threshold = 25,
