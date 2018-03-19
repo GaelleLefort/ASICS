@@ -26,11 +26,11 @@
 
 \item{idx}{index of the spectrum to plot. Default to 1.}
 
-\item{pure.library}{pure library used for quantification. Default to
-\code{NULL} (the library included in the package is used).}
+\item{pure.library}{pure library used for the quantification. Default to
+\code{NULL} (in which case, the library included in the package is used).}
 
 \item{add.metab}{name of one metabolite to add to the plot. Default to
-\code{NULL} (no pure spectrum added to the plot).}
+\code{NULL} (in which case, no pure spectrum added to the plot).}
 }
 \value{
 \itemize{

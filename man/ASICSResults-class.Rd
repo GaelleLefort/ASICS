@@ -5,10 +5,10 @@
 \alias{ASICSResults-class}
 \title{Class \linkS4class{ASICSResults}}
 \description{
-Objects of class \linkS4class{ASICSResults} represent results of ASICS for a
-set of spectra.
-It an extension of class \linkS4class{Spectra} with additional slots for
-quantification results, recomposed spectra and deformed library.
+Objects of class \linkS4class{ASICSResults} contains results of ASICS 
+quantification method for a set of spectra. This object is an extension of 
+the class \linkS4class{Spectra}, with additional slots for quantification 
+results, reconstructed spectra and deformed library.
 }
 \section{Slots}{
 
@@ -18,33 +18,33 @@ quantification results, recomposed spectra and deformed library.
 \item{\code{ppm.grid}}{Numeric vector of a unique grid (definition domain) for all
 spectra (in ppm).}
 
-\item{\code{spectra}}{Numeric matrix of original spectra in column.
-Columns are in the same order as for \code{sample.name} and rows correspond
-to points of \code{ppm.grid}.}
+\item{\code{spectra}}{Numeric matrix of original spectra. Columns contain the spectra
+and are in the same order than \code{sample.name}. Rows correspond to points 
+of \code{ppm.grid}.}
 
-\item{\code{recomposed.spectra}}{Numeric matrix of recomposed spectra (in column)
-with estimated concentrations. Columns are in the same order as for
+\item{\code{recomposed.spectra}}{Numeric matrix of reconstructed spectra (in columns)
+with estimated concentrations. Columns are in the same order than
 \code{sample.name} and rows correspond to points of \code{ppm.grid}.}
 
 \item{\code{quantification}}{Data-frame with identified metabolites and their
 relative concentrations.}
 
 \item{\code{deformed.library}}{a list of \linkS4class{PureLibrary} containing the
-deformed libraries of each sample.}
+deformed library of each sample.}
 }}
 
 \section{Methods}{
 
-  Multiple methods can be applied on \linkS4class{Spectra} objects.
+  Multiple methods can be applied to \linkS4class{Spectra} objects.
   \itemize{
     \item As usual for S4 object, show and summary methods are available, see
     \link[=summary-methods]{Object summary}
     \item All slots have an accessor \code{get_slot name}, see
     \link[=accessors-methods]{Accessors}
-    \item Two objects can be combine or a subset can be extract, see
+    \item Two objects can be combined or a subset can be extracted, see
     \link[=combineAndSubset-methods]{Combine and subset methods}
-    \item All spectra contained in an object can be represent in a plot, see
-    \link[=visualization-methods-spectra]{Visualization methods}
+    \item All spectra contained in an object can be represented in a plot, 
+    see \link[=visualization-methods-spectra]{Visualization methods}
   }
 }
 
