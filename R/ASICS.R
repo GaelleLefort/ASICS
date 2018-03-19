@@ -5,17 +5,18 @@
 #'
 #' @param spectra_obj an object of class \linkS4class{Spectra} obtained with the
 #' function \link{createSpectra}
-#' @param exclusion.areas definition domain of spectra to exclude (ppm).
-#' By default, only the water region (4.5-5.1 ppm).
+#' @param exclusion.areas definition domain of spectra that has to be excluded
+#' for the quantification (ppm). By default, the water region is excluded
+#' (4.5-5.1 ppm).
 #' @param max.shift maximum chemical shift allowed (in ppm). Default to 0.02.
 #' @param pure.library an object of class \linkS4class{PureLibrary} containing
-#' the references (pure metabolite spectra). If \code{NULL}, the library
-#' included in the package is used
+#' the reference spectra (pure metabolite spectra). If \code{NULL}, the library
+#' included in the package (that contains 175 reference spectra) is used
 #' @param threshold.noise threshold for signal noise. Default to 0.02.
 #' @param seed random seed to control randomness in the algorithm (used in the
-#' estimation of significativity of a given metabolite concentration)
-#' @param parallel if \code{TRUE}, apply function in parallel. Default to
-#' \code{TRUE}.
+#' estimation of the significativity of a given metabolite concentration)
+#' @param parallel logical. If \code{TRUE}, the function is run in parallel. 
+#' Default to \code{TRUE}.
 #'
 #' @return An object of type \linkS4class{ASICSResults} containing the
 #' quantification results.
@@ -50,7 +51,7 @@ ASICS <- function(spectra_obj,
 
   if(!is.null(exclusion.areas) &&
      (!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2)){
-    stop("'exclusion.areas' needs to be a matrix with 2 columns.")
+    stop("'exclusion.areas' must be a matrix with 2 columns.")
   }
 
   if(max.shift < 0){
@@ -62,7 +63,7 @@ ASICS <- function(spectra_obj,
   }
 
   if(class(pure.library) != "PureLibrary" & !is.null(pure.library)){
-    stop(paste("'pure.library' needs to be either NULL or an object of class",
+    stop(paste("'pure.library' must be either NULL or an object of class",
                "'PureLibrary'."))
   }
 
