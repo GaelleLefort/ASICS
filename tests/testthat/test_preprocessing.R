@@ -2,7 +2,7 @@ library(ASICS)
 
 context("Preprocessing the spectra before quantification")
 
-test_that("import from Bruker files goes well and gives a well formatted
+test_that("Importation from Bruker files works well and gives a well formatted
 data frame", {
   lib_path <- system.file("extdata", "example_library",
                           package = "ASICS")
@@ -19,7 +19,7 @@ data frame", {
 })
 
 
-test_that("preprocessing functions goes well and gives a data frame", {
+test_that("Preprocessing functions work well and give a data frame", {
   current_path <- system.file("extdata", "spectra_example.txt",
                               package = "ASICS")
   spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
@@ -28,7 +28,7 @@ test_that("preprocessing functions goes well and gives a data frame", {
   expect_is(alignment(spectra_data), "data.frame")
 })
 
-test_that("bucketing function goes well and gives a data frame", {
+test_that("Bucketing function works well and gives a data frame", {
   current_path <- system.file("extdata", "spectra_example.txt",
                               package = "ASICS")
   spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
@@ -36,14 +36,14 @@ test_that("bucketing function goes well and gives a data frame", {
 })
 
 
-test_that("functions of PureLibrary class work without error", {
+test_that("Functions of PureLibrary class work without error", {
   expect_equal(length(pure_library), length(pure_library@sample.name))
   expect_equal(length(pure_library[1]), 1)
   expect_equal(length(c(pure_library[1], pure_library[2])), 2)
 })
 
 
-test_that("creation of a Spectra objet and functions of Sepctra class work
+test_that("Creation of a 'Spectra' objet and functions of Spectra class work
 without error", {
   current_path <- system.file("extdata", "spectra_example.txt",
                               package = "ASICS")
