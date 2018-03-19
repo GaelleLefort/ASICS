@@ -17,7 +17,7 @@ Default to 0.02.}
 
 \item{reference}{Index of the reference spectrum used for the alignment. 
 Default to \code{NULL}, \emph{i.e.} the reference spectrum is automatically 
-detected with the \code{\link[spea]{findRef}} function of the \code{speaq}
+detected with the \code{\link[speaq]{findRef}} function of the \code{speaq}
 package.}
 
 \item{max.shift}{Maximum shift allowed for the alignment. Default to 0.002.}
