@@ -5,9 +5,8 @@
 \alias{Spectra-class}
 \title{Class \linkS4class{Spectra}}
 \description{
-Objects of class \linkS4class{Spectra} represent a set of NMR spectra of
-one study.
-It contains preprocessed spectra and can be created with the function
+Objects of class \linkS4class{Spectra} contain a set of NMR spectra.
+It includes preprocessed spectra and can be created with the function
 \code{\link{createSpectra}}.
 }
 \section{Slots}{
@@ -31,10 +30,10 @@ the same order as for \code{sample.name} and rows correspond to points of
     \link[=summary-methods]{Object summary}
     \item All slots have an accessor \code{get_slot name}, see
     \link[=accessors-methods]{Accessors}
-    \item Two objects can be combine or a subset can be extract, see
+    \item Two objects can be combined or a subset can be extracted, see
     \link[=combineAndSubset-methods]{Combine and subset methods}
-    \item All spectra contained in an object can be represent in a plot, see
-    \link[=visualization-methods-spectra]{Visualization methods}
+    \item All spectra contained in an object can be represented in a plot, 
+    see \link[=visualization-methods-spectra]{Visualization methods}
   }
 }
 

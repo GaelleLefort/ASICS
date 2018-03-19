@@ -5,10 +5,10 @@
 \alias{PureLibrary-class}
 \title{Class \code{PureLibrary}}
 \description{
-Objects of class \code{PureLibrary} represent a set of pure metabolite NMR
-spectra.
-It's an extension of class \linkS4class{Spectra} with an additional slot
-(number of protons of each metabolite) needed for spectrum quantification.
+Objects of class \code{PureLibrary} contain a set of pure metabolite NMR
+spectra, used as a reference for the quantification. This class is an 
+extension of the class \linkS4class{Spectra}, with an additional slot
+(number of protons for each metabolite) needed for spectrum quantification.
 }
 \section{Slots}{
 

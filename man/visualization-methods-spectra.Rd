@@ -34,12 +34,13 @@
 }
 \value{
 \itemize{
-\item A ggplot plot all spectra (or a subset) on the same figure for
-\linkS4class{Spectra} and \linkS4class{PureLibrary} object.
-\item A ggplot plot original and recomposed spectra of one sample in one
-figure for \linkS4class{ASICSResults} object. In addition, one pure
-metabolite spectrum (as provided in the reference library) and the deformed
-one can be superimposed to the plot.
+\item A \code{\link[ggplot2]{ggplot}} plot of all spectra (or of a subset) on 
+the same figure for \linkS4class{Spectra} and \linkS4class{PureLibrary} 
+objects.
+\item A \code{\link[ggplot2]{ggplot}} plot of original and reconstructed 
+spectra of one sample in the same figure for \linkS4class{ASICSResults} 
+object. In addition, one pure metabolite spectrum (as provided in the 
+reference library) and the deformed one can be superimposed to the plot.
 }
 }
 \description{
