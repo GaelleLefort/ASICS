@@ -25,10 +25,10 @@ metabolite spectra.}
     \link[=summary-methods]{Object summary}
     \item All slots have an accessor \code{get_slot name}, see
     \link[=accessors-methods]{Accessors}
-    \item Two objects can be combine or a subset can be extract, see
+    \item Two objects can be combined or a subset can be extracted, see
     \link[=combineAndSubset-methods]{Combine and subset methods}
-    \item All spectra contained in an object can be represent in a plot, see
-    \link[=visualization-methods-spectra]{Visualization methods}
+    \item All spectra contained in an object can be represented in a plot, 
+    see \link[=visualization-methods-spectra]{Visualization methods}
   }
 }
 
