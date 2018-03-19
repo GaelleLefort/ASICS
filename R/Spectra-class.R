@@ -154,6 +154,7 @@ setMethod("getSpectra", "Spectra",
 NULL
 
 #' @aliases show.Spectra
+#' @importFrom methods show
 #' @export
 #' @rdname summary-methods
 setMethod(

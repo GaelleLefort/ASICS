@@ -1,6 +1,6 @@
 ---
 title: "Automatic Statistical Identification in Complex Spectra (ASICS)"
-author: "Gaëlle Lefort, Rémi Sevien, Patrick Tardivel and Nathalie Villa-Vialaneix"
+author: "Gaëlle Lefort, Rémi Servien, Patrick Tardivel and Nathalie Villa-Vialaneix"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 package: ASICS
