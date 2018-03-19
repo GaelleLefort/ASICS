@@ -5,27 +5,27 @@
 \alias{AnalysisResults-class}
 \title{Class \linkS4class{AnalysisResults}}
 \description{
-Objects of class \linkS4class{AnalysisResults} represent a results of
-analyses performed with functions \code{\link{pca}}, \code{\link{oplsda}} and
-\code{\link{kruskalWallis}} available in \code{ASICS} package.
+Objects of class \linkS4class{AnalysisResults} contains results of analyses 
+performed with the functions \code{\link{pca}}, \code{\link{oplsda}} and
+\code{\link{kruskalWallis}}.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{type.analysis}}{Name of the analysis (\emph{e. g.} \code{"PCA"},
-\code{"OPLS-DA"}...).}
+\item{\code{type.analysis}}{Name of the analysis (\emph{e.g.,} \code{"PCA"},
+\code{"OPLS-DA"}, ...).}
 
-\item{\code{type.data}}{Type of data used for the analyses (\emph{e. g.}
+\item{\code{type.data}}{Type of data used for the analyses (\emph{e.g.,}
 \code{"quantification"}, \code{"buckets"}...).}
 
-\item{\code{dataset}}{An object of type \code{\link{SummarizedExperiment}} used for
+\item{\code{dataset}}{The object of type \code{\link{SummarizedExperiment}} used for
 the analysis.}
 
-\item{\code{results}}{Results of the analysis. Can be a data frame for tests results
-or a object of class \code{\link{opls}} from \code{\link{ropls}} for PCA and
+\item{\code{results}}{Results of the analysis. Can be a data frame for test results
+or an object of class \code{\link{opls}} from \code{\link{ropls}} for PCA and
 OPLS-DA.}
 
-\item{\code{cv.error}}{Cross validation error an OPLS-DA is used.}
+\item{\code{cv.error}}{Cross validation error (only for OPLS-DA analyses).}
 
 \item{\code{mean.by.group}}{Data frame with means by group and a variable indicating
 if there is a significant difference between groups for tests and if the VIP

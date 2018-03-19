@@ -1,23 +1,23 @@
 #' Class \linkS4class{AnalysisResults}
 #'
-#' Objects of class \linkS4class{AnalysisResults} represent a results of
-#' analyses performed with functions \code{\link{pca}}, \code{\link{oplsda}} and
-#' \code{\link{kruskalWallis}} available in \code{ASICS} package.
+#' Objects of class \linkS4class{AnalysisResults} contains results of analyses 
+#' performed with the functions \code{\link{pca}}, \code{\link{oplsda}} and
+#' \code{\link{kruskalWallis}}.
 #'
 #' @name AnalysisResults-class
 #' @exportClass AnalysisResults
 #'
 #'
-#' @slot type.analysis Name of the analysis (\emph{e. g.} \code{"PCA"},
-#' \code{"OPLS-DA"}...).
-#' @slot type.data Type of data used for the analyses (\emph{e. g.}
+#' @slot type.analysis Name of the analysis (\emph{e.g.,} \code{"PCA"},
+#' \code{"OPLS-DA"}, ...).
+#' @slot type.data Type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantification"}, \code{"buckets"}...).
-#' @slot dataset An object of type \code{\link{SummarizedExperiment}} used for
+#' @slot dataset The object of type \code{\link{SummarizedExperiment}} used for
 #' the analysis.
-#' @slot results Results of the analysis. Can be a data frame for tests results
-#' or a object of class \code{\link{opls}} from \code{\link{ropls}} for PCA and
+#' @slot results Results of the analysis. Can be a data frame for test results
+#' or an object of class \code{\link{opls}} from \code{\link{ropls}} for PCA and
 #' OPLS-DA.
-#' @slot cv.error Cross validation error an OPLS-DA is used.
+#' @slot cv.error Cross validation error (only for OPLS-DA analyses).
 #' @slot mean.by.group Data frame with means by group and a variable indicating
 #' if there is a significant difference between groups for tests and if the VIP
 #' associated to the variable is superior to the given threshold for OPLS-DA.
@@ -168,28 +168,29 @@ setMethod(
 #' @param x an object of class \linkS4class{AnalysisResults}
 #' @param y currently not used
 #' @param ... currently not used
-#' @param graph a vector specifying the elements to be plotted. Allowed values
-#' are \code{"eig"} for plot of eigen value (PCA), \code{"ind"} for plot of
-#' individuals (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and
-#' OPLS-DA), \code{"boxplot"} for boxplot of test results and \code{"buckets"}
-#' to show significant or influential buckets on the mean spectrum.
-#' Default value is NULL (\emph{i. e.} \code{c("ind", "var")} for PCA and
+#' @param graph a vector specifying what to plot. Allowed values are 
+#' \code{"eig"} for the screegraph (PCA), \code{"ind"} for plot of individuals 
+#' (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA), 
+#' \code{"boxplot"} for boxplots of test results and \code{"buckets"} to show 
+#' significant or influential buckets on the mean spectrum.
+#' Default value is \code{NULL} (\emph{i.e.,} \code{c("ind", "var")} for PCA and
 #' OPLS-DA and \code{c("boxplot")} for tests).
 #' @param add.label if \code{TRUE}, labels are added on individual plot.
 #' @param axes a numeric vector of length 2 specifying the dimensions to be
-#' plotted on individual and variable plots.
-#' @param col.ind an character specifying the name of the design variable used
-#' for coloring the observations by groups for PCA individual plot.
+#' plotted for individual and variable plots.
+#' @param col.ind a character specifying the name of the design variable used
+#' to color the observations by groups for PCA individual plot.
 #' @param xlim,ylim boundaries for x and y, respectively.
 #'
 #'
 #' @return
 #' \itemize{
-#' \item PCA: a ggplot allows the visualization of PCA results (eigen values,
-#' individuals and variables)
-#' \item OPLS-DA: a ggplot allows the visualization of OPLS-DA results
-#' (individuals and variables). If \code{cross.val > 1} in \code{\link{oplsda}},
-#' only results on the first fold are plotted.
+#' \item PCA: a \code{\link[ggplot2]{ggplot}} plot that allows for the 
+#' visualization of PCA results (eigen values, individuals and variables)
+#' \item OPLS-DA: a \code{\link[ggplot2]{ggplot}} plot that allows for the 
+#' visualization of OPLS-DA results (individuals and variables). If 
+#' \code{cross.val > 1} in \code{\link{oplsda}}, only results on the first fold 
+#' are plotted.
 #' }
 #'
 #' @examples
@@ -203,8 +204,7 @@ setMethod(
 #' design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                  package = "ASICSdata"), header = TRUE)
 #'
-#' # Create object for analysis and remove metabolites with more than 25% of
-#' #zeros
+#' # Create object for analysis and remove metabolites with more than 25% of zeros
 #' analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
 #'
