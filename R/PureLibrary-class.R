@@ -52,8 +52,8 @@ setValidity(
       errors <- c(errors, msg)
     }
     if (length(object@nb.protons) != length(object@sample.name)) {
-      msg <- paste("Number of sample names and length of number of protons",
-                   "vector of spectra matrix must be identical.")
+      msg <- paste("Vector contaning the numbers of protons must be of same",
+                   "length than the sample name vector.")
       errors <- c(errors, msg)
     }
     if(any(duplicated(object@sample.name))){
