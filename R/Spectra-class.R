@@ -196,8 +196,8 @@ setMethod(f = "length", signature(x = "Spectra"),
 #' @param i vector of indices specifying which elements to extract
 #' @param ... objects to be concatenated
 #'
-#' @return A subset of the original object or a single object containing all
-#' original objects
+#' @return A \linkS4class{Spectra} object containing a part of the original
+#' object or combining other \linkS4class{Spectra} objects
 #'
 #' @examples
 #' # Import data and create object
