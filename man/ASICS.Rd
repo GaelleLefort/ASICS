@@ -44,9 +44,12 @@ current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 spectra_data <- importSpectraBruker(current_path)
 spectra_obj <- createSpectra(spectra_data)
 
-# Estimation of relative quantification
-to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2)
-resASICS <- ASICS(spectra_obj, exclusion.areas = to_exclude)
+# Estimation of relative quantification of Lactate and L-Alanine
+to_exclude <- matrix(c(4.5, 10), ncol = 2)
+pure_lib <- pure_library[pure_library@sample.name \%in\% c("Lactate",
+"L-Alanine")]
+resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
+pure.library = pure_lib)
 }
 \references{
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer
