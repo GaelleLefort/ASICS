@@ -7,9 +7,9 @@
 createPureLibrary(spectra, nb.protons, threshold = 1)
 }
 \arguments{
-\item{spectra}{Data frame with spectra in columns and chemical shifts in 
-rows. Colnames of this data frame correspond to pure metabolite names and 
-rownames to chemical shift grid (in p.p.m).}
+\item{spectra}{Data frame with spectra in columns and chemical shifts in
+rows. Colnames of this data frame correspond to pure metabolite names and
+rownames to chemical shift grid (in ppm).}
 
 \item{nb.protons}{Numeric vector of the number of protons for each pure
 metabolite spectrum contained in \code{spectra} data frame.}
@@ -21,7 +21,7 @@ considered to be zero. Default to 1.}
 A \linkS4class{PureLibrary} object with the newly created library.
 }
 \description{
-Create a new pure library from a data frame containing different spectra of 
+Create a new pure library from a data frame containing different spectra of
 pure metabolites. The noise is removed by thresholding each spectrum.
 }
 \examples{

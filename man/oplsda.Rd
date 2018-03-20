@@ -9,10 +9,10 @@ oplsda(analysis_data, condition, scale.unit = TRUE, cross.val = 1,
   thres.VIP = 1, orthoI = NA, type.data = "quantifications")
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained 
+\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained
 with the \code{\link{formatForAnalysis}} function.}
 
-\item{condition}{the name of the design variable (two level factor) 
+\item{condition}{the name of the design variable (two level factor)
 specifying the response to be explained.}
 
 \item{scale.unit}{logical. If \code{TRUE}, data are scaled to unit variance}
@@ -25,7 +25,7 @@ influential variables.}
 \item{orthoI}{parameter of the \code{\link{opls}} function (package
 \code{\link{ropls}}) specifying the number of orthogonal components. When set
 to \code{NA}, OPLS is performed and the number of orthogonal components is
-automatically tuned with cross-validation (with a maximum of 9 orthogonal 
+automatically tuned with cross-validation (with a maximum of 9 orthogonal
 components). Default to \code{NA}.}
 
 \item{type.data}{type of data used for the analyses (\emph{e.g.,}

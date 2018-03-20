@@ -7,13 +7,13 @@
 normalisation(spectra)
 }
 \arguments{
-\item{spectra}{Data frame with spectra in columns and chemical shifts in 
-rows. Colnames of this data frame correspond to pure metabolite names and 
-rownames to chemical shift grid (in p.p.m).}
+\item{spectra}{Data frame with spectra in columns and chemical shifts in
+rows. Colnames of this data frame correspond to pure metabolite names and
+rownames to chemical shift grid (in ppm).}
 }
 \value{
 A data frame with normalised spectra in columns and chemical shifts
-(in p.p.m.) in rows.
+(in ppm) in rows.
 }
 \description{
 Normalise a data frame of spectra by the area under the curve.

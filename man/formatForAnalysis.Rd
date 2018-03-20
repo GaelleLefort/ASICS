@@ -12,8 +12,8 @@ formatForAnalysis(data, design = NULL, feature_info = NULL,
 features of interest in rows (metabolites/buckets...).}
 
 \item{design}{a data frame describing the colums of \code{data} with at
-least two columns, the first one corresponding to the column names of 
-\code{data}. Default to NULL (in which case, the column names of \code{data} 
+least two columns, the first one corresponding to the column names of
+\code{data}. Default to NULL (in which case, the column names of \code{data}
 are used for study design).}
 
 \item{feature_info}{a data frame describing the rows of \code{data} with
@@ -25,8 +25,8 @@ used for feature information).}
 than or equal to \code{zero.threshold}. Default to \code{100}.}
 
 \item{zero.group}{variable name of design data frame specifying the group
-variable used to remove features with a proportion of zeros larger than or 
-equal to \code{zero.threshold} within the group. Default to \code{NULL}, no 
+variable used to remove features with a proportion of zeros larger than or
+equal to \code{zero.threshold} within the group. Default to \code{NULL}, no
 group.}
 
 \item{outliers}{names of the outliers (samples) to remove.}

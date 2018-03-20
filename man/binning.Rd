@@ -8,17 +8,17 @@ binning(spectra, bin = 0.01, exclusion.areas = matrix(c(4.5, 5.1), ncol =
   2), parallel = TRUE)
 }
 \arguments{
-\item{spectra}{Data frame with spectra in columns and chemical shifts in 
-rows. Colnames of this data frame correspond to pure metabolite names and 
-rownames to chemical shift grid (in p.p.m).}
+\item{spectra}{Data frame with spectra in columns and chemical shifts in
+rows. Colnames of this data frame correspond to pure metabolite names and
+rownames to chemical shift grid (in ppm).}
 
 \item{bin}{Numeric value specifying the bin width.}
 
-\item{exclusion.areas}{Definition domain of spectra that have to be excluded 
-of the analysis (ppm). By default, the water region is excluded 
+\item{exclusion.areas}{Definition domain of spectra that have to be excluded
+of the analysis (ppm). By default, the water region is excluded
 (4.5-5.1 ppm).}
 
-\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel. 
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
 Default to \code{TRUE}.}
 }
 \value{

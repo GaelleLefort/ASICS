@@ -6,8 +6,8 @@
 #' @param data a data frame containing omics dataset with samples in columns and
 #' features of interest in rows (metabolites/buckets...).
 #' @param design a data frame describing the colums of \code{data} with at
-#' least two columns, the first one corresponding to the column names of 
-#' \code{data}. Default to NULL (in which case, the column names of \code{data} 
+#' least two columns, the first one corresponding to the column names of
+#' \code{data}. Default to NULL (in which case, the column names of \code{data}
 #' are used for study design).
 #' @param feature_info a data frame describing the rows of \code{data} with
 #' at least two columns, the first one corresponding to the row names of
@@ -16,8 +16,8 @@
 #' @param zero.threshold remove features having a proportion of zeros larger
 #' than or equal to \code{zero.threshold}. Default to \code{100}.
 #' @param zero.group variable name of design data frame specifying the group
-#' variable used to remove features with a proportion of zeros larger than or 
-#' equal to \code{zero.threshold} within the group. Default to \code{NULL}, no 
+#' variable used to remove features with a proportion of zeros larger than or
+#' equal to \code{zero.threshold} within the group. Default to \code{NULL}, no
 #' group.
 #' @param outliers names of the outliers (samples) to remove.
 #'
@@ -113,9 +113,9 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
 #' \code{\link{SummarizedExperiment}} object obtained from the
 #' \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained 
+#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained
 #' from the \code{\link{formatForAnalysis}} function.
-#' @param scale.unit logical. If \code{TRUE}, data are scaled to unit variance 
+#' @param scale.unit logical. If \code{TRUE}, data are scaled to unit variance
 #' prior PCA
 #' @param type.data type of data used for the analysis (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
@@ -359,9 +359,9 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' \code{\link{SummarizedExperiment}} object obtained with the
 #' \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained 
+#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained
 #' with the \code{\link{formatForAnalysis}} function.
-#' @param condition the name of the design variable (two level factor) 
+#' @param condition the name of the design variable (two level factor)
 #' specifying the response to be explained.
 #' @param scale.unit logical. If \code{TRUE}, data are scaled to unit variance
 #' @param cross.val number of cross validation folds.
@@ -370,7 +370,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @param orthoI parameter of the \code{\link{opls}} function (package
 #' \code{\link{ropls}}) specifying the number of orthogonal components. When set
 #' to \code{NA}, OPLS is performed and the number of orthogonal components is
-#' automatically tuned with cross-validation (with a maximum of 9 orthogonal 
+#' automatically tuned with cross-validation (with a maximum of 9 orthogonal
 #' components). Default to \code{NA}.
 #' @param type.data type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
@@ -378,7 +378,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #'
 #' @return A S4 object of class \linkS4class{AnalysisResults} containing OPLS-DA
 #' results.
-#' 
+#'
 #' @seealso \linkS4class{AnalysisResults}
 #'
 #' @references Thevenot, E.A., Roux, A., Xu, Y., Ezan, E., Junot, C. 2015.
@@ -543,7 +543,7 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
       order(as.numeric(rownames(res.oplsda@mean.by.group))),]
     vip$VIP[!vip$influential] <- NA
 
-    # Value (in p.p.m) of the bucket correspond to the center so middle points
+    # Value (in ppm) of the bucket correspond to the center so middle points
     #between all buckets are needed to visualize influential buckets with
     #another color
     data_res <- data.frame(buckets = c(buckets_num,
@@ -564,7 +564,7 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
       geom_line(aes(group=1), na.rm = TRUE) + theme_bw() +
       scale_x_reverse(limits = rev(c(xlim[1], xlim[2]))) +
       ylim(c(ylim[1], ylim[2])) +
-      labs(x = "Chemical shift (in p.p.m.)", y = "Intensity") +
+      labs(x = "Chemical shift (in ppm)", y = "Intensity") +
       scale_colour_gradientn(colours = c("#F7F76C", "#D7191C"))
 
     to_plot[[pos]] <- p_buckets
@@ -586,7 +586,7 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 #' Perform Kruskal-Wallis tests on a \code{\link{SummarizedExperiment}} object
 #' obtained with the \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained 
+#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained
 #' with the \code{\link{formatForAnalysis}} function.
 #' @param condition the name of the design variable (two level factor)
 #' specifying the group of each sample.
@@ -607,11 +607,11 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 #' quantif_path <- system.file("extdata", "results_ASICS.txt",
 #'                             package = "ASICSdata")
 #' quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
-#' 
+#'
 #' # Import design
 #' design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                  package = "ASICSdata"), header = TRUE)
-#' 
+#'
 #' # Create object for analysis and remove features with more than 25% of zeros
 #' analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
@@ -739,7 +739,7 @@ kruskalWallis <- function(analysis_data, condition,
                                 colnames(res.tests@mean.by.group)[1]),
                          NA)
 
-    # Value (in p.p.m) of the bucket correspond to the center so middle points
+    # Value (in ppm) of the bucket correspond to the center so middle points
     #between all buckets are needed to visualize influential buckets with
     #another color
     data_res <- data.frame(buckets = c(buckets_num,
@@ -760,7 +760,7 @@ kruskalWallis <- function(analysis_data, condition,
       geom_line(aes(group=1), na.rm = TRUE, size = 0.7) + theme_bw() +
       scale_x_reverse(limits = rev(c(xlim[1], xlim[2]))) +
       ylim(c(ylim[1], ylim[2])) +
-      labs(x = "Chemical shift (in p.p.m.)", y = "Intensity") +
+      labs(x = "Chemical shift (in ppm)", y = "Intensity") +
       scale_colour_manual(name = "Significatively higher in:",
                           values = c("blue", "red"), na.translate = TRUE,
                           na.value = "grey70")

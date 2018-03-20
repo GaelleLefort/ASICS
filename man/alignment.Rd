@@ -10,13 +10,13 @@ alignment(spectra, baseline.threshold = 0.02, reference = NULL,
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shift in rows.
 Colnames of this data frame correspond to pure metabolite names and rownames
-to chemical shift grid (in p.p.m).}
+to chemical shift grid (in ppm).}
 
 \item{baseline.threshold}{Value of baseline threshold used to identify peaks.
 Default to 0.02.}
 
-\item{reference}{Index of the reference spectrum used for the alignment. 
-Default to \code{NULL}, \emph{i.e.} the reference spectrum is automatically 
+\item{reference}{Index of the reference spectrum used for the alignment.
+Default to \code{NULL}, \emph{i.e.} the reference spectrum is automatically
 detected with the \code{\link[speaq]{findRef}} function of the \code{speaq}
 package.}
 
@@ -24,7 +24,7 @@ package.}
 }
 \value{
 A data frame with aligned spectra in columns and chemical shifts
-(in p.p.m.) in rows.
+(in ppm) in rows.
 }
 \description{
 Align spectra of a data frame with the CluPA algorithm (Vu et al., (2011))

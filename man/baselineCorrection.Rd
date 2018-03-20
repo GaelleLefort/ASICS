@@ -7,19 +7,19 @@
 baselineCorrection(spectra, parallel = TRUE)
 }
 \arguments{
-\item{spectra}{Data frame with spectra in columns and chemical shifts in 
-rows. Colnames of this data frame correspond to pure metabolite names and 
-rownames to chemical shift grid (in p.p.m).}
+\item{spectra}{Data frame with spectra in columns and chemical shifts in
+rows. Colnames of this data frame correspond to pure metabolite names and
+rownames to chemical shift grid (in ppm).}
 
-\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel. 
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
 Default to \code{TRUE}.}
 }
 \value{
 A data frame with baseline corrected spectra in columns and chemical
-shifts (in p.p.m.) in rows.
+shifts (in ppm) in rows.
 }
 \description{
-Apply a baseline correction to a spectra with the algorithm described in 
+Apply a baseline correction to a spectra with the algorithm described in
 Wang et al. (2013).
 }
 \examples{

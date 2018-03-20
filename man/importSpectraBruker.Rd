@@ -12,25 +12,25 @@ importSpectraBruker(name.dir, which.spectra = "last",
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each
 subfolder contains the Bruker files of this sample.}
 
-\item{which.spectra}{If there is more than one spectrum by sample, number of 
-the spectrum to import (either \code{"first"}, \code{"last"} or its number). 
+\item{which.spectra}{If there is more than one spectrum by sample, number of
+the spectrum to import (either \code{"first"}, \code{"last"} or its number).
 Default to \code{"last"}.}
 
 \item{baseline.correction}{Logical. If \code{TRUE} a baseline correction is
 applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.}
 
 \item{ppm.grid}{Numeric vector of a unique grid (definition domain) for all
-spectra (in ppm). Default to \code{NULL} (in which case, the default grid of 
+spectra (in ppm). Default to \code{NULL} (in which case, the default grid of
 the pure library is used).}
 
 \item{sample.names}{Character vector of sample names. Default to \code{NULL}
 (in which case, folder names are used).}
 
-\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel. 
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
 Default to \code{TRUE}.}
 }
 \value{
-A data frame with spectra in columns and chemical shifts (in p.p.m.)
+A data frame with spectra in columns and chemical shifts (in ppm)
 in rows.
 }
 \description{

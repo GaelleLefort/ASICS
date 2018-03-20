@@ -9,7 +9,7 @@ kruskalWallis(analysis_data, condition, correction = c("BH", "bonferroni",
   type.data = "quantifications")
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained 
+\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained
 with the \code{\link{formatForAnalysis}} function.}
 
 \item{condition}{the name of the design variable (two level factor)

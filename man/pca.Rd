@@ -9,10 +9,10 @@ pca(analysis_data, scale.unit = TRUE, type.data = "quantifications",
   condition = NULL)
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained 
+\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained
 from the \code{\link{formatForAnalysis}} function.}
 
-\item{scale.unit}{logical. If \code{TRUE}, data are scaled to unit variance 
+\item{scale.unit}{logical. If \code{TRUE}, data are scaled to unit variance
 prior PCA}
 
 \item{type.data}{type of data used for the analysis (\emph{e.g.,}
