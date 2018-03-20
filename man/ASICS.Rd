@@ -20,7 +20,7 @@ for the quantification (ppm). By default, the water region is excluded
 
 \item{pure.library}{an object of class \linkS4class{PureLibrary} containing
 the reference spectra (pure metabolite spectra). If \code{NULL}, the library
-included in the package (that contains 175 reference spectra) is used}
+included in the package (that contains 180 reference spectra) is used.}
 
 \item{threshold.noise}{threshold for signal noise. Default to 0.02.}
 
@@ -35,7 +35,7 @@ An object of type \linkS4class{ASICSResults} containing the
 quantification results.
 }
 \description{
-Quantification of 1D 1H NMR spectra with ASICS method using a library of 175
+Quantification of 1D 1H NMR spectra with ASICS method using a library of
 pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 }
 \examples{

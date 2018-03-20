@@ -1,6 +1,6 @@
 #' Automatic Statistical Identification in Complex Spectra
 #'
-#' Quantification of 1D 1H NMR spectra with ASICS method using a library of 175
+#' Quantification of 1D 1H NMR spectra with ASICS method using a library of
 #' pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 #'
 #' @param spectra_obj an object of class \linkS4class{Spectra} obtained with the
@@ -11,7 +11,7 @@
 #' @param max.shift maximum chemical shift allowed (in ppm). Default to 0.02.
 #' @param pure.library an object of class \linkS4class{PureLibrary} containing
 #' the reference spectra (pure metabolite spectra). If \code{NULL}, the library
-#' included in the package (that contains 175 reference spectra) is used
+#' included in the package (that contains 180 reference spectra) is used.
 #' @param threshold.noise threshold for signal noise. Default to 0.02.
 #' @param seed random seed to control randomness in the algorithm (used in the
 #' estimation of the significativity of a given metabolite concentration)

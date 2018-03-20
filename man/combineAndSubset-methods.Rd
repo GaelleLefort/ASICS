@@ -39,8 +39,8 @@
 \item{...}{objects to be concatenated}
 }
 \value{
-A subset of the original object or a single object containing all
-original objects
+A \linkS4class{Spectra} object containing a part of the original
+object or combining other \linkS4class{Spectra} objects
 }
 \description{
 Methods available to combine multiple objects or to extract a subset of one

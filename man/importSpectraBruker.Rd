@@ -12,8 +12,10 @@ importSpectraBruker(name.dir, which.spectra = "last",
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each
 subfolder contains the Bruker files of this sample.}
 
-\item{which.spectra}{If there is more than one spectrum by sample, number of
-the spectrum to import (either \code{"first"}, \code{"last"} or its number).
+\item{which.spectra}{If there is more than one spectrum by sample, which is
+the spectrum to import (either always the first one with \code{which.spectra
+= "first"}, always the last one with \code{which.spectra = "last"} or a
+vector containing the number of each spectra to import).
 Default to \code{"last"}.}
 
 \item{baseline.correction}{Logical. If \code{TRUE} a baseline correction is
