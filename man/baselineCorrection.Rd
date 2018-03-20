@@ -23,6 +23,8 @@ Apply a baseline correction to a spectra with the algorithm described in
 Wang et al. (2013).
 }
 \examples{
+current_path <- file.path(system.file("extdata", package = "ASICS"),
+                          "spectra_example.txt")
 spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
 spectra_base_cor <- baselineCorrection(spectra_data)
 }

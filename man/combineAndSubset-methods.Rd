@@ -53,5 +53,5 @@ spectra_data <- importSpectraBruker(current_path)
 spectra_obj <- createSpectra(spectra_data)
 
 # Extract the first sample
-spectra_obj[1:3]
+spectra_obj[1]
 }
