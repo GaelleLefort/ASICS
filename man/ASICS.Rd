@@ -9,25 +9,25 @@ ASICS(spectra_obj, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
   seed = 1234, parallel = TRUE)
 }
 \arguments{
-\item{spectra_obj}{an object of class \linkS4class{Spectra} obtained with the
-function \link{createSpectra}}
+\item{spectra_obj}{An object of class \linkS4class{Spectra} obtained with the
+function \link{createSpectra}.}
 
-\item{exclusion.areas}{definition domain of spectra that has to be excluded
+\item{exclusion.areas}{Definition domain of spectra that has to be excluded
 for the quantification (ppm). By default, the water region is excluded
 (4.5-5.1 ppm).}
 
-\item{max.shift}{maximum chemical shift allowed (in ppm). Default to 0.02.}
+\item{max.shift}{Maximum chemical shift allowed (in ppm). Default to 0.02.}
 
-\item{pure.library}{an object of class \linkS4class{PureLibrary} containing
+\item{pure.library}{An object of class \linkS4class{PureLibrary} containing
 the reference spectra (pure metabolite spectra). If \code{NULL}, the library
 included in the package (that contains 180 reference spectra) is used.}
 
-\item{threshold.noise}{threshold for signal noise. Default to 0.02.}
+\item{threshold.noise}{Threshold for signal noise. Default to 0.02.}
 
-\item{seed}{random seed to control randomness in the algorithm (used in the
-estimation of the significativity of a given metabolite concentration)}
+\item{seed}{Random seed to control randomness in the algorithm (used in the
+estimation of the significativity of a given metabolite concentration).}
 
-\item{parallel}{logical. If \code{TRUE}, the function is run in parallel.
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
 Default to \code{TRUE}.}
 }
 \value{

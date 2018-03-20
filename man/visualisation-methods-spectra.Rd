@@ -15,21 +15,21 @@
   ylim = NULL, pure.library = NULL, add.metab = NULL, ...)
 }
 \arguments{
-\item{x}{an object of class \linkS4class{Spectra},
-\linkS4class{PureLibrary} or \linkS4class{ASICSResults}}
+\item{x}{An object of class \linkS4class{Spectra},
+\linkS4class{PureLibrary} or \linkS4class{ASICSResults}.}
 
-\item{y}{currently not used}
+\item{y}{Currently not used.}
 
-\item{xlim, ylim}{boundaries for x and y, respectively}
+\item{xlim, ylim}{Boundaries for x and y, respectively.}
 
-\item{...}{currently not used}
+\item{...}{Currently not used.}
 
-\item{idx}{index of the spectrum to plot. Default to 1.}
+\item{idx}{Index of the spectrum to plot. Default to 1.}
 
-\item{pure.library}{pure library used for the quantification. Default to
+\item{pure.library}{Pure library used for the quantification. Default to
 \code{NULL} (in which case, the library included in the package is used).}
 
-\item{add.metab}{name of one metabolite to add to the plot. Default to
+\item{add.metab}{Name of one metabolite to add to the plot. Default to
 \code{NULL} (in which case, no pure spectrum added to the plot).}
 }
 \value{

@@ -12,13 +12,13 @@
   ylim = NULL)
 }
 \arguments{
-\item{x}{an object of class \linkS4class{AnalysisResults}}
+\item{x}{An object of class \linkS4class{AnalysisResults}.}
 
-\item{y}{currently not used}
+\item{y}{Currently not used.}
 
-\item{...}{currently not used}
+\item{...}{Currently not used.}
 
-\item{graph}{a vector specifying what to plot. Allowed values are
+\item{graph}{A vector specifying what to plot. Allowed values are
 \code{"eig"} for the screegraph (PCA), \code{"ind"} for plot of individuals
 (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA),
 \code{"boxplot"} for boxplots of test results and \code{"buckets"} to show
@@ -26,15 +26,15 @@ significant or influential buckets on the mean spectrum.
 Default value is \code{NULL} (\emph{i.e.,} \code{c("ind", "var")} for PCA and
 OPLS-DA and \code{c("boxplot")} for tests).}
 
-\item{add.label}{if \code{TRUE}, labels are added on individual plot.}
+\item{add.label}{If \code{TRUE}, labels are added on individual plot.}
 
-\item{axes}{a numeric vector of length 2 specifying the dimensions to be
+\item{axes}{A numeric vector of length 2 specifying the dimensions to be
 plotted for individual and variable plots.}
 
-\item{col.ind}{a character specifying the name of the design variable used
+\item{col.ind}{A character specifying the name of the design variable used
 to color the observations by groups for PCA individual plot.}
 
-\item{xlim, ylim}{boundaries for x and y, respectively.}
+\item{xlim, ylim}{Boundaries for x and y, respectively.}
 }
 \value{
 \itemize{

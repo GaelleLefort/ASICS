@@ -3,23 +3,23 @@
 #' Create a useful object for analysis with the omics dataset, informations
 #' (metabolites/buckets...) and study design.
 #'
-#' @param data a data frame containing omics dataset with samples in columns and
+#' @param data A data frame containing omics dataset with samples in columns and
 #' features of interest in rows (metabolites/buckets...).
-#' @param design a data frame describing the colums of \code{data} with at
+#' @param design A data frame describing the colums of \code{data} with at
 #' least two columns, the first one corresponding to the column names of
 #' \code{data}. Default to NULL (in which case, the column names of \code{data}
 #' are used for study design).
-#' @param feature_info a data frame describing the rows of \code{data} with
+#' @param feature_info A data frame describing the rows of \code{data} with
 #' at least two columns, the first one corresponding to the row names of
 #' \code{data}. Default to NULL (in which case, the row names of \code{data} are
 #' used for feature information).
-#' @param zero.threshold remove features having a proportion of zeros larger
+#' @param zero.threshold Remove features having a proportion of zeros larger
 #' than or equal to \code{zero.threshold}. Default to \code{100}.
-#' @param zero.group variable name of design data frame specifying the group
+#' @param zero.group Variable name of design data frame specifying the group
 #' variable used to remove features with a proportion of zeros larger than or
 #' equal to \code{zero.threshold} within the group. Default to \code{NULL}, no
 #' group.
-#' @param outliers names of the outliers (samples) to remove.
+#' @param outliers Names of the outliers (samples) to remove.
 #'
 #' @return An object of type \code{\link{SummarizedExperiment}}.
 #'
@@ -113,14 +113,14 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
 #' \code{\link{SummarizedExperiment}} object obtained from the
 #' \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained
+#' @param analysis_data A \code{\link{SummarizedExperiment}} object obtained
 #' from the \code{\link{formatForAnalysis}} function.
-#' @param scale.unit logical. If \code{TRUE}, data are scaled to unit variance
-#' prior PCA
-#' @param type.data type of data used for the analysis (\emph{e.g.,}
+#' @param scale.unit Logical. If \code{TRUE}, data are scaled to unit variance
+#' prior PCA.
+#' @param type.data Type of data used for the analysis (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
-#' @param condition the name of the design variable (two level factor)
+#' @param condition The name of the design variable (two level factor)
 #' specifying the groups.
 
 #'
@@ -359,20 +359,20 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' \code{\link{SummarizedExperiment}} object obtained with the
 #' \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained
+#' @param analysis_data A \code{\link{SummarizedExperiment}} object obtained
 #' with the \code{\link{formatForAnalysis}} function.
-#' @param condition the name of the design variable (two level factor)
+#' @param condition The name of the design variable (two level factor)
 #' specifying the response to be explained.
-#' @param scale.unit logical. If \code{TRUE}, data are scaled to unit variance
-#' @param cross.val number of cross validation folds.
-#' @param thres.VIP a number specifying the VIP threshold used to identify
+#' @param scale.unit Logical. If \code{TRUE}, data are scaled to unit variance
+#' @param cross.val Number of cross validation folds.
+#' @param thres.VIP A number specifying the VIP threshold used to identify
 #' influential variables.
-#' @param orthoI parameter of the \code{\link{opls}} function (package
+#' @param orthoI Parameter of the \code{\link{opls}} function (package
 #' \code{\link{ropls}}) specifying the number of orthogonal components. When set
 #' to \code{NA}, OPLS is performed and the number of orthogonal components is
 #' automatically tuned with cross-validation (with a maximum of 9 orthogonal
 #' components). Default to \code{NA}.
-#' @param type.data type of data used for the analyses (\emph{e.g.,}
+#' @param type.data Type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
 #'
@@ -586,14 +586,14 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 #' Perform Kruskal-Wallis tests on a \code{\link{SummarizedExperiment}} object
 #' obtained with the \code{\link{formatForAnalysis}} function
 #'
-#' @param analysis_data a \code{\link{SummarizedExperiment}} object obtained
+#' @param analysis_data A \code{\link{SummarizedExperiment}} object obtained
 #' with the \code{\link{formatForAnalysis}} function.
-#' @param condition the name of the design variable (two level factor)
+#' @param condition The name of the design variable (two level factor)
 #' specifying the group of each sample.
-#' @param correction p-value correction method, see \code{\link{p.adjust}}.
+#' @param correction P-value correction method, see \code{\link{p.adjust}}.
 #' Default to \code{"BH"}.
-#' @param alpha cutoff for adjusted p-values. Default to 0.05.
-#' @param type.data type of data used for the analyses (\emph{e.g.,}
+#' @param alpha Cutoff for adjusted p-values. Default to 0.05.
+#' @param type.data Type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
 #'

@@ -7,8 +7,8 @@
 #'
 #' @description Open the ASICS User's Guide (with default browser)
 #'
-#' @param view logical. If \code{TRUE}, the user's guide will be opened with 
-#' system default browser
+#' @param view Logical. If \code{TRUE}, the user's guide will be opened with
+#' system default browser.
 #' @details The function \code{vignette("ASICS")} will find the short
 #' ASICS vignette that describes the main functions and how to obtain the ASICS
 #' User's Guide.\cr

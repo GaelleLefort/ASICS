@@ -9,26 +9,26 @@ oplsda(analysis_data, condition, scale.unit = TRUE, cross.val = 1,
   thres.VIP = 1, orthoI = NA, type.data = "quantifications")
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained
+\item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
 with the \code{\link{formatForAnalysis}} function.}
 
-\item{condition}{the name of the design variable (two level factor)
+\item{condition}{The name of the design variable (two level factor)
 specifying the response to be explained.}
 
-\item{scale.unit}{logical. If \code{TRUE}, data are scaled to unit variance}
+\item{scale.unit}{Logical. If \code{TRUE}, data are scaled to unit variance}
 
-\item{cross.val}{number of cross validation folds.}
+\item{cross.val}{Number of cross validation folds.}
 
-\item{thres.VIP}{a number specifying the VIP threshold used to identify
+\item{thres.VIP}{A number specifying the VIP threshold used to identify
 influential variables.}
 
-\item{orthoI}{parameter of the \code{\link{opls}} function (package
+\item{orthoI}{Parameter of the \code{\link{opls}} function (package
 \code{\link{ropls}}) specifying the number of orthogonal components. When set
 to \code{NA}, OPLS is performed and the number of orthogonal components is
 automatically tuned with cross-validation (with a maximum of 9 orthogonal
 components). Default to \code{NA}.}
 
-\item{type.data}{type of data used for the analyses (\emph{e.g.,}
+\item{type.data}{Type of data used for the analyses (\emph{e.g.,}
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
 }

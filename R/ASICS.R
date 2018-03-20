@@ -3,19 +3,19 @@
 #' Quantification of 1D 1H NMR spectra with ASICS method using a library of
 #' pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 #'
-#' @param spectra_obj an object of class \linkS4class{Spectra} obtained with the
-#' function \link{createSpectra}
-#' @param exclusion.areas definition domain of spectra that has to be excluded
+#' @param spectra_obj An object of class \linkS4class{Spectra} obtained with the
+#' function \link{createSpectra}.
+#' @param exclusion.areas Definition domain of spectra that has to be excluded
 #' for the quantification (ppm). By default, the water region is excluded
 #' (4.5-5.1 ppm).
-#' @param max.shift maximum chemical shift allowed (in ppm). Default to 0.02.
-#' @param pure.library an object of class \linkS4class{PureLibrary} containing
+#' @param max.shift Maximum chemical shift allowed (in ppm). Default to 0.02.
+#' @param pure.library An object of class \linkS4class{PureLibrary} containing
 #' the reference spectra (pure metabolite spectra). If \code{NULL}, the library
 #' included in the package (that contains 180 reference spectra) is used.
-#' @param threshold.noise threshold for signal noise. Default to 0.02.
-#' @param seed random seed to control randomness in the algorithm (used in the
-#' estimation of the significativity of a given metabolite concentration)
-#' @param parallel logical. If \code{TRUE}, the function is run in parallel.
+#' @param threshold.noise Threshold for signal noise. Default to 0.02.
+#' @param seed Random seed to control randomness in the algorithm (used in the
+#' estimation of the significativity of a given metabolite concentration).
+#' @param parallel Logical. If \code{TRUE}, the function is run in parallel.
 #' Default to \code{TRUE}.
 #'
 #' @return An object of type \linkS4class{ASICSResults} containing the

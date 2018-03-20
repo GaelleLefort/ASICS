@@ -20,8 +20,8 @@
 #' \code{sample.name} and rows correspond to points of \code{ppm.grid}.
 #' @slot quantification Data-frame with identified metabolites and their
 #' relative concentrations.
-#' @slot deformed.library a list of \linkS4class{PureLibrary} containing the
-#' deformed library of each sample.
+#' @slot deformed.library A data frame containing the deformed library of each
+#' sample.
 #'
 #' @section Methods:
 #'   Multiple methods can be applied to \linkS4class{Spectra} objects.
@@ -183,10 +183,10 @@ setMethod(
 
 
 #' @aliases plot.ASICSResults
-#' @param idx index of the spectrum to plot. Default to 1.
-#' @param pure.library pure library used for the quantification. Default to
+#' @param idx Index of the spectrum to plot. Default to 1.
+#' @param pure.library Pure library used for the quantification. Default to
 #' \code{NULL} (in which case, the library included in the package is used).
-#' @param add.metab name of one metabolite to add to the plot. Default to
+#' @param add.metab Name of one metabolite to add to the plot. Default to
 #' \code{NULL} (in which case, no pure spectrum added to the plot).
 #' @export
 #' @rdname visualisation-methods-spectra

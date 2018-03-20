@@ -59,7 +59,7 @@
 \S4method{getNbProtons}{PureLibrary}(object)
 }
 \arguments{
-\item{object}{an object of class \linkS4class{Spectra},
+\item{object}{An object of class \linkS4class{Spectra},
 \linkS4class{PureLibrary}, \linkS4class{ASICSResults} or
 \linkS4class{AnalysisResults}.}
 }

@@ -9,18 +9,18 @@ kruskalWallis(analysis_data, condition, correction = c("BH", "bonferroni",
   type.data = "quantifications")
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained
+\item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
 with the \code{\link{formatForAnalysis}} function.}
 
-\item{condition}{the name of the design variable (two level factor)
+\item{condition}{The name of the design variable (two level factor)
 specifying the group of each sample.}
 
-\item{correction}{p-value correction method, see \code{\link{p.adjust}}.
+\item{correction}{P-value correction method, see \code{\link{p.adjust}}.
 Default to \code{"BH"}.}
 
-\item{alpha}{cutoff for adjusted p-values. Default to 0.05.}
+\item{alpha}{Cutoff for adjusted p-values. Default to 0.05.}
 
-\item{type.data}{type of data used for the analyses (\emph{e.g.,}
+\item{type.data}{Type of data used for the analyses (\emph{e.g.,}
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
 }

@@ -8,28 +8,28 @@ formatForAnalysis(data, design = NULL, feature_info = NULL,
   zero.threshold = 100, zero.group = NULL, outliers = NULL)
 }
 \arguments{
-\item{data}{a data frame containing omics dataset with samples in columns and
+\item{data}{A data frame containing omics dataset with samples in columns and
 features of interest in rows (metabolites/buckets...).}
 
-\item{design}{a data frame describing the colums of \code{data} with at
+\item{design}{A data frame describing the colums of \code{data} with at
 least two columns, the first one corresponding to the column names of
 \code{data}. Default to NULL (in which case, the column names of \code{data}
 are used for study design).}
 
-\item{feature_info}{a data frame describing the rows of \code{data} with
+\item{feature_info}{A data frame describing the rows of \code{data} with
 at least two columns, the first one corresponding to the row names of
 \code{data}. Default to NULL (in which case, the row names of \code{data} are
 used for feature information).}
 
-\item{zero.threshold}{remove features having a proportion of zeros larger
+\item{zero.threshold}{Remove features having a proportion of zeros larger
 than or equal to \code{zero.threshold}. Default to \code{100}.}
 
-\item{zero.group}{variable name of design data frame specifying the group
+\item{zero.group}{Variable name of design data frame specifying the group
 variable used to remove features with a proportion of zeros larger than or
 equal to \code{zero.threshold} within the group. Default to \code{NULL}, no
 group.}
 
-\item{outliers}{names of the outliers (samples) to remove.}
+\item{outliers}{Names of the outliers (samples) to remove.}
 }
 \value{
 An object of type \code{\link{SummarizedExperiment}}.

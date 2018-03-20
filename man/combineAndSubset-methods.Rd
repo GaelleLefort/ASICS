@@ -31,8 +31,8 @@
 \S4method{c}{PureLibrary}(x, ...)
 }
 \arguments{
-\item{x}{an object of class \linkS4class{Spectra},
-\linkS4class{PureLibrary} or \linkS4class{ASICSResults}}
+\item{x}{An object of class \linkS4class{Spectra},
+\linkS4class{PureLibrary} or \linkS4class{ASICSResults}.}
 
 \item{i}{vector of indices specifying which elements to extract}
 

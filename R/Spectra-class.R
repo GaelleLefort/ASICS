@@ -81,7 +81,7 @@ setGeneric("getSpectra",
 #' package.
 #'
 #' @name accessors-methods
-#' @param object an object of class \linkS4class{Spectra},
+#' @param object An object of class \linkS4class{Spectra},
 #' \linkS4class{PureLibrary}, \linkS4class{ASICSResults} or
 #' \linkS4class{AnalysisResults}.
 #'
@@ -134,7 +134,7 @@ setMethod("getSpectra", "Spectra",
 #' Methods available to summarize the various S4 objects of ASICS package.
 #'
 #' @name summary-methods
-#' @param object an object of class \linkS4class{Spectra},
+#' @param object An object of class \linkS4class{Spectra},
 #' \linkS4class{PureLibrary}, \linkS4class{ASICSResults} or
 #' \linkS4class{AnalysisResults}.
 #'
@@ -176,8 +176,8 @@ setMethod(
 )
 
 #' @rdname summary-methods
-#' @param x an object of class \linkS4class{Spectra},
-#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
+#' @param x An object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}.
 #' @export
 #' @aliases length.Spectra
 setMethod(f = "length", signature(x = "Spectra"),
@@ -191,8 +191,8 @@ setMethod(f = "length", signature(x = "Spectra"),
 #' object in ASICS package.
 #'
 #' @name combineAndSubset-methods
-#' @param x an object of class \linkS4class{Spectra},
-#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
+#' @param x An object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}.
 #' @param i vector of indices specifying which elements to extract
 #' @param ... objects to be concatenated
 #'
@@ -260,11 +260,11 @@ setMethod(
 #' Methods available to plot one object in ASICS package.
 #'
 #' @name visualisation-methods-spectra
-#' @param x an object of class \linkS4class{Spectra},
-#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
-#' @param xlim,ylim boundaries for x and y, respectively
-#' @param y currently not used
-#' @param ... currently not used
+#' @param x An object of class \linkS4class{Spectra},
+#' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}.
+#' @param xlim,ylim Boundaries for x and y, respectively.
+#' @param y Currently not used.
+#' @param ... Currently not used.
 #'
 #' @return
 #' \itemize{

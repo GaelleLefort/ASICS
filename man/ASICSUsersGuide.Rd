@@ -7,8 +7,8 @@
 ASICSUsersGuide(view = TRUE)
 }
 \arguments{
-\item{view}{logical. If \code{TRUE}, the user's guide will be opened with 
-system default browser}
+\item{view}{Logical. If \code{TRUE}, the user's guide will be opened with
+system default browser.}
 }
 \value{
 Character string giving the file location. If \code{view = TRUE},

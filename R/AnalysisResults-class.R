@@ -165,22 +165,22 @@ setMethod(
 #' Method available to plot results of analyses in ASICS package.
 #'
 #' @name visualisation-methods-analyses
-#' @param x an object of class \linkS4class{AnalysisResults}
-#' @param y currently not used
-#' @param ... currently not used
-#' @param graph a vector specifying what to plot. Allowed values are
+#' @param x An object of class \linkS4class{AnalysisResults}.
+#' @param y Currently not used.
+#' @param ... Currently not used.
+#' @param graph A vector specifying what to plot. Allowed values are
 #' \code{"eig"} for the screegraph (PCA), \code{"ind"} for plot of individuals
 #' (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA),
 #' \code{"boxplot"} for boxplots of test results and \code{"buckets"} to show
 #' significant or influential buckets on the mean spectrum.
 #' Default value is \code{NULL} (\emph{i.e.,} \code{c("ind", "var")} for PCA and
 #' OPLS-DA and \code{c("boxplot")} for tests).
-#' @param add.label if \code{TRUE}, labels are added on individual plot.
-#' @param axes a numeric vector of length 2 specifying the dimensions to be
+#' @param add.label If \code{TRUE}, labels are added on individual plot.
+#' @param axes A numeric vector of length 2 specifying the dimensions to be
 #' plotted for individual and variable plots.
-#' @param col.ind a character specifying the name of the design variable used
+#' @param col.ind A character specifying the name of the design variable used
 #' to color the observations by groups for PCA individual plot.
-#' @param xlim,ylim boundaries for x and y, respectively.
+#' @param xlim,ylim Boundaries for x and y, respectively.
 #'
 #'
 #' @return

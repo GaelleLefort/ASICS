@@ -29,8 +29,8 @@ columns) with estimated concentrations. Columns are in the same order than
 \item{\code{quantification}}{Data-frame with identified metabolites and their
 relative concentrations.}
 
-\item{\code{deformed.library}}{a list of \linkS4class{PureLibrary} containing the
-deformed library of each sample.}
+\item{\code{deformed.library}}{A data frame containing the deformed library of each
+sample.}
 }}
 
 \section{Methods}{

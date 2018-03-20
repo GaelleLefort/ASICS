@@ -9,17 +9,17 @@ pca(analysis_data, scale.unit = TRUE, type.data = "quantifications",
   condition = NULL)
 }
 \arguments{
-\item{analysis_data}{a \code{\link{SummarizedExperiment}} object obtained
+\item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
 from the \code{\link{formatForAnalysis}} function.}
 
-\item{scale.unit}{logical. If \code{TRUE}, data are scaled to unit variance
-prior PCA}
+\item{scale.unit}{Logical. If \code{TRUE}, data are scaled to unit variance
+prior PCA.}
 
-\item{type.data}{type of data used for the analysis (\emph{e.g.,}
+\item{type.data}{Type of data used for the analysis (\emph{e.g.,}
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
 
-\item{condition}{the name of the design variable (two level factor)
+\item{condition}{The name of the design variable (two level factor)
 specifying the groups.}
 }
 \value{

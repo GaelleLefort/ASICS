@@ -31,12 +31,12 @@
 \S4method{summary}{AnalysisResults}(object)
 }
 \arguments{
-\item{object}{an object of class \linkS4class{Spectra},
+\item{object}{An object of class \linkS4class{Spectra},
 \linkS4class{PureLibrary}, \linkS4class{ASICSResults} or
 \linkS4class{AnalysisResults}.}
 
-\item{x}{an object of class \linkS4class{Spectra},
-\linkS4class{PureLibrary} or \linkS4class{ASICSResults}}
+\item{x}{An object of class \linkS4class{Spectra},
+\linkS4class{PureLibrary} or \linkS4class{ASICSResults}.}
 }
 \value{
 A summary of the object or its length.
