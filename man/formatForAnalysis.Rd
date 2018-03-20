@@ -35,8 +35,9 @@ group.}
 An object of type \code{\link{SummarizedExperiment}}.
 }
 \description{
-Create a useful object for analysis with the omics dataset, informations
-(metabolites/buckets...) and study design.
+Create an object of class \code{\link{SummarizedExperiment}} to use in
+functions \code{\link{pca}}, \code{\link{oplsda}} or
+\code{\link{kruskalWallis}}.
 }
 \examples{
 # Import quantification results

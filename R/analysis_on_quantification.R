@@ -1,7 +1,8 @@
 #' Format data for analysis
 #'
-#' Create a useful object for analysis with the omics dataset, informations
-#' (metabolites/buckets...) and study design.
+#' Create an object of class \code{\link{SummarizedExperiment}} to use in
+#' functions \code{\link{pca}}, \code{\link{oplsda}} or
+#' \code{\link{kruskalWallis}}.
 #'
 #' @param data A data frame containing omics dataset with samples in columns and
 #' features of interest in rows (metabolites/buckets...).
