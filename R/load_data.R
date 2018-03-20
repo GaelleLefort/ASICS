@@ -97,7 +97,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
     ncores <- 1
   }
 
-  #import spectra
+  # import spectra
   if (ncores > 1) {
     imported_spectra <-
       bptry(bplapply(cur_dir_spec, .readNMRBruker, ppm.grid,
@@ -115,7 +115,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
                                 .progress = "text"))
   }
 
-  #if error in a file
+  # if error in a file
   if (any(!bpok(imported_spectra)) |
       any(sapply(imported_spectra, is, "try-error"))) {
     warning(paste0("There is a problem in files for spectra: ",
@@ -131,7 +131,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
                                                    "try-error")]
   }
 
-  #convert in a data frame
+  # convert in a data frame
   imported_spectra <- as.data.frame(do.call(cbind, imported_spectra),
                                     row.names = as.character(ppm.grid))
   colnames(imported_spectra) <- sample.names
@@ -143,12 +143,12 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
 ## Extract a spectrum from Bruker files
 .readNMRBruker <- function(path, ppm.grid, baseline.correction){
 
-  #file paths
+  # file paths
   acq_file <- file.path(path, "acqus")
   spec_file <- file.path(path, "pdata/1/1r")
   proc_file <- file.path(path, "pdata/1/procs")
 
-  #meta-data in acq_file
+  # meta-data in acq_file
   ACQ <- readLines(acq_file)
   TD <- .getBrukerParam(ACQ, "TD")
   SW <- .getBrukerParam(ACQ, "SW")
@@ -158,19 +158,19 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   ENDIAN <- "little"
   SIZE <- ifelse(DTYPA == 0, 4, 8)
 
-  #meta-data in proc_file
+  # meta-data in proc_file
   PROC <- readLines(proc_file)
   OFFSET <- .getBrukerParam(PROC, "OFFSET")
   SI <- .getBrukerParam(PROC, "SI")
 
-  #meta-data in spec_file
+  # meta-data in spec_file
   to.read <- file(spec_file, "rb")
   maxTDSI <- max(TD, SI)
   signal <- rev(readBin(to.read, what = "int", size = SIZE, n = maxTDSI,
                         signed = TRUE, endian = ENDIAN))
   close(to.read)
 
-  #get signal
+  # get signal
   td <- length(signal)
   dppm <- SW / (td - 1)
   pmax <- OFFSET
@@ -184,7 +184,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
     signal[signal < 0] <- 0
   }
 
-  #adapt the grid
+  # adapt the grid
   new_signal <- .changeGrid(signal, ppmseq, ppm.grid)
 
   # normalisation by area under the curve
@@ -193,7 +193,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   return(new_signal)
 }
 
-# find parameter in a bruker file
+## Find parameter in a bruker file
 .getBrukerParam <- function(file, paramStr){
   regexpStr <- paste0("^...", paramStr, "=")
   as.numeric(gsub("^[^=]+= ", "" ,
@@ -277,7 +277,7 @@ baselineCorrection <- function(spectra, parallel = TRUE){
 
   spectra_list <- as.list(spectra)
 
-  #baseline correction
+  # baseline correction
   if (ncores > 1) {
     spectra_bc_list <-
       bptry(bplapply(spectra_list, .baselineCorrector,
@@ -293,7 +293,7 @@ baselineCorrection <- function(spectra, parallel = TRUE){
                                 .progress = "text"))
   }
 
-  #if error in a file
+  # if error in a file
   if (any(!bpok(spectra_bc_list)) |
       any(sapply(spectra_bc_list, is, "try-error"))) {
     warning(paste0("The baseline correction algorithm can not be used for spectra: ",
@@ -307,7 +307,7 @@ baselineCorrection <- function(spectra, parallel = TRUE){
     spectra_bc_list[!(!bpok(spectra_bc_list) | sapply(spectra_bc_list, is,
                                                       "try-error"))]
 
-  #convert in a data frame
+  # convert in a data frame
   spectra_bc <- as.data.frame(do.call(cbind, spectra_list))
   spectra_bc[spectra_bc < 0] <- 0
 
@@ -359,11 +359,11 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
     stop("Rownames of spectra data frame do not contain ppm grid.")
   }
 
-  # Maximum shift
+  # maximum shift
   max_shift <- floor(max.shift / (ASICS::pure_library@ppm.grid[2] -
                                     ASICS::pure_library@ppm.grid[1]))
 
-  # Detect peaks
+  # detect peaks
   peak_list <- detectSpecPeaks(t(spectra),
                                nDivRange = 64,
                                scales = seq(1, 16, 2),
@@ -371,7 +371,7 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
                                SNR.Th = -1,
                                verbose = FALSE)
 
-  # Reference spectrum
+  # reference spectrum
   if (is.null(reference)) {
     reference <- findRef(peak_list)$refInd
   }
@@ -512,7 +512,7 @@ binning <- function(spectra, bin = 0.01,
 
   old_grid <- as.numeric(rownames(spectra))
 
-  #for signal in exclusion.areas, intensity is null (mixture and library)
+  # for signal in exclusion.areas, intensity is null (mixture and library)
   if(!is.null(exclusion.areas)){
     idx_to_remove <-
       unlist(alply(exclusion.areas, 1,
@@ -530,14 +530,14 @@ binning <- function(spectra, bin = 0.01,
     ncores <- 1
   }
 
-  # Compute buckets
+  # compute buckets
   buckets <- seq(max(0.5, min(trunc(old_grid * 10, 1) / 10)) + bin / 2,
                  min(10, max(trunc(old_grid * 10, 1) / 10)) + bin / 2,
                  by = bin)
 
 
   spectra_list <- as.list(spectra)
-  # Buckets values for each spectrum
+  # buckets values for each spectrum
   if (ncores > 1) {
     buckets_values_list <-
       bplapply(spectra_list, .binningSpectrum, old_grid, buckets, bin,
@@ -549,10 +549,10 @@ binning <- function(spectra, bin = 0.01,
     buckets_values_list <- llply(spectra_list, .binningSpectrum, old_grid,
                                  buckets, bin, .progress = "text")
   }
-  #convert in a data frame
+  # convert in a data frame
   buckets_values <- as.data.frame(do.call(cbind, buckets_values_list))
 
-  # Normalisation
+  # normalisation
   spectra_norm <- data.frame(apply(buckets_values, 2, function(value)
     t(value / .AUC(buckets, value))))
   rownames(spectra_norm) <- buckets

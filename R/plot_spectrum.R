@@ -2,7 +2,7 @@
 .plotSpectrum <- function(ASICS.results, idx = 1, xlim = c(0, 10), ylim = NULL,
                           pure.library = NULL, add.metab = NULL) {
 
-  # Original spectrum and reconstituted one
+  # original spectrum and reconstituted one
   spectra <- data.frame(grid = rep(ASICS.results@ppm.grid, 2),
                         mixture = c(ASICS.results@spectra[, idx],
                                     ASICS.results@reconstructed.spectra[, idx]),
@@ -19,7 +19,7 @@
     pure_lib <- pure.library
   }
 
-  # Add a pure spectrum if the user wants
+  # add a pure spectrum if the user wants
   if (!is.null(add.metab) && add.metab %in% pure_lib@sample.name) {
 
     # original pure spectra
@@ -60,7 +60,7 @@
   }
 
   spectra$which_mix <- relevel(spectra$which_mix, "Original spectrum")
-  # Plot with ggplot2
+  # plot with ggplot2
   p1 <- ggplot(spectra) +
     geom_line(aes_string(x = "grid", y = "mixture",
                          colour = "which_mix"), na.rm = TRUE) +

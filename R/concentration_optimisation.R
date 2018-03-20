@@ -5,19 +5,19 @@
 .concentrationOpti <- function(cleaned_spectrum, deformed_library,
                                noises, mixture_weights){
 
-  #Variance matrix of maximum likelihood
+  # variance matrix of maximum likelihood
   A <- as.numeric(1 / sqrt(noises)) * deformed_library@spectra
   VMLE <- solve(t(A)%*%A)
 
-  #First threshold minimisation
+  # first threshold minimisation
   N <- 1000
   C <- t(chol(VMLE))
   ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N, rnorm(nrow(C)*N))
 
-  #Regularization paramater of lasso under positive constraints
+  # regularization paramater of lasso under positive constraints
   se <- sqrt(diag(VMLE))
 
-  #L1 norm of threshold optimisation
+  # L1 norm of threshold optimisation
   nb_draw <- 30
   p <- ncol(VMLE)
   W <- matrix(nrow = nb_draw, ncol = p)
@@ -41,7 +41,7 @@
     }
   }
 
-  #Pseudo MLE estimation
+  # pseudo MLE estimation
   B2 <- try(.lmConstrained(cleaned_spectrum@spectra, deformed_library@spectra,
                            mixture_weights)$coefficients, silent = TRUE)
   if(is(B2, "try-error")){
@@ -49,11 +49,11 @@
                              mixture_weights, 10e-3)$coefficients
   }
 
-  #Compute all thresholds
+  # compute all thresholds
   N <- 10000
   ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N, rnorm(nrow(C)*N))
 
-  #Concentration lasso estimation with positive constraints
+  # concentration lasso estimation with positive constraints
   identified_metab <- (B2 > .tuning(delta0, ZMLE) / delta0) & (B2 > 0)
 
 
@@ -69,7 +69,7 @@
                                   mixture_weights, 10e-3)$coefficients
   }
 
-  #Test of coefficients positivity
+  # test of coefficients positivity
   B_final <- B_final_tot[B_final_tot > 0]
   identified_metab[identified_metab][B_final_tot < 0] <- FALSE
   final_library <- deformed_library[which(identified_metab)]

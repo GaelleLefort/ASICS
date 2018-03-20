@@ -9,24 +9,24 @@
 ## Linear interpolation to adapt old_spectrum on the old grid to the new grid
 .changeGrid <- function(old_spectrum, old_grid, new_grid) {
 
-  #new_grid must be included in old_grid
+  # new_grid must be included in old_grid
   if (new_grid[1] < old_grid[1]) new_grid[1] <- old_grid[1]
   n <- length(old_grid)
   nphi <- length(new_grid)
   if (new_grid[nphi] > old_grid[n]) new_grid[nphi] <- old_grid[n]
 
-  #Combine both grid (1 = old and 0 = new)
+  # combine both grid (1 = old and 0 = new)
   grid_indicator <- rep(c(1, 0), c(n, nphi))
   old_grid[1] <- old_grid[1] - 1e-06
   old_grid[n] <- old_grid[n] + 1e-06
   combined_grid <- c(old_grid, new_grid)
 
-  #Sort combined grid and get points on old grid just before points on new grid
+  # sort combined grid and get points on old grid just before points on new grid
   idx_sorted_grid <- order(combined_grid)
   u <- cumsum(grid_indicator[idx_sorted_grid])
   lower_bound <- u[grid_indicator[idx_sorted_grid] == 0]
 
-  #Spectrum on new grid
+  # spectrum on new grid
   new_spectrum <- old_spectrum[lower_bound] +
     (new_grid - old_grid[lower_bound]) *
     (old_spectrum[(lower_bound + 1)] - old_spectrum[lower_bound]) /
@@ -45,14 +45,14 @@
 #' @importFrom plyr alply
 .removeAreas <- function(spectrum_obj, exclusion.areas, pure.library){
 
-  #default library or not
+  # default library or not
   if(is.null(pure.library)){
     cleaned_library <- ASICS::pure_library
   } else {
     cleaned_library <- pure.library
   }
 
-  #remove extremities of library grid if the spectrum is shorter
+  # remove extremities of library grid if the spectrum is shorter
   cleaned_library@spectra <-
     cleaned_library@spectra[cleaned_library@ppm.grid >=
                               min(spectrum_obj@ppm.grid) &
@@ -65,7 +65,7 @@
                                max(spectrum_obj@ppm.grid)]
 
 
-  #adapt spectrum grid to have the same than library
+  # adapt spectrum grid to have the same than library
   cleaned_spectrum <- new("Spectra",
                           sample.name = spectrum_obj@sample.name,
                           ppm.grid = cleaned_library@ppm.grid,
@@ -76,7 +76,7 @@
                                    ncol = 1))
 
 
-  #for signal in exclusion.areas, intensity is null (mixture and library)
+  # for signal in exclusion.areas, intensity is null (mixture and library)
   if(!is.null(exclusion.areas)){
     idx_to_remove <-
       unlist(alply(exclusion.areas, 1,
@@ -88,11 +88,11 @@
     cleaned_library@spectra[idx_to_remove, ] <- 0
   }
 
-  #remove metabolite without any signal
+  # remove metabolite without any signal
   with_signal <- as.numeric(which(colSums(cleaned_library@spectra) > 0))
   cleaned_library <- cleaned_library[with_signal]
 
-  #re-normalisation of mixture and pure spectra library
+  # re-normalisation of mixture and pure spectra library
   cleaned_library@spectra <- apply(cleaned_library@spectra, 2,
                                    function(x)
                                      t(x / .AUC(cleaned_library@ppm.grid, x)))
@@ -106,7 +106,7 @@
 }
 
 
-## remove metabolites that cannot belong to the mixture
+## Remove metabolites that cannot belong to the mixture
 #' @importFrom plyr aaply
 .cleanLibrary <- function(cleaned_spectrum, cleaned_library,
                           threshold.noise, nb_points_shift){
@@ -132,21 +132,21 @@
 ## Extend each peak in signal of nb_points_shift
 .signalWithShift <- function(signal, nb_points_shift) {
 
-  #Get indexes with a signal
+  # get indexes with a signal
   idx_signal <- which(signal == 1)
 
-  #Get extremities of peaks
+  # get extremities of peaks
   min_extremities <- idx_signal[!((idx_signal - 1) %in% idx_signal)]
   max_extremities <- idx_signal[!((idx_signal + 1) %in% idx_signal)]
 
-  #New signal indexes with shift
+  # new signal indexes with shift
   shift_before <- unlist(lapply(min_extremities,
                                 function(x) max(x - nb_points_shift, 1):x))
   shift_after <- unlist(lapply(max_extremities,
                                function(x) x:min(x + nb_points_shift,
                                                  length(signal))))
 
-  #New signal
+  # new signal
   signal[c(shift_before, shift_after)] <- 1
 
   return(signal)
@@ -156,22 +156,22 @@
 ## Non-negative least square (formula : y~x with weights w)
 #' @importFrom quadprog solve.QP
 .lmConstrained <- function(y, x, w = 1, precision = 1){
-  #constraints
+  # constraints
   Amat <- diag(rep(1, ncol(x)))
   b0 <- rep(0, ncol(x))
 
-  #quadratic function to be minimized
+  # quadratic function to be minimized
   D <- t(x) %*% (w * x) * precision
   dlittle <- t(x) %*% (w * y) * precision
 
-  #optimisation
+  # optimisation
   res_lm <- solve.QP(D, dlittle, Amat, b0)
 
-  #coefficients
+  # coefficients
   coefficients <- res_lm$solution
   coefficients[coefficients < 0] <- 0
 
-  #residuals
+  # residuals
   residuals <- y - x %*% coefficients
 
   return(list(coefficients = coefficients, residuals = residuals))

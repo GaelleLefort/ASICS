@@ -11,14 +11,14 @@
   nb_interpolation_points <- 3
   nb_smooth_points <- 10
 
-  #1 - Calculating the expected value of noise standard deviation
+  # 1 - calculating the expected value of noise standard deviation
   SDset <- .getSD(intensity, sliding_windows)
   sigma <- .findNoiseSD(SDset, convergence_ratio)
 
-  #2 & 3 - Classification of windows and spectral points
+  # 2 & 3 - classification of windows and spectral points
   SNvector <- .isSignal(sigma, SDset, nb_central_points, cutoff_threshold)
 
-  #4 - Baseline fitting
+  # 4 - baseline fitting
   sStart <- .getSignalStart(SNvector)
   sEnd <- sort(1 + length(intensity) - .getSignalStart(rev(SNvector)))
   tempBaseline <- .getTempBaseline(intensity, sStart, sEnd,

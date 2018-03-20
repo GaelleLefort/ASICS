@@ -108,7 +108,7 @@ ASICS <- function(spectra_obj,
                            max.shift = 0.02, pure.library = NULL,
                            threshold.noise = 0.02, seed = 1234){
 
-  ##Seed
+  # seed
   set.seed(seed)
 
   #-----------------------------------------------------------------------------
@@ -119,7 +119,7 @@ ASICS <- function(spectra_obj,
   cleaned_spectrum <- cleaned_obj$cleaned_spectrum
   cleaned_library <- cleaned_obj$cleaned_library
 
-  #number of points on library grid corresponding to maximum shift
+  # number of points on library grid corresponding to maximum shift
   nb_points_shift <- floor(max.shift / (cleaned_library@ppm.grid[2] -
                                           cleaned_library@ppm.grid[1]))
 
@@ -132,7 +132,7 @@ ASICS <- function(spectra_obj,
   #### Find the best translation between each pure spectra and mixture ####
   #and sort metabolites by regression residuals
 
-  #Compute weights
+  # compute weights
   s1 <- 0.172 #standard deviation of multiplicative noise
   s2 <- 0.15 #standard deviation of additive noise
   noises <- abs(cleaned_spectrum@spectra) * s1 ^ 2 + s2 ^ 2
@@ -159,15 +159,15 @@ ASICS <- function(spectra_obj,
   #-----------------------------------------------------------------------------
   #### Results ####
 
-  #Reconstituted mixture with estimated coefficents and
+  # reconstituted mixture with estimated coefficents
   est_mixture <- final_library@spectra %*% res_opti$B_final
   pure_lib_final_conc <- final_library
   pure_lib_final_conc@spectra <- final_library@spectra %*%
     diag(res_opti$B_final)
 
-  #Compute relative concentration of identified metabolites
+  # compute relative concentration of identified metabolites
   relative_concentration <- res_opti$B_final / final_library@nb.protons
-  #Sort library according to relative concentration
+  # sort library according to relative concentration
   sorted_idx <- sort(relative_concentration, decreasing = TRUE,
                      index.return = TRUE)$ix
   pure_lib_final_sorted <- pure_lib_final_conc[sorted_idx]
@@ -176,7 +176,7 @@ ASICS <- function(spectra_obj,
   rownames(present_metab) <- pure_lib_final_sorted@sample.name
   colnames(present_metab) <- spectrum_obj@sample.name
 
-  #Change format of pure library
+  # change format of pure library
   temp_df <- as.data.frame(pure_lib_final_sorted@spectra)
   rownames(temp_df) <- pure_lib_final_sorted@ppm.grid
   colnames(temp_df) <- pure_lib_final_sorted@sample.name
@@ -191,7 +191,7 @@ ASICS <- function(spectra_obj,
                                         nrow(pure_lib_format)),
                            pure_lib_format)
 
-  #List to return
+  # Object to return
   res_object <- new(Class = "ASICSResults",
                     sample.name = cleaned_spectrum@sample.name,
                     ppm.grid = cleaned_spectrum@ppm.grid,

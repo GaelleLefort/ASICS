@@ -53,7 +53,7 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
   }
 
   # if design and feature_info are NULL use rownames and colnames
-  #else same order than for data
+  # else same order than for data
   if (is.null(design)) {
     design <- data.frame(sample.name = colnames(data))
   } else {
@@ -79,7 +79,7 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
                                    rowData = feature_info,
                                    colData = design)
 
-  ## clean data
+  # clean data
   clean_data <- raw_data
   if (zero.threshold != 100) {
     if (is.null(zero.group)) {
@@ -414,14 +414,14 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
     stop("'condition' must be a variable name of the design data frame")
   }
 
-  ## scale.unit
+  # scale.unit
   if (scale.unit) {
     scale_unit <- "standard"
   } else {
     scale_unit <- "none"
   }
 
-  ## opls-da and cross-validation
+  # opls-da and cross-validation
   if (cross.val > 1) {
     folds <- sample(cut(seq_len(ncol(analysis_data)), breaks = cross.val,
                         labels = FALSE), ncol(analysis_data))
@@ -442,15 +442,15 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
                               plotL = FALSE, printL = FALSE))
   }
 
-  ## prediction error
+  # prediction error
   cv_error <- round(mean(sapply(cv_oplsda, .errorPred,
                                 analysis_data, condition)), 2)
 
-  #VIP
+  # VIP
   VIP_all <- sapply(cv_oplsda, getVipVn)
   mean_VIP <- apply(VIP_all, 1, mean)
 
-  ## Influencial feature
+  # influencial feature
   mean_by_group <- aggregate(t(assay(analysis_data, 1)),
                              list(colData(analysis_data)[, condition]), mean)
   rownames(mean_by_group) <- mean_by_group[, 1]
@@ -535,17 +535,17 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
   if ("buckets" %in% graph) {
     data_wide <- as.data.frame(assay(res.oplsda@dataset, 1))
     buckets_num <- as.numeric(rownames(data_wide))
-    # Compute median spectrum
+    # compute median spectrum
     spect_med <- apply(t(data_wide), 2, median)
 
-    # Compute mean of VIP
+    # compute mean of VIP
     vip <- res.oplsda@mean.by.group[
       order(as.numeric(rownames(res.oplsda@mean.by.group))),]
     vip$VIP[!vip$influential] <- NA
 
-    # Value (in ppm) of the bucket correspond to the center so middle points
-    #between all buckets are needed to visualize influential buckets with
-    #another color
+    # value (in ppm) of the bucket correspond to the center so middle points
+    # between all buckets are needed to visualize influential buckets with
+    # another color
     data_res <- data.frame(buckets = c(buckets_num,
                                        buckets_num - diff(buckets_num)[1]/2),
                            spectrum = c(spect_med, rep(NA, length(buckets_num))),
@@ -557,7 +557,7 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
     data_res[1, 2] <- 0
     data_res$spectrum <- na.approx(data_res$spectrum, data_res$buckets)
 
-    # Plots
+    # plots
     if (is.null(ylim)) ylim <- c(0, max(data_res$spectrum))
     p_buckets <-
       ggplot(data_res, aes_string("buckets", "spectrum", colour = "VIP")) +
@@ -655,7 +655,7 @@ kruskalWallis <- function(analysis_data, condition,
                                decreasing = FALSE), ]
   rownames(res_tests) <- NULL
 
-  # Add condition to analysis_data with the variable name: conditionTest
+  # âdd condition to analysis_data with the variable name: conditionTest
   colData(analysis_data)$conditionTest <- colData(analysis_data)[, condition]
 
   resTest_obj <- new(Class = "AnalysisResults",
@@ -680,12 +680,12 @@ kruskalWallis <- function(analysis_data, condition,
 
   # graph
   if ("boxplot" %in% graph) {
-    #Keep only significant features
+    # keep only significant features
     sig <- res.tests@mean.by.group$significant
     data_wide <- data_wide[rownames(data_wide) %in%
                              rownames(res.tests@mean.by.group)[sig], ]
 
-    #Reshape the data frame
+    # reshape the data frame
     data_long <- reshape(data_wide,
                          idvar = "feature", ids = row.names(data_wide),
                          times = names(data_wide), timevar = "sample",
@@ -694,14 +694,14 @@ kruskalWallis <- function(analysis_data, condition,
     data_long$group <- rep(colData(res.tests@dataset)[, "conditionTest"],
                            each = nrow(data_wide))
 
-    #Boxplot stats
+    # boxplot stats
     stat <- tapply(data_long$quantif, list(data_long$feature, data_long$group),
                    function(x) boxplot.stats(x))
     stats <- unlist(tapply(data_long$quantif, list(data_long$feature,
                                                    data_long$group),
                            function(x) boxplot.stats(x)$stats))
 
-    #New labels with p-values
+    # new labels with p-values
     padj <- res.tests@results[order(res.tests@results$Feature), ]
     padj <- padj[padj$Feature %in% unlist(dimnames(stat)[1]), ]
     padj <- ifelse(padj$Adjusted.p.value < 0.0001, "< 0.0001",
@@ -728,10 +728,10 @@ kruskalWallis <- function(analysis_data, condition,
 
   if ("buckets" %in% graph) {
     buckets_num <- as.numeric(rownames(data_wide))
-    # Compute median spectrum
+    # compute median spectrum
     spect_med <- apply(t(data_wide), 2, median)
 
-    # Compute direction of change of significant buckets
+    # compute direction of change of significant buckets
     difference <- res.tests@mean.by.group[, 2] - res.tests@mean.by.group[, 1]
     dir_change <- ifelse(res.tests@mean.by.group$significant,
                          ifelse(difference > 0,
@@ -739,9 +739,9 @@ kruskalWallis <- function(analysis_data, condition,
                                 colnames(res.tests@mean.by.group)[1]),
                          NA)
 
-    # Value (in ppm) of the bucket correspond to the center so middle points
-    #between all buckets are needed to visualize influential buckets with
-    #another color
+    # value (in ppm) of the bucket correspond to the center so middle points
+    # between all buckets are needed to visualize influential buckets with
+    # another color
     data_res <- data.frame(buckets = c(buckets_num,
                                        buckets_num - diff(buckets_num)[1]/2),
                            spectrum = c(spect_med, rep(NA, length(buckets_num))),
@@ -752,7 +752,7 @@ kruskalWallis <- function(analysis_data, condition,
     data_res[1, 2] <- 0
     data_res$spectrum <- na.approx(data_res$spectrum, data_res$buckets)
 
-    # Plots
+    # plots
     if (is.null(ylim)) ylim <- c(0, max(data_res$spectrum))
     p_buckets <-
       ggplot(data_res, aes_string("buckets", "spectrum",
