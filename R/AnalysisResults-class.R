@@ -1,6 +1,6 @@
 #' Class \linkS4class{AnalysisResults}
 #'
-#' Objects of class \linkS4class{AnalysisResults} contains results of analyses 
+#' Objects of class \linkS4class{AnalysisResults} contains results of analyses
 #' performed with the functions \code{\link{pca}}, \code{\link{oplsda}} and
 #' \code{\link{kruskalWallis}}.
 #'
@@ -30,7 +30,7 @@
 #'     \item All slots have an accessor \code{get_slot name}, see
 #'     \link[=accessors-methods]{Accessors}
 #'     \item All results contained in an object can be represent in a plot, see
-#'     \link[=visualization-methods-analyses]{Visualization methods}
+#'     \link[=visualisation-methods-analyses]{Visualisation methods}
 #'   }
 #'
 setClass(
@@ -160,18 +160,18 @@ setMethod(
 
 
 
-#' Visualization methods
+#' Visualisation methods
 #'
 #' Method available to plot results of analyses in ASICS package.
 #'
-#' @name visualization-methods-analyses
+#' @name visualisation-methods-analyses
 #' @param x an object of class \linkS4class{AnalysisResults}
 #' @param y currently not used
 #' @param ... currently not used
-#' @param graph a vector specifying what to plot. Allowed values are 
-#' \code{"eig"} for the screegraph (PCA), \code{"ind"} for plot of individuals 
-#' (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA), 
-#' \code{"boxplot"} for boxplots of test results and \code{"buckets"} to show 
+#' @param graph a vector specifying what to plot. Allowed values are
+#' \code{"eig"} for the screegraph (PCA), \code{"ind"} for plot of individuals
+#' (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA),
+#' \code{"boxplot"} for boxplots of test results and \code{"buckets"} to show
 #' significant or influential buckets on the mean spectrum.
 #' Default value is \code{NULL} (\emph{i.e.,} \code{c("ind", "var")} for PCA and
 #' OPLS-DA and \code{c("boxplot")} for tests).
@@ -185,11 +185,11 @@ setMethod(
 #'
 #' @return
 #' \itemize{
-#' \item PCA: a \code{\link[ggplot2]{ggplot}} plot that allows for the 
-#' visualization of PCA results (eigen values, individuals and variables)
-#' \item OPLS-DA: a \code{\link[ggplot2]{ggplot}} plot that allows for the 
-#' visualization of OPLS-DA results (individuals and variables). If 
-#' \code{cross.val > 1} in \code{\link{oplsda}}, only results on the first fold 
+#' \item PCA: a \code{\link[ggplot2]{ggplot}} plot that allows for the
+#' visualisation of PCA results (eigen values, individuals and variables)
+#' \item OPLS-DA: a \code{\link[ggplot2]{ggplot}} plot that allows for the
+#' visualisation of OPLS-DA results (individuals and variables). If
+#' \code{cross.val > 1} in \code{\link{oplsda}}, only results on the first fold
 #' are plotted.
 #' }
 #'
@@ -223,7 +223,7 @@ NULL
 
 
 #' @aliases plot.AnalysisResults
-#' @rdname visualization-methods-analyses
+#' @rdname visualisation-methods-analyses
 #' @export
 setMethod(
   f = "plot",

@@ -32,8 +32,8 @@ the same order as for \code{sample.name} and rows correspond to points of
     \link[=accessors-methods]{Accessors}
     \item Two objects can be combined or a subset can be extracted, see
     \link[=combineAndSubset-methods]{Combine and subset methods}
-    \item All spectra contained in an object can be represented in a plot, 
-    see \link[=visualization-methods-spectra]{Visualization methods}
+    \item All spectra contained in an object can be represented in a plot,
+    see \link[=visualisation-methods-spectra]{Visualisation methods}
   }
 }
 

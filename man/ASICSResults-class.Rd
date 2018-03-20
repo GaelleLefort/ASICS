@@ -44,7 +44,7 @@ deformed library of each sample.}
     \item Two objects can be combined or a subset can be extracted, see
     \link[=combineAndSubset-methods]{Combine and subset methods}
     \item All spectra contained in an object can be represented in a plot,
-    see \link[=visualization-methods-spectra]{Visualization methods}
+    see \link[=visualisation-methods-spectra]{Visualisation methods}
   }
 }
 

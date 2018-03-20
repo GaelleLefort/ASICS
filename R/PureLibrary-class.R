@@ -1,7 +1,7 @@
 #' Class \code{PureLibrary}
 #'
 #' Objects of class \code{PureLibrary} contain a set of pure metabolite NMR
-#' spectra, used as a reference for the quantification. This class is an 
+#' spectra, used as a reference for the quantification. This class is an
 #' extension of the class \linkS4class{Spectra}, with an additional slot
 #' (number of protons for each metabolite) needed for spectrum quantification.
 #'
@@ -18,8 +18,8 @@
 #'     \link[=accessors-methods]{Accessors}
 #'     \item Two objects can be combined or a subset can be extracted, see
 #'     \link[=combineAndSubset-methods]{Combine and subset methods}
-#'     \item All spectra contained in an object can be represented in a plot, 
-#'     see \link[=visualization-methods-spectra]{Visualization methods}
+#'     \item All spectra contained in an object can be represented in a plot,
+#'     see \link[=visualisation-methods-spectra]{Visualisation methods}
 #'   }
 #'
 #' @seealso \linkS4class{Spectra}

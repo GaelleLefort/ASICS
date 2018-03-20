@@ -24,8 +24,8 @@
 #'     \link[=accessors-methods]{Accessors}
 #'     \item Two objects can be combined or a subset can be extracted, see
 #'     \link[=combineAndSubset-methods]{Combine and subset methods}
-#'     \item All spectra contained in an object can be represented in a plot, 
-#'     see \link[=visualization-methods-spectra]{Visualization methods}
+#'     \item All spectra contained in an object can be represented in a plot,
+#'     see \link[=visualisation-methods-spectra]{Visualisation methods}
 #'   }
 #'
 setClass(
@@ -255,11 +255,11 @@ setMethod(
 
 
 
-#' Visualization methods
+#' Visualisation methods
 #'
 #' Methods available to plot one object in ASICS package.
 #'
-#' @name visualization-methods-spectra
+#' @name visualisation-methods-spectra
 #' @param x an object of class \linkS4class{Spectra},
 #' \linkS4class{PureLibrary} or \linkS4class{ASICSResults}
 #' @param xlim,ylim boundaries for x and y, respectively
@@ -268,12 +268,12 @@ setMethod(
 #'
 #' @return
 #' \itemize{
-#' \item A \code{\link[ggplot2]{ggplot}} plot of all spectra (or of a subset) on 
-#' the same figure for \linkS4class{Spectra} and \linkS4class{PureLibrary} 
+#' \item A \code{\link[ggplot2]{ggplot}} plot of all spectra (or of a subset) on
+#' the same figure for \linkS4class{Spectra} and \linkS4class{PureLibrary}
 #' objects.
-#' \item A \code{\link[ggplot2]{ggplot}} plot of original and reconstructed 
-#' spectra of one sample in the same figure for \linkS4class{ASICSResults} 
-#' object. In addition, one pure metabolite spectrum (as provided in the 
+#' \item A \code{\link[ggplot2]{ggplot}} plot of original and reconstructed
+#' spectra of one sample in the same figure for \linkS4class{ASICSResults}
+#' object. In addition, one pure metabolite spectrum (as provided in the
 #' reference library) and the deformed one can be superimposed to the plot.
 #' }
 #'
@@ -293,7 +293,7 @@ NULL
 #' @importFrom stats reshape
 #' @import ggplot2
 #' @export
-#' @rdname visualization-methods-spectra
+#' @rdname visualisation-methods-spectra
 setMethod(
   f = "plot",
   signature = "Spectra",

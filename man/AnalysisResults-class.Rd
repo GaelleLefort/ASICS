@@ -5,7 +5,7 @@
 \alias{AnalysisResults-class}
 \title{Class \linkS4class{AnalysisResults}}
 \description{
-Objects of class \linkS4class{AnalysisResults} contains results of analyses 
+Objects of class \linkS4class{AnalysisResults} contains results of analyses
 performed with the functions \code{\link{pca}}, \code{\link{oplsda}} and
 \code{\link{kruskalWallis}}.
 }
@@ -41,7 +41,7 @@ associated to the variable is superior to the given threshold for OPLS-DA.}
     \item All slots have an accessor \code{get_slot name}, see
     \link[=accessors-methods]{Accessors}
     \item All results contained in an object can be represent in a plot, see
-    \link[=visualization-methods-analyses]{Visualization methods}
+    \link[=visualisation-methods-analyses]{Visualisation methods}
   }
 }
 

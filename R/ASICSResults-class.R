@@ -33,7 +33,7 @@
 #'     \item Two objects can be combined or a subset can be extracted, see
 #'     \link[=combineAndSubset-methods]{Combine and subset methods}
 #'     \item All spectra contained in an object can be represented in a plot,
-#'     see \link[=visualization-methods-spectra]{Visualization methods}
+#'     see \link[=visualisation-methods-spectra]{Visualisation methods}
 #'   }
 #'
 #' @include Spectra-class.R
@@ -189,7 +189,7 @@ setMethod(
 #' @param add.metab name of one metabolite to add to the plot. Default to
 #' \code{NULL} (in which case, no pure spectrum added to the plot).
 #' @export
-#' @rdname visualization-methods-spectra
+#' @rdname visualisation-methods-spectra
 setMethod(
   f = "plot",
   signature = "ASICSResults",
