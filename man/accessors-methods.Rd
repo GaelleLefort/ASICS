@@ -10,8 +10,8 @@
 \alias{getPpmGrid}
 \alias{getSpectra,Spectra-method}
 \alias{getSpectra}
-\alias{getRecomposedSpectra,ASICSResults-method}
-\alias{getRecomposedSpectra}
+\alias{getReconstructedSpectra,ASICSResults-method}
+\alias{getReconstructedSpectra}
 \alias{getQuantification,ASICSResults-method}
 \alias{getQuantification}
 \alias{getDeformedLibrary,ASICSResults-method}
@@ -38,7 +38,7 @@
 
 \S4method{getSpectra}{Spectra}(object)
 
-\S4method{getRecomposedSpectra}{ASICSResults}(object)
+\S4method{getReconstructedSpectra}{ASICSResults}(object)
 
 \S4method{getQuantification}{ASICSResults}(object)
 

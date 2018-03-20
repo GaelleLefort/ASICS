@@ -1,8 +1,8 @@
 #' Class \linkS4class{ASICSResults}
 #'
-#' Objects of class \linkS4class{ASICSResults} contains results of ASICS 
-#' quantification method for a set of spectra. This object is an extension of 
-#' the class \linkS4class{Spectra}, with additional slots for quantification 
+#' Objects of class \linkS4class{ASICSResults} contains results of ASICS
+#' quantification method for a set of spectra. This object is an extension of
+#' the class \linkS4class{Spectra}, with additional slots for quantification
 #' results, reconstructed spectra and deformed library.
 #'
 #'
@@ -13,10 +13,10 @@
 #' @slot ppm.grid Numeric vector of a unique grid (definition domain) for all
 #' spectra (in ppm).
 #' @slot spectra Numeric matrix of original spectra. Columns contain the spectra
-#' and are in the same order than \code{sample.name}. Rows correspond to points 
+#' and are in the same order than \code{sample.name}. Rows correspond to points
 #' of \code{ppm.grid}.
-#' @slot recomposed.spectra Numeric matrix of reconstructed spectra (in columns)
-#' with estimated concentrations. Columns are in the same order than
+#' @slot reconstructed.spectra Numeric matrix of reconstructed spectra (in
+#' columns) with estimated concentrations. Columns are in the same order than
 #' \code{sample.name} and rows correspond to points of \code{ppm.grid}.
 #' @slot quantification Data-frame with identified metabolites and their
 #' relative concentrations.
@@ -32,7 +32,7 @@
 #'     \link[=accessors-methods]{Accessors}
 #'     \item Two objects can be combined or a subset can be extracted, see
 #'     \link[=combineAndSubset-methods]{Combine and subset methods}
-#'     \item All spectra contained in an object can be represented in a plot, 
+#'     \item All spectra contained in an object can be represented in a plot,
 #'     see \link[=visualization-methods-spectra]{Visualization methods}
 #'   }
 #'
@@ -42,7 +42,7 @@
 setClass(
   Class = "ASICSResults",
   slots = list(
-    recomposed.spectra = "matrix",
+    reconstructed.spectra = "matrix",
     quantification = "data.frame",
     deformed.library = "data.frame"
   ),
@@ -53,8 +53,8 @@ setClass(
 
 #### Accessors
 
-setGeneric("getRecomposedSpectra",
-           function(object) standardGeneric("getRecomposedSpectra")
+setGeneric("getReconstructedSpectra",
+           function(object) standardGeneric("getReconstructedSpectra")
 )
 setGeneric("getQuantification",
            function(object) standardGeneric("getQuantification")
@@ -65,10 +65,10 @@ setGeneric("getDeformedLibrary",
 
 
 #' @export
-#' @aliases getRecomposedSpectra
+#' @aliases getReconstructedSpectra
 #' @rdname accessors-methods
-setMethod("getRecomposedSpectra", "ASICSResults",
-          function(object) return(object@recomposed.spectra)
+setMethod("getReconstructedSpectra", "ASICSResults",
+          function(object) return(object@reconstructed.spectra)
 )
 
 #' @export
@@ -128,7 +128,7 @@ setMethod(
                sample.name = x@sample.name[i],
                ppm.grid = x@ppm.grid,
                spectra = as.matrix(x@spectra[, i]),
-               recomposed.spectra = as.matrix(x@recomposed.spectra[, i]),
+               reconstructed.spectra = as.matrix(x@reconstructed.spectra[, i]),
                quantification = quantification,
                deformed.library = x@deformed.library[x@deformed.library$sample
                                                      %in% x@sample.name[i], ]))
@@ -173,8 +173,8 @@ setMethod(
                sample.name = do.call("c", lapply(elements, getSampleName)),
                ppm.grid = x@ppm.grid,
                spectra = do.call("cbind", lapply(elements, getSpectra)),
-               recomposed.spectra =
-                 do.call("cbind", lapply(elements, getRecomposedSpectra)),
+               reconstructed.spectra =
+                 do.call("cbind", lapply(elements, getReconstructedSpectra)),
                quantification = all_quantification,
                deformed.library =
                  do.call("rbind", lapply(elements, getDeformedLibrary))))

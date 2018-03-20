@@ -5,9 +5,9 @@
 \alias{ASICSResults-class}
 \title{Class \linkS4class{ASICSResults}}
 \description{
-Objects of class \linkS4class{ASICSResults} contains results of ASICS 
-quantification method for a set of spectra. This object is an extension of 
-the class \linkS4class{Spectra}, with additional slots for quantification 
+Objects of class \linkS4class{ASICSResults} contains results of ASICS
+quantification method for a set of spectra. This object is an extension of
+the class \linkS4class{Spectra}, with additional slots for quantification
 results, reconstructed spectra and deformed library.
 }
 \section{Slots}{
@@ -19,11 +19,11 @@ results, reconstructed spectra and deformed library.
 spectra (in ppm).}
 
 \item{\code{spectra}}{Numeric matrix of original spectra. Columns contain the spectra
-and are in the same order than \code{sample.name}. Rows correspond to points 
+and are in the same order than \code{sample.name}. Rows correspond to points
 of \code{ppm.grid}.}
 
-\item{\code{recomposed.spectra}}{Numeric matrix of reconstructed spectra (in columns)
-with estimated concentrations. Columns are in the same order than
+\item{\code{reconstructed.spectra}}{Numeric matrix of reconstructed spectra (in
+columns) with estimated concentrations. Columns are in the same order than
 \code{sample.name} and rows correspond to points of \code{ppm.grid}.}
 
 \item{\code{quantification}}{Data-frame with identified metabolites and their
@@ -43,7 +43,7 @@ deformed library of each sample.}
     \link[=accessors-methods]{Accessors}
     \item Two objects can be combined or a subset can be extracted, see
     \link[=combineAndSubset-methods]{Combine and subset methods}
-    \item All spectra contained in an object can be represented in a plot, 
+    \item All spectra contained in an object can be represented in a plot,
     see \link[=visualization-methods-spectra]{Visualization methods}
   }
 }

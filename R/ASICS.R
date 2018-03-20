@@ -15,7 +15,7 @@
 #' @param threshold.noise threshold for signal noise. Default to 0.02.
 #' @param seed random seed to control randomness in the algorithm (used in the
 #' estimation of the significativity of a given metabolite concentration)
-#' @param parallel logical. If \code{TRUE}, the function is run in parallel. 
+#' @param parallel logical. If \code{TRUE}, the function is run in parallel.
 #' Default to \code{TRUE}.
 #'
 #' @return An object of type \linkS4class{ASICSResults} containing the
@@ -193,7 +193,7 @@ ASICS <- function(spectra_obj,
                     sample.name = cleaned_spectrum@sample.name,
                     ppm.grid = cleaned_spectrum@ppm.grid,
                     spectra = cleaned_spectrum@spectra,
-                    recomposed.spectra = est_mixture,
+                    reconstructed.spectra = est_mixture,
                     quantification = present_metab,
                     deformed.library = pure_lib_format)
 

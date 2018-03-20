@@ -27,7 +27,7 @@ included in the package (that contains 175 reference spectra) is used}
 \item{seed}{random seed to control randomness in the algorithm (used in the
 estimation of the significativity of a given metabolite concentration)}
 
-\item{parallel}{logical. If \code{TRUE}, the function is run in parallel. 
+\item{parallel}{logical. If \code{TRUE}, the function is run in parallel.
 Default to \code{TRUE}.}
 }
 \value{

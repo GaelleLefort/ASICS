@@ -5,10 +5,10 @@
   # Original spectrum and reconstituted one
   spectra <- data.frame(grid = rep(ASICS.results@ppm.grid, 2),
                         mixture = c(ASICS.results@spectra[, idx],
-                                    ASICS.results@recomposed.spectra[, idx]),
+                                    ASICS.results@reconstructed.spectra[, idx]),
                         which_mix  = c(rep("Original spectrum",
                                            length(ASICS.results@ppm.grid)),
-                                       rep("Recomposed spectrum",
+                                       rep("Reconstructed spectrum",
                                            length(ASICS.results@ppm.grid))))
 
   if (is.null(ylim)) ylim <- c(0, max(spectra$mixture))
