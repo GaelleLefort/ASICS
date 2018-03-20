@@ -206,7 +206,7 @@ setMethod(f = "length", signature(x = "Spectra"),
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Extract the first sample
-#' spectra_obj[1:3]
+#' spectra_obj[1]
 NULL
 
 #' @rdname combineAndSubset-methods

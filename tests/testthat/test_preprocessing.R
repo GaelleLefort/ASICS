@@ -8,7 +8,7 @@ data frame", {
                           package = "ASICS")
   expect_is(importSpectraBruker(lib_path), "data.frame")
 
-  example_path <- system.file("extdata", "example_spectra",
+  example_path <- system.file("extdata", "example_spectra_warnings",
                               package = "ASICS")
   expect_warning(importSpectraBruker(example_path),
                  regexp = "There is a problem in files for spectra:",
