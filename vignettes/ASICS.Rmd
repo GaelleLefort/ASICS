@@ -1,6 +1,6 @@
 ---
 title: "Automatic Statistical Identification in Complex Spectra (ASICS)"
-author: "Gaëlle Lefort, Rémi Servien, Patrick Tardivel and Nathalie Villa-Vialaneix"
+author: "Gaëlle Lefort, Rémi Servien and Nathalie Villa-Vialaneix"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 package: ASICS
@@ -32,6 +32,4 @@ Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer L., Concordet
 D., Servien R. (2017). ASICS: an automatic method for identification and 
 quantification of metabolites in complex 1D 1H NMR spectra. *Metabolomics*,
 **13**(10): 109. https://doi.org/10.1007/s11306-017-1244-5
-
-
 

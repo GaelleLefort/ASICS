@@ -1,6 +1,6 @@
 ---
 title: "ASICS User's Guide"
-author: "Gaëlle Lefort, Rémi Servien, Patrick Tardivel and Nathalie Villa-Vialaneix"
+author: "Gaëlle Lefort, Rémi Servien and Nathalie Villa-Vialaneix"
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
