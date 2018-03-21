@@ -5,8 +5,8 @@
 \title{Orthogonal projections to latent structures discriminant analysis (OPLS-DA)
 on a \code{\link{SummarizedExperiment}} object}
 \usage{
-oplsda(analysis_data, condition, scale.unit = TRUE, cross.val = 1,
-  thres.VIP = 1, orthoI = NA, type.data = "quantifications")
+oplsda(analysis_data, condition, cross.val = 1, thres.VIP = 1,
+  type.data = "quantifications", ...)
 }
 \arguments{
 \item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
@@ -15,22 +15,18 @@ with the \code{\link{formatForAnalysis}} function.}
 \item{condition}{The name of the design variable (two level factor)
 specifying the response to be explained.}
 
-\item{scale.unit}{Logical. If \code{TRUE}, data are scaled to unit variance}
-
 \item{cross.val}{Number of cross validation folds.}
 
 \item{thres.VIP}{A number specifying the VIP threshold used to identify
 influential variables.}
 
-\item{orthoI}{Parameter of the \code{\link{opls}} function (package
-\code{\link{ropls}}) specifying the number of orthogonal components. When set
-to \code{NA}, OPLS is performed and the number of orthogonal components is
-automatically tuned with cross-validation (with a maximum of 9 orthogonal
-components). Default to \code{NA}.}
-
 \item{type.data}{Type of data used for the analyses (\emph{e.g.,}
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
+
+\item{...}{Further arguments to be passed to the function
+\code{\link{opls}} for specifying the parameters of the algorithm, if
+necessary.}
 }
 \value{
 A S4 object of class \linkS4class{AnalysisResults} containing OPLS-DA

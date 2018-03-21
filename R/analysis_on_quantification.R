@@ -366,18 +366,15 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' with the \code{\link{formatForAnalysis}} function.
 #' @param condition The name of the design variable (two level factor)
 #' specifying the response to be explained.
-#' @param scale.unit Logical. If \code{TRUE}, data are scaled to unit variance
 #' @param cross.val Number of cross validation folds.
 #' @param thres.VIP A number specifying the VIP threshold used to identify
 #' influential variables.
-#' @param orthoI Parameter of the \code{\link{opls}} function (package
-#' \code{\link{ropls}}) specifying the number of orthogonal components. When set
-#' to \code{NA}, OPLS is performed and the number of orthogonal components is
-#' automatically tuned with cross-validation (with a maximum of 9 orthogonal
-#' components). Default to \code{NA}.
 #' @param type.data Type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
+#' @param ... Further arguments to be passed to the function
+#' \code{\link{opls}} for specifying the parameters of the algorithm, if
+#' necessary.
 #'
 #' @return A S4 object of class \linkS4class{AnalysisResults} containing OPLS-DA
 #' results.
@@ -410,20 +407,26 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @export
 #' @importFrom ropls opls getSubsetVi predict getVipVn
 #' @importFrom stats aggregate
-oplsda <- function(analysis_data, condition, scale.unit = TRUE,
-                   cross.val = 1, thres.VIP = 1, orthoI = NA,
-                   type.data = "quantifications"){
+oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
+                   type.data = "quantifications", ...){
+
+  param.args <- list(...)
 
   if (!(condition %in% names(colData(analysis_data)))) {
     stop("'condition' must be a variable name of the design data frame")
   }
 
-  # scale.unit
-  if (scale.unit) {
-    scale_unit <- "standard"
-  } else {
-    scale_unit <- "none"
-  }
+  # opls parameter
+  if (is.null(param.args$predI)) param.args$predI <- 1
+  if (is.null(param.args$orthoI)) param.args$orthoI <- NA
+  if (is.null(param.args$algoC)) param.args$algoC <- "default"
+  if (is.null(param.args$crossvalI)) param.args$crossvalI <- 7
+  if (is.null(param.args$log10L)) param.args$log10L <- FALSE
+  if (is.null(param.args$permI)) param.args$permI <- 0
+  if (is.null(param.args$scaleC)) param.args$scaleC <- "standard"
+  if (is.null(param.args$printL)) param.args$printL <- FALSE
+  if (is.null(param.args$plotL)) param.args$plotL <- FALSE
+  if (!is.null(param.args$subset)) param.args$subset <- NULL
 
   # opls-da and cross-validation
   if (cross.val > 1) {
@@ -431,19 +434,23 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
                         labels = FALSE), ncol(analysis_data))
     cv_oplsda <-
       sapply(seq_len(cross.val),
-             function(i) opls(t(assay(analysis_data, 1)),
-                              colData(analysis_data)[, condition], permI = 0,
-                              predI = 1, orthoI = orthoI, scaleC = scale_unit,
-                              subset = which(folds != i),
-                              plotL = FALSE, printL = FALSE))
+             function(i)
+               do.call(opls,
+                       c(x = list(t(assay(analysis_data, 1))),
+                         y = list(colData(analysis_data)[, condition]),
+                         subset = list(which(folds != i)),
+                         param.args)
+                       ))
   } else {
     cv_oplsda <-
       sapply(1:1,
-             function(i) opls(t(assay(analysis_data, 1)),
-                              colData(analysis_data)[, condition], permI = 0,
-                              predI = 1, orthoI = orthoI, scaleC = scale_unit,
-                              subset = "odd",
-                              plotL = FALSE, printL = FALSE))
+             function(i)
+               do.call(opls,
+                       c(x = list(t(assay(analysis_data, 1))),
+                         y = list(colData(analysis_data)[, condition]),
+                         subset = "odd",
+                         param.args)
+               ))
   }
 
   # prediction error
@@ -594,10 +601,10 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 #' with the \code{\link{formatForAnalysis}} function.
 #' @param condition The name of the design variable (two level factor)
 #' specifying the group of each sample.
-#' @param correction P-value correction method, see \code{\link{p.adjust}}.
-#' Default to \code{"BH"}.
 #' @param alpha Cutoff for adjusted p-values. Default to 0.05.
 #' @param type.data Type of data used for the analyses (\emph{e.g.,}
+#' @param ... Arguments to be passed to \code{\link{p.adjust}} such as the
+#' correction method to use with the \code{method} argument.
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
 #'
@@ -619,25 +626,17 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 #'   # Create object for analysis and remove features with more than 25% of zeros
 #'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
-#'   res_tests <- kruskalWallis(analysis_obj, "condition")
+#'   res_tests <- kruskalWallis(analysis_obj, "condition", method = "BH")
 #' }
 #'
 #' @importFrom stats p.adjust kruskal.test
 #' @importFrom SummarizedExperiment colData colData<-
 #' @export
 kruskalWallis <- function(analysis_data, condition,
-                          correction = c("BH", "bonferroni", "BY", "fdr",
-                                         "holm", "hochberg", "hommel"),
-                          alpha = 0.05, type.data = "quantifications"){
+                          alpha = 0.05, type.data = "quantifications", ...){
 
   if (!(condition %in% names(colData(analysis_data)))) {
     stop("'condition' need to be a variable name of design data frame")
-  }
-
-  correction <- try(match.arg(correction), silent = TRUE)
-  if(is(correction, "try-error")) {
-    stop(paste("'correction' should be one of 'BH', 'bonferroni', 'BY', 'fdr',",
-               "'holm', 'hochberg', 'hommel'"))
   }
 
   kruskal_pval <-
@@ -645,7 +644,7 @@ kruskalWallis <- function(analysis_data, condition,
           function(x)
             kruskal.test(x~colData(analysis_data)[, condition])$p.value)
 
-  p_adj <- p.adjust(kruskal_pval, method = correction)
+  p_adj <- p.adjust(kruskal_pval, ...)
 
   mean_by_group <- aggregate(t(assay(analysis_data, 1)),
                              list(colData(analysis_data)[, condition]), mean)

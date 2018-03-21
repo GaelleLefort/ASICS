@@ -4,9 +4,8 @@
 \alias{kruskalWallis}
 \title{Kruskal-Wallis rank sum tests on a \code{\link{SummarizedExperiment}} object}
 \usage{
-kruskalWallis(analysis_data, condition, correction = c("BH", "bonferroni",
-  "BY", "fdr", "holm", "hochberg", "hommel"), alpha = 0.05,
-  type.data = "quantifications")
+kruskalWallis(analysis_data, condition, alpha = 0.05,
+  type.data = "quantifications", ...)
 }
 \arguments{
 \item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
@@ -15,12 +14,12 @@ with the \code{\link{formatForAnalysis}} function.}
 \item{condition}{The name of the design variable (two level factor)
 specifying the group of each sample.}
 
-\item{correction}{P-value correction method, see \code{\link{p.adjust}}.
-Default to \code{"BH"}.}
-
 \item{alpha}{Cutoff for adjusted p-values. Default to 0.05.}
 
-\item{type.data}{Type of data used for the analyses (\emph{e.g.,}
+\item{type.data}{Type of data used for the analyses (\emph{e.g.,}}
+
+\item{...}{Arguments to be passed to \code{\link{p.adjust}} such as the
+correction method to use with the \code{method} argument.
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
 }
@@ -46,7 +45,7 @@ if (require("ASICSdata", quietly = TRUE)) {
   # Create object for analysis and remove features with more than 25\% of zeros
   analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
-  res_tests <- kruskalWallis(analysis_obj, "condition")
+  res_tests <- kruskalWallis(analysis_obj, "condition", method = "BH")
 }
 
 }
