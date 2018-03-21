@@ -33,14 +33,15 @@ Perform a PCA with the function of the \code{\link{ropls}} package on a
 }
 \examples{
 # Import quantification results
-library(ASICSdata)
-quantif_path <- system.file("extdata", "results_ASICS.txt",
-                            package = "ASICSdata")
-quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
+if (require("ASICSdata", quietly = TRUE)) {
+  quantif_path <- system.file("extdata", "results_ASICS.txt",
+                              package = "ASICSdata")
+  quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 
-# Create object for analysis and remove features with more than 25\% of zeros
-analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
-res_pca <- pca(analysis_obj)
+  # Create object for analysis and remove features with more than 25\% of zeros
+  analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
+  res_pca <- pca(analysis_obj)
+}
 
 }
 \seealso{

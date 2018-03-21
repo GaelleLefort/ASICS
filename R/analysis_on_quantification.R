@@ -26,20 +26,21 @@
 #'
 #' @examples
 #' # Import quantification results
-#' library(ASICSdata)
-#' quantif_path <- system.file("extdata", "results_ASICS.txt",
-#'                             package = "ASICSdata")
-#' quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
+#' if (require("ASICSdata", quietly = TRUE)) {
+#'   quantif_path <- system.file("extdata", "results_ASICS.txt",
+#'                               package = "ASICSdata")
+#'   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 #'
-#' # Import design
-#' design <- read.table(system.file("extdata", "design_diabete_example.txt",
-#'                                  package = "ASICSdata"), header = TRUE)
+#'   # Import design
+#'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
+#'                                    package = "ASICSdata"), header = TRUE)
 #'
-#' # Create object for analysis and remove features with more than 25% of zeros
-#' analysis_obj <- formatForAnalysis(quantification,
-#'                                   design = design,
-#'                                   zero.threshold = 25,
-#'                                   zero.group = "condition")
+#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   analysis_obj <- formatForAnalysis(quantification,
+#'                                     design = design,
+#'                                     zero.threshold = 25,
+#'                                     zero.group = "condition")
+#' }
 #'
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @export
@@ -131,14 +132,15 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
 #'
 #' @examples
 #' # Import quantification results
-#' library(ASICSdata)
-#' quantif_path <- system.file("extdata", "results_ASICS.txt",
-#'                             package = "ASICSdata")
-#' quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
+#' if (require("ASICSdata", quietly = TRUE)) {
+#'   quantif_path <- system.file("extdata", "results_ASICS.txt",
+#'                               package = "ASICSdata")
+#'   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 #'
-#' # Create object for analysis and remove features with more than 25% of zeros
-#' analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
-#' res_pca <- pca(analysis_obj)
+#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
+#'   res_pca <- pca(analysis_obj)
+#' }
 #'
 #' @importFrom ropls opls
 #' @importFrom SummarizedExperiment assay colData
@@ -390,19 +392,20 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #'
 #' @examples
 #' # Import quantification results
-#' library(ASICSdata)
-#' quantif_path <- system.file("extdata", "results_ASICS.txt",
-#'                             package = "ASICSdata")
-#' quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
+#' if (require("ASICSdata", quietly = TRUE)) {
+#'   quantif_path <- system.file("extdata", "results_ASICS.txt",
+#'                               package = "ASICSdata")
+#'   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 #'
-#' # Import design
-#' design <- read.table(system.file("extdata", "design_diabete_example.txt",
-#'                                  package = "ASICSdata"), header = TRUE)
+#'   # Import design
+#'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
+#'                                    package = "ASICSdata"), header = TRUE)
 #'
-#' # Create object for analysis and remove features with more than 25% of zeros
-#' analysis_obj <- formatForAnalysis(quantification,
-#'                                   zero.threshold = 25, design = design)
-#' res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
+#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   analysis_obj <- formatForAnalysis(quantification,
+#'                                     zero.threshold = 25, design = design)
+#'   res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
+#' }
 #'
 #' @export
 #' @importFrom ropls opls getSubsetVi predict getVipVn
@@ -604,19 +607,20 @@ oplsda <- function(analysis_data, condition, scale.unit = TRUE,
 #'
 #' @examples
 #' # Import quantification results
-#' library(ASICSdata)
-#' quantif_path <- system.file("extdata", "results_ASICS.txt",
-#'                             package = "ASICSdata")
-#' quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
+#' if (require("ASICSdata", quietly = TRUE)) {
+#'   quantif_path <- system.file("extdata", "results_ASICS.txt",
+#'                               package = "ASICSdata")
+#'   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 #'
-#' # Import design
-#' design <- read.table(system.file("extdata", "design_diabete_example.txt",
-#'                                  package = "ASICSdata"), header = TRUE)
+#'   # Import design
+#'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
+#'                                    package = "ASICSdata"), header = TRUE)
 #'
-#' # Create object for analysis and remove features with more than 25% of zeros
-#' analysis_obj <- formatForAnalysis(quantification,
+#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
-#' res_tests <- kruskalWallis(analysis_obj, "condition")
+#'   res_tests <- kruskalWallis(analysis_obj, "condition")
+#' }
 #'
 #' @importFrom stats p.adjust kruskal.test
 #' @importFrom SummarizedExperiment colData colData<-

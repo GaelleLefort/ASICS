@@ -1,10 +1,18 @@
 library(ASICS)
-library(ASICSdata)
 
 context("Analysis on ASICS relative quantifications")
 
+check_ASICSdata <- function() {
+  if (!require("ASICSdata")) {
+    skip("ASICSdata package not available")
+  }
+}
+
+
 test_that("PCA on quantification goes well", {
-  # Import quantification results
+  check_ASICSdata()
+
+  # import quantification results
   quantif_path <- system.file("extdata", "results_ASICS.txt",
                               package = "ASICSdata")
   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
@@ -21,12 +29,12 @@ test_that("PCA on quantification goes well", {
 
 
 test_that("OPLS-DA on quantifications works well", {
-  # Import quantification results
+  # import quantification results
   quantif_path <- system.file("extdata", "results_ASICS.txt",
                               package = "ASICSdata")
   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 
-  # Import design
+  # import design
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
 
@@ -53,16 +61,16 @@ test_that("OPLS-DA on quantifications works well", {
 
 
 test_that("Kruskall-Wallis on quantifications works well", {
-  # Import quantification results
+  # import quantification results
   quantif_path <- system.file("extdata", "results_ASICS.txt",
                               package = "ASICSdata")
   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 
-  # Import design
+  # import design
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
 
-  # Create object for analysis and remove metabolites with more than 25% of
+  # create object for analysis and remove metabolites with more than 25% of
   #zeros
   analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)

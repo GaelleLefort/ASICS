@@ -41,19 +41,20 @@ functions \code{\link{pca}}, \code{\link{oplsda}} or
 }
 \examples{
 # Import quantification results
-library(ASICSdata)
-quantif_path <- system.file("extdata", "results_ASICS.txt",
-                            package = "ASICSdata")
-quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
+if (require("ASICSdata", quietly = TRUE)) {
+  quantif_path <- system.file("extdata", "results_ASICS.txt",
+                              package = "ASICSdata")
+  quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 
-# Import design
-design <- read.table(system.file("extdata", "design_diabete_example.txt",
-                                 package = "ASICSdata"), header = TRUE)
+  # Import design
+  design <- read.table(system.file("extdata", "design_diabete_example.txt",
+                                   package = "ASICSdata"), header = TRUE)
 
-# Create object for analysis and remove features with more than 25\% of zeros
-analysis_obj <- formatForAnalysis(quantification,
-                                  design = design,
-                                  zero.threshold = 25,
-                                  zero.group = "condition")
+  # Create object for analysis and remove features with more than 25\% of zeros
+  analysis_obj <- formatForAnalysis(quantification,
+                                    design = design,
+                                    zero.threshold = 25,
+                                    zero.group = "condition")
+}
 
 }

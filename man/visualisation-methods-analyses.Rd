@@ -51,28 +51,29 @@ Method available to plot results of analyses in ASICS package.
 }
 \examples{
 # Import quantification results
-library(ASICSdata)
-quantif_path <- system.file("extdata", "results_ASICS.txt",
-                            package = "ASICSdata")
-quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
+if (require("ASICSdata", quietly = TRUE)) {
+  quantif_path <- system.file("extdata", "results_ASICS.txt",
+                              package = "ASICSdata")
+  quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 
-# Import design
-design <- read.table(system.file("extdata", "design_diabete_example.txt",
-                                 package = "ASICSdata"), header = TRUE)
+  # Import design
+  design <- read.table(system.file("extdata", "design_diabete_example.txt",
+                                   package = "ASICSdata"), header = TRUE)
 
-# Create object for analysis and remove metabolites with more than 25\% of zeros
-analysis_obj <- formatForAnalysis(quantification,
+  # Create object for analysis and remove metabolites with more than 25\% of zeros
+  analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
 
-# Perform a PCA and plot results
-res_pca <- pca(analysis_obj)
-plot(res_pca)
+  # Perform a PCA and plot results
+  res_pca <- pca(analysis_obj)
+  plot(res_pca)
 
-# Perform an OPLS-DA and plot results
-res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
-plot(res_oplsda)
+  # Perform an OPLS-DA and plot results
+  res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
+  plot(res_oplsda)
 
-# Perform Kruskal-Wallis tests and plot results
-res_tests <- kruskalWallis(analysis_obj, "condition")
-plot(res_tests)
+  # Perform Kruskal-Wallis tests and plot results
+  res_tests <- kruskalWallis(analysis_obj, "condition")
+  plot(res_tests)
+}
 }
