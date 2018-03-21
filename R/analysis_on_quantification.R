@@ -381,6 +381,9 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #'
 #' @seealso \linkS4class{AnalysisResults}
 #'
+#' @references Trygg, J. and Wold, S. (2002). Orthogonal projections to latent
+#' structures (O-PLS). \emph{Journal of Chemometrics}, \strong{16}(3), 119–128.
+#'
 #' @references Thevenot, E.A., Roux, A., Xu, Y., Ezan, E., Junot, C. 2015.
 #' Analysis of the human adult urinary metabolome variations with age, body mass
 #' index and gender by implementing a comprehensive workflow for univariate and
