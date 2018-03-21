@@ -17,3 +17,13 @@ citEntry(entry = "Article",
         "Metabolomics, 13(10): 109.",
         "https://doi.org/10.1007/s11306-017-1244-5")
 )
+
+
+citEntry(
+  textVersion  =
+  paste("Lefort G., Servien R., Tardivel P. and Villa-Vialaneix N. (2018).",
+        "ASICS: Automatic Statistical Identification in Complex Spectra.",
+        "R package version 0.99.0")
+)
+
+
