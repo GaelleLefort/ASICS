@@ -88,7 +88,7 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
     if (is.null(zero.group)) {
       zero_percent <- apply(assay(clean_data, 1), 1,
                             function(x) sum(x == 0)/length(x))
-      to_remove <- zero_percent > zero.threshold / 100
+      to_remove <- zero_percent >= zero.threshold / 100
 
       clean_data <- clean_data[!to_remove, ]
     } else {
@@ -96,7 +96,7 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
                             function(x) by(x, colData(clean_data)[, zero.group],
                                            function(z) sum(z == 0)/length(z)))
       to_remove <- apply(zero_percent, 2,
-                         function(x) all(x > zero.threshold / 100))
+                         function(x) all(x >= zero.threshold / 100))
 
       clean_data <- clean_data[!to_remove, ]
     }
