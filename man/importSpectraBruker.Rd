@@ -40,6 +40,13 @@ Import spectra from Bruker files contained in a single folder. This folder
 contains one subfolder for each sample. Spectra are baseline corrected
 (optional) and normalised by the area under the curve during the importation.
 }
+\details{
+Some preprocessing step are included during the importation. First, spectra
+are baseline corrected if \code{baseline.correction = TRUE}. Then, all
+spectrum definition domains are change to have a unique one (either the one
+specified in \code{ppm.grid} or the grid of the default library). Finally,
+all spectra are normalised by the area under the curve.
+}
 \examples{
 current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 spectra_data <- importSpectraBruker(current_path)

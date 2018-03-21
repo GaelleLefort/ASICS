@@ -21,6 +21,13 @@
 #' @param parallel Logical. If \code{TRUE}, the function is run in parallel.
 #' Default to \code{TRUE}.
 #'
+#' @details
+#' Some preprocessing step are included during the importation. First, spectra
+#' are baseline corrected if \code{baseline.correction = TRUE}. Then, all
+#' spectrum definition domains are change to have a unique one (either the one
+#' specified in \code{ppm.grid} or the grid of the default library). Finally,
+#' all spectra are normalised by the area under the curve.
+#'
 #' @references Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
 #' Distribution-based classification method for baseline correction of
 #' metabolomic 1D proton nuclear magnetic resonance spectra.
