@@ -138,7 +138,7 @@ setMethod("getSpectra", "Spectra",
 #' \linkS4class{PureLibrary}, \linkS4class{ASICSResults} or
 #' \linkS4class{AnalysisResults}.
 #'
-#' @return A summary of the object or its length.
+#' @return A summary of the object, its length or its dimensions.
 #'
 #' @examples
 #' # Import data and create object
@@ -150,6 +150,8 @@ setMethod("getSpectra", "Spectra",
 #' summary(spectra_obj)
 #' # Length
 #' length(spectra_obj)
+#' # Dimensions
+#' dim(spectra_obj)
 NULL
 
 #' @aliases show.Spectra
@@ -182,6 +184,13 @@ setMethod(
 #' @aliases length.Spectra
 setMethod(f = "length", signature(x = "Spectra"),
           function(x) return(length(x@sample.name))
+)
+
+#' @rdname summary-methods
+#' @export
+#' @aliases dim.Spectra
+setMethod(f = "dim", signature(x = "Spectra"),
+          function(x) return(c(nrow(x@spectra), length(x@sample.name)))
 )
 
 

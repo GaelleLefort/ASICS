@@ -10,6 +10,8 @@
 \alias{summary.Spectra}
 \alias{length,Spectra-method}
 \alias{length.Spectra}
+\alias{dim,Spectra-method}
+\alias{dim.Spectra}
 \alias{show,ASICSResults-method}
 \alias{show.ASICSResults}
 \alias{show,AnalysisResults-method}
@@ -23,6 +25,8 @@
 \S4method{summary}{Spectra}(object)
 
 \S4method{length}{Spectra}(x)
+
+\S4method{dim}{Spectra}(x)
 
 \S4method{show}{ASICSResults}(object)
 
@@ -39,7 +43,7 @@
 \linkS4class{PureLibrary} or \linkS4class{ASICSResults}.}
 }
 \value{
-A summary of the object or its length.
+A summary of the object, its length or its dimensions.
 }
 \description{
 Methods available to summarize the various S4 objects of ASICS package.
@@ -54,4 +58,6 @@ spectra_obj <- createSpectra(spectra_data)
 summary(spectra_obj)
 # Length
 length(spectra_obj)
+# Dimensions
+dim(spectra_obj)
 }
