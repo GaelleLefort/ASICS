@@ -15,7 +15,8 @@ subfolder contains the Bruker files of this sample.}
 \item{which.spectra}{If there is more than one spectrum by sample, which is
 the spectrum to import (either always the first one with \code{which.spectra
 = "first"}, always the last one with \code{which.spectra = "last"} or a
-vector containing the number of each spectra to import).
+vector of length the number of spectra that specifies the number of each
+spectrum to import).
 Default to \code{"last"}.}
 
 \item{baseline.correction}{Logical. If \code{TRUE} a baseline correction is

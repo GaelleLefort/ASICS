@@ -22,7 +22,8 @@
 #' group.
 #' @param outliers Names of the outliers (samples) to remove.
 #'
-#' @return An object of type \code{\link{SummarizedExperiment}}.
+#' @return An object of type \code{\link{SummarizedExperiment}} with metabolite
+#' data given as buckets or quantified metabolites.
 #'
 #' @examples
 #' # Import quantification results

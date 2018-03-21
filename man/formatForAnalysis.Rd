@@ -32,7 +32,8 @@ group.}
 \item{outliers}{Names of the outliers (samples) to remove.}
 }
 \value{
-An object of type \code{\link{SummarizedExperiment}}.
+An object of type \code{\link{SummarizedExperiment}} with metabolite
+data given as buckets or quantified metabolites.
 }
 \description{
 Create an object of class \code{\link{SummarizedExperiment}} to use in
