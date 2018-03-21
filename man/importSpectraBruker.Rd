@@ -38,7 +38,7 @@ in rows.
 \description{
 Import spectra from Bruker files contained in a single folder. This folder
 contains one subfolder for each sample. Spectra are baseline corrected
-(optional) and normalised by the area under the curve.
+(optional) and normalised by the area under the curve during the importation.
 }
 \examples{
 current_path <- system.file("extdata", "example_spectra", package = "ASICS")

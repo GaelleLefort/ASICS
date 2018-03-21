@@ -22,7 +22,8 @@ A \linkS4class{PureLibrary} object with the newly created library.
 }
 \description{
 Create a new pure library from a data frame containing different spectra of
-pure metabolites. The noise is removed by thresholding each spectrum.
+pure metabolites. The noise is removed by thresholding each spectrum during
+the creation of a new pure library.
 }
 \examples{
 pure_spectra <- importSpectraBruker(system.file("extdata",

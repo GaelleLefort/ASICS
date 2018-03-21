@@ -2,7 +2,7 @@
 #'
 #' Import spectra from Bruker files contained in a single folder. This folder
 #' contains one subfolder for each sample. Spectra are baseline corrected
-#' (optional) and normalised by the area under the curve.
+#' (optional) and normalised by the area under the curve during the importation.
 #'
 #' @param name.dir Path of the folder containing one subfolder by sample. Each
 #' subfolder contains the Bruker files of this sample.
@@ -414,7 +414,8 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
 #' Create a pure library
 #'
 #' Create a new pure library from a data frame containing different spectra of
-#' pure metabolites. The noise is removed by thresholding each spectrum.
+#' pure metabolites. The noise is removed by thresholding each spectrum during
+#' the creation of a new pure library.
 #'
 #' @param spectra Data frame with spectra in columns and chemical shifts in
 #' rows. Colnames of this data frame correspond to pure metabolite names and
