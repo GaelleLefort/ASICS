@@ -29,7 +29,8 @@
 #' @return A data frame with spectra in columns and chemical shifts (in ppm)
 #' in rows.
 #'
-#' @importFrom BiocParallel bplapply bptry MulticoreParam bpok
+#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SnowParam
+#' @importFrom BiocParallel snowWorkers bptry bpok
 #' @importFrom plyr llply
 #' @importFrom utils head tail
 #' @export
@@ -92,20 +93,28 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
 
   # number of cores
   if (parallel) {
-    ncores <- multicoreWorkers()
+    if (.Platform$OS.type == "windows") {
+      ncores <- min(snowWorkers(), length(cur_dir_spec))
+      para_param <- SnowParam(workers = ncores,
+                              progressbar = TRUE,
+                              tasks = length(cur_dir_spec))
+    } else {
+      ncores <- min(multicoreWorkers(), length(cur_dir_spec))
+      para_param <- MulticoreParam(workers = ncores,
+                                   progressbar = TRUE,
+                                   tasks = length(cur_dir_spec))
+    }
   } else {
     ncores <- 1
   }
+
 
   # import spectra
   if (ncores > 1) {
     imported_spectra <-
       bptry(bplapply(cur_dir_spec, .readNMRBruker, ppm.grid,
                      baseline.correction,
-                     BPPARAM = MulticoreParam(workers = ncores,
-                                              progressbar = TRUE,
-                                              stop.on.error = FALSE,
-                                              tasks = length(cur_dir_spec))))
+                     BPPARAM = para_param))
   } else {
     suppressWarnings(
       imported_spectra <- llply(cur_dir_spec,
@@ -255,6 +264,8 @@ normalisation <- function(spectra){
 #' metabolomic 1D proton nuclear magnetic resonance spectra.
 #' \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
 #'
+#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SnowParam
+#' @importFrom BiocParallel snowWorkers
 #' @export
 #'
 #' @examples
@@ -270,10 +281,21 @@ baselineCorrection <- function(spectra, parallel = TRUE){
 
   # number of cores
   if (parallel) {
-    ncores <- multicoreWorkers()
+    if (.Platform$OS.type == "windows") {
+      ncores <- snowWorkers()
+      para_param <- SnowParam(workers = ncores,
+                              progressbar = TRUE,
+                              tasks = ncol(spectra))
+    } else {
+      ncores <- multicoreWorkers()
+      para_param <- MulticoreParam(workers = ncores,
+                                   progressbar = TRUE,
+                                   tasks = ncol(spectra))
+    }
   } else {
     ncores <- 1
   }
+
 
   spectra_list <- as.list(spectra)
 
@@ -281,10 +303,7 @@ baselineCorrection <- function(spectra, parallel = TRUE){
   if (ncores > 1) {
     spectra_bc_list <-
       bptry(bplapply(spectra_list, .baselineCorrector,
-                     BPPARAM = MulticoreParam(workers = ncores,
-                                              progressbar = TRUE,
-                                              stop.on.error = FALSE,
-                                              tasks = ncol(spectra))))
+                     BPPARAM = para_param))
   } else {
     suppressWarnings(
       spectra_bc_list <- llply(spectra_list,
@@ -490,7 +509,8 @@ createSpectra <- function(spectra){
 #'
 #' @export
 #' @importFrom plyr alply
-#' @importFrom BiocParallel multicoreWorkers
+#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SnowParam
+#' @importFrom BiocParallel snowWorkers
 #'
 #' @examples
 #' current_path <- file.path(system.file("extdata", package = "ASICS"),
@@ -525,7 +545,17 @@ binning <- function(spectra, bin = 0.01,
 
   # number of cores
   if (parallel) {
-    ncores <- multicoreWorkers()
+    if (.Platform$OS.type == "windows") {
+      ncores <- snowWorkers()
+      para_param <- SnowParam(workers = ncores,
+                              progressbar = TRUE,
+                              tasks = ncol(spectra))
+    } else {
+      ncores <- multicoreWorkers()
+      para_param <- MulticoreParam(workers = ncores,
+                                   progressbar = TRUE,
+                                   tasks = ncol(spectra))
+    }
   } else {
     ncores <- 1
   }
@@ -541,10 +571,7 @@ binning <- function(spectra, bin = 0.01,
   if (ncores > 1) {
     buckets_values_list <-
       bplapply(spectra_list, .binningSpectrum, old_grid, buckets, bin,
-                     BPPARAM = MulticoreParam(workers = ncores,
-                                              progressbar = TRUE,
-                                              stop.on.error = FALSE,
-                                              tasks = ncol(spectra)))
+                     BPPARAM = para_param)
   } else {
     buckets_values_list <- llply(spectra_list, .binningSpectrum, old_grid,
                                  buckets, bin, .progress = "text")
