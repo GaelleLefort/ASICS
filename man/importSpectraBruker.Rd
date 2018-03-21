@@ -41,9 +41,9 @@ contains one subfolder for each sample. Spectra are baseline corrected
 (optional) and normalised by the area under the curve during the importation.
 }
 \details{
-Some preprocessing step are included during the importation. First, spectra
+Some preprocessing steps are included during the importation. First, spectra
 are baseline corrected if \code{baseline.correction = TRUE}. Then, all
-spectrum definition domains are change to have a unique one (either the one
+spectrum definition domains are aligned to a unique one (either the one
 specified in \code{ppm.grid} or the grid of the default library). Finally,
 all spectra are normalised by the area under the curve.
 }

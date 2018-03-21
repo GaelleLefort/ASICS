@@ -9,7 +9,8 @@
 #' @param which.spectra If there is more than one spectrum by sample, which is
 #' the spectrum to import (either always the first one with \code{which.spectra
 #' = "first"}, always the last one with \code{which.spectra = "last"} or a
-#' vector containing the number of each spectra to import).
+#' vector of length the number of spectra that specifies the number of each
+#' spectrum to import).
 #' Default to \code{"last"}.
 #' @param baseline.correction Logical. If \code{TRUE} a baseline correction is
 #' applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.
@@ -22,9 +23,9 @@
 #' Default to \code{TRUE}.
 #'
 #' @details
-#' Some preprocessing step are included during the importation. First, spectra
+#' Some preprocessing steps are included during the importation. First, spectra
 #' are baseline corrected if \code{baseline.correction = TRUE}. Then, all
-#' spectrum definition domains are change to have a unique one (either the one
+#' spectrum definition domains are aligned to a unique one (either the one
 #' specified in \code{ppm.grid} or the grid of the default library). Finally,
 #' all spectra are normalised by the area under the curve.
 #'
