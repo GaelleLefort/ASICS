@@ -7,9 +7,9 @@
 \alias{plot.AnalysisResults}
 \title{Visualisation methods}
 \usage{
-\S4method{plot}{AnalysisResults,ANY}(x, y, ..., graph = NULL,
-  add.label = TRUE, axes = c(1, 2), col.ind = NULL, xlim = c(0.5, 10),
-  ylim = NULL)
+\S4method{plot}{AnalysisResults,ANY}(x, y, ..., graph = c("default", "ind",
+  "var", "eig", "boxplot", "buckets"), add.label = TRUE, axes = c(1, 2),
+  col.ind = NULL, xlim = c(0.5, 10), ylim = NULL)
 }
 \arguments{
 \item{x}{An object of class \linkS4class{AnalysisResults}.}
@@ -23,8 +23,8 @@
 (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA),
 \code{"boxplot"} for boxplots of test results and \code{"buckets"} to show
 significant or influential buckets on the mean spectrum.
-Default value is \code{NULL} (\emph{i.e.,} \code{c("ind", "var")} for PCA and
-OPLS-DA and \code{c("boxplot")} for tests).}
+Default value is \code{"default"} (\emph{i.e.,} \code{c("ind", "var")} for
+PCA and OPLS-DA and \code{c("boxplot")} for tests).}
 
 \item{add.label}{If \code{TRUE}, labels are added on individual plot.}
 

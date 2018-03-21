@@ -173,8 +173,8 @@ setMethod(
 #' (PCA and OPLS-DA), \code{"var"} for plot of variables (PCA and OPLS-DA),
 #' \code{"boxplot"} for boxplots of test results and \code{"buckets"} to show
 #' significant or influential buckets on the mean spectrum.
-#' Default value is \code{NULL} (\emph{i.e.,} \code{c("ind", "var")} for PCA and
-#' OPLS-DA and \code{c("boxplot")} for tests).
+#' Default value is \code{"default"} (\emph{i.e.,} \code{c("ind", "var")} for
+#' PCA and OPLS-DA and \code{c("boxplot")} for tests).
 #' @param add.label If \code{TRUE}, labels are added on individual plot.
 #' @param axes A numeric vector of length 2 specifying the dimensions to be
 #' plotted for individual and variable plots.
@@ -229,25 +229,24 @@ NULL
 setMethod(
   f = "plot",
   signature = "AnalysisResults",
-  definition = function(x, y, ..., graph = NULL, add.label = TRUE,
-                        axes = c(1, 2), col.ind = NULL, xlim = c(0.5, 10),
-                        ylim = NULL) {
+  definition = function(x, y, ..., graph = c("default", "ind", "var", "eig",
+                                             "boxplot", "buckets"),
+                        add.label = TRUE, axes = c(1, 2), col.ind = NULL,
+                        xlim = c(0.5, 10), ylim = NULL) {
 
-      if(!is.null(graph) &
-         !all(graph %in% c("ind", "var", "eig", "boxplot", "buckets")))
-        stop("Type of plot must be 'ind', 'var', 'eig', 'boxplot' or 'buckets'")
+      graph <- match.arg(graph)
 
       if (x@type.analysis == "PCA") {
-        if (is.null(graph)) graph <- c("ind", "var")
+        if (graph == "default") graph <- c("ind", "var")
         if(any(c("buckets", "boxplot") %in% graph))
-          stop(paste("Type of plot 'buckets' or 'boxplot' are not possible with",
-                     "PCA analysis"))
+          stop(paste("Type of plot 'buckets' or 'boxplot' are not possible",
+                     "with PCA analysis"))
 
         .plotPCA(x@results, graph = graph, add.label = add.label,
                  axes = axes, col.ind = col.ind)
 
       } else if (x@type.analysis == "OPLS-DA") {
-        if (is.null(graph)) graph <- c("ind", "var")
+        if (graph == "default") graph <- c("ind", "var")
         if(any(c("eig", "boxplot") %in% graph))
           stop(paste("Type of plot 'eig' or 'boxplot' are not possible with",
                      "OPLS-DA analysis"))
@@ -259,7 +258,7 @@ setMethod(
                                 xlim = xlim, ylim = ylim)
 
       } else if (x@type.analysis == "Kruskal-Wallis tests") {
-        if (is.null(graph)) graph <- "boxplot"
+        if (graph == "default") graph <- "boxplot"
         if(any(c("eig", "var", "ind") %in% graph))
           stop(paste("Type of plot 'eig', 'var' or 'ind' are not possible with",
                      "test analysis"))
