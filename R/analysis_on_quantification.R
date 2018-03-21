@@ -123,8 +123,8 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
 #' @param condition The name of the design variable (two level factor)
-#' specifying the groups.
-
+#' specifying the groups, if one is available. Default to NULL, no group
+#' provided.
 #'
 #' @return A S4 object of class \linkS4class{AnalysisResults} containing PCA
 #' results.

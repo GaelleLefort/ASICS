@@ -20,7 +20,8 @@ prior PCA.}
 \code{"quantifications"}.}
 
 \item{condition}{The name of the design variable (two level factor)
-specifying the groups.}
+specifying the groups, if one is available. Default to NULL, no group
+provided.}
 }
 \value{
 A S4 object of class \linkS4class{AnalysisResults} containing PCA
