@@ -242,8 +242,8 @@ setMethod(
           stop(paste("Type of plot 'buckets' or 'boxplot' are not possible with",
                      "PCA analysis"))
 
-        res_plot <- .plotPCA(x@results, graph = graph, add.label = add.label,
-                            axes = axes, col.ind = col.ind)
+        .plotPCA(x@results, graph = graph, add.label = add.label,
+                 axes = axes, col.ind = col.ind)
 
       } else if (x@type.analysis == "OPLS-DA") {
         if (is.null(graph)) graph <- c("ind", "var")
@@ -254,7 +254,7 @@ setMethod(
           stop(paste("Type of plot 'buckets' is possible only with",
                      "bucket data type"))
 
-        res_plot <- .plotOPLSDA(x, graph = graph, add.label = add.label,
+        .plotOPLSDA(x, graph = graph, add.label = add.label,
                                 xlim = xlim, ylim = ylim)
 
       } else if (x@type.analysis == "Kruskal-Wallis tests") {
@@ -266,11 +266,9 @@ setMethod(
           stop(paste("Type of plot 'buckets' is possible only with",
                      "bucket data type"))
 
-        res_plot <- .plotTests(x, graph = graph, xlim = xlim, ylim = ylim)
+        .plotTests(x, graph = graph, xlim = xlim, ylim = ylim)
 
       }
-
-    return(res_plot)
   }
 )
 

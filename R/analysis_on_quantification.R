@@ -242,7 +242,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
     to_return <- to_plot[[1]]
     return(to_return)
   } else {
-    grid.arrange(grobs = to_plot, ncol = length(graph))
+    return(grid.arrange(grobs = to_plot, ncol = length(graph)))
   }
 }
 
