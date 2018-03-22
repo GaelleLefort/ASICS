@@ -14,6 +14,8 @@
 #' Default to \code{"last"}.
 #' @param baseline.correction Logical. If \code{TRUE} a baseline correction is
 #' applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.
+#' @param alignment Logical. If \code{TRUE} a peak alignment is
+#' applied for each spectrum (Vu et al (2011)). Default to \code{FALSE}.
 #' @param ppm.grid Numeric vector of a unique grid (definition domain) for all
 #' spectra (in ppm). Default to \code{NULL} (in which case, the default grid of
 #' the pure library is used).
@@ -21,6 +23,9 @@
 #' (in which case, folder names are used).
 #' @param parallel Logical. If \code{TRUE}, the function is run in parallel.
 #' Default to \code{TRUE}.
+#' @param ... Further arguments to be passed to the function
+#' \code{\link{alignment}} for specifying the parameters of the algorithm, if
+#' necessary.
 #'
 #' @details
 #' Some preprocessing steps are included during the importation. First, spectra
@@ -33,6 +38,11 @@
 #' Distribution-based classification method for baseline correction of
 #' metabolomic 1D proton nuclear magnetic resonance spectra.
 #' \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
+#'
+#' @references Vu, T. N., Valkenborg, D., Smets, K., Verwaest, K. A., Dommisse,
+#' R., Lemiere, F., ... & Laukens, K. (2011). An integrated workflow for robust
+#' alignment and simplified quantitative analysis of NMR spectrometry data.
+#' \emph{BMC Bioinformatics}, \strong{12}(1), 405.
 #'
 #' @return A data frame with spectra in columns and chemical shifts (in ppm)
 #' in rows.
@@ -50,9 +60,9 @@
 #' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 #' spectra_data <- importSpectraBruker(current_path)
 importSpectraBruker <- function(name.dir, which.spectra = "last",
-                                  baseline.correction = TRUE,
-                                  ppm.grid = NULL, sample.names = NULL,
-                                  parallel = TRUE){
+                                baseline.correction = TRUE, alignment = FALSE,
+                                ppm.grid = NULL, sample.names = NULL,
+                                parallel = TRUE, ...){
 
   if(!dir.exists(name.dir)){
     stop("Path of the Bruker files doesn't exist!")
@@ -152,6 +162,11 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   imported_spectra <- as.data.frame(do.call(cbind, imported_spectra),
                                     row.names = as.character(ppm.grid))
   colnames(imported_spectra) <- sample.names
+
+  # peak alignment
+  if (alignment) {
+    imported_spectra <- alignment(imported_spectra, ...)
+  }
 
   return(imported_spectra)
 }
