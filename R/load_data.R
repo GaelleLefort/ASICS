@@ -15,7 +15,7 @@
 #' @param baseline.correction Logical. If \code{TRUE} a baseline correction is
 #' applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.
 #' @param alignment Logical. If \code{TRUE} a peak alignment is
-#' applied for each spectrum (Vu et al (2011)). Default to \code{FALSE}.
+#' applied between all spectra (Vu et al (2011)). Default to \code{FALSE}.
 #' @param ppm.grid Numeric vector of a unique grid (definition domain) for all
 #' spectra (in ppm). Default to \code{NULL} (in which case, the default grid of
 #' the pure library is used).

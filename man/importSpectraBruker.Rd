@@ -23,7 +23,7 @@ Default to \code{"last"}.}
 applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.}
 
 \item{alignment}{Logical. If \code{TRUE} a peak alignment is
-applied for each spectrum (Vu et al (2011)). Default to \code{FALSE}.}
+applied between all spectra (Vu et al (2011)). Default to \code{FALSE}.}
 
 \item{ppm.grid}{Numeric vector of a unique grid (definition domain) for all
 spectra (in ppm). Default to \code{NULL} (in which case, the default grid of
