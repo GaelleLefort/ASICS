@@ -110,6 +110,12 @@ setMethod(
   }
 )
 
+#' @rdname summary-methods
+#' @export
+#' @aliases dim.Spectra
+setMethod(f = "dim", signature(x = "Spectra"),
+          function(x) return(c(nrow(x@quantification), length(x@sample.name)))
+)
 
 
 #' @rdname combineAndSubset-methods
