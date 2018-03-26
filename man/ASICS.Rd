@@ -20,7 +20,7 @@ for the quantification (ppm). By default, the water region is excluded
 
 \item{pure.library}{An object of class \linkS4class{PureLibrary} containing
 the reference spectra (pure metabolite spectra). If \code{NULL}, the library
-included in the package (that contains 180 reference spectra) is used.}
+included in the package (that contains 191 reference spectra) is used.}
 
 \item{threshold.noise}{Threshold for signal noise. Default to 0.02.}
 

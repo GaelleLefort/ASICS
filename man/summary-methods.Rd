@@ -14,6 +14,8 @@
 \alias{dim.Spectra}
 \alias{show,ASICSResults-method}
 \alias{show.ASICSResults}
+\alias{dim,ASICSResults-method}
+\alias{dim.Spectra}
 \alias{show,AnalysisResults-method}
 \alias{show.AnalysisResults}
 \alias{summary,AnalysisResults-method}
@@ -29,6 +31,8 @@
 \S4method{dim}{Spectra}(x)
 
 \S4method{show}{ASICSResults}(object)
+
+\S4method{dim}{ASICSResults}(x)
 
 \S4method{show}{AnalysisResults}(object)
 

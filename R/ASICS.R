@@ -11,7 +11,7 @@
 #' @param max.shift Maximum chemical shift allowed (in ppm). Default to 0.02.
 #' @param pure.library An object of class \linkS4class{PureLibrary} containing
 #' the reference spectra (pure metabolite spectra). If \code{NULL}, the library
-#' included in the package (that contains 180 reference spectra) is used.
+#' included in the package (that contains 191 reference spectra) is used.
 #' @param threshold.noise Threshold for signal noise. Default to 0.02.
 #' @param seed Random seed to control randomness in the algorithm (used in the
 #' estimation of the significativity of a given metabolite concentration).

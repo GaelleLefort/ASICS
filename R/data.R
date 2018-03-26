@@ -1,9 +1,9 @@
 #' Pure spectra library
 #'
-#' The 1D 1H NMR spectra of 180 reference compounds were collected to build the
+#' The 1D 1H NMR spectra of 191 reference compounds were collected to build the
 #' default library of reference spectra. These compounds have been prepared and
-#' measured using a Bruker Avance III HD spectrometer in the MetaToul - AXIOM 
-#' Site at Toulouse (France). For more details on the preparation, please see 
+#' measured using a Bruker Avance III HD spectrometer in the MetaToul - AXIOM
+#' Site at Toulouse (France). For more details on the preparation, please see
 #' Tardivel et al. (2017).
 #'
 #' @name pure_library

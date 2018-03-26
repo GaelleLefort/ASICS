@@ -113,7 +113,7 @@ setMethod(
 #' @rdname summary-methods
 #' @export
 #' @aliases dim.Spectra
-setMethod(f = "dim", signature(x = "Spectra"),
+setMethod(f = "dim", signature(x = "ASICSResults"),
           function(x) return(c(nrow(x@quantification), length(x@sample.name)))
 )
 

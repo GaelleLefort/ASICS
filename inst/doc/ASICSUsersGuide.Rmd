@@ -45,10 +45,10 @@ functions.
 
 # Library of pure NMR metabolite spectrum
 
-An object of class `PureLibrary` with spectra of 180 pure metabolites is 
+An object of class `PureLibrary` with spectra of 191 pure metabolites is 
 required to perform the quantification. These spectra are metabolite spectra 
-used as references for quantification: only metabolites that are present in the library 
-object can be quantified with ASICS.
+used as references for quantification: only metabolites that are present in the 
+library object can be quantified with ASICS.
 
 A default library is available and is automatically loaded at package start. 
 Available metabolites are displayed with:
