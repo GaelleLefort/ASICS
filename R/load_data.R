@@ -89,14 +89,16 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   # path of the chosen spectra
   if (length(which.spectra) == 1 && which.spectra == "first") {
     cur_dir_spec <- as.list(file.path(cur_dir,
-                                      sapply(as.list(lapply(cur_dir, function(x)
+                                      vapply(as.list(lapply(cur_dir, function(x)
                                         sort(as.numeric(dir(x))))),
-                                             head, 1)))
+                                             head, 1,
+                                        FUN.VALUE = numeric(1))))
   } else if (length(which.spectra) == 1 && which.spectra == "last") {
     cur_dir_spec <- as.list(file.path(cur_dir,
-                                      sapply(as.list(lapply(cur_dir, function(x)
+                                      vapply(as.list(lapply(cur_dir, function(x)
                                         sort(as.numeric(dir(x))))),
-                                             tail, 1)))
+                                             tail, 1,
+                                        FUN.VALUE = numeric(1))))
   } else {
     cur_dir_spec <- as.list(file.path(cur_dir, which.spectra))
   }
@@ -144,18 +146,21 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
 
   # if error in a file
   if (any(!bpok(imported_spectra)) |
-      any(sapply(imported_spectra, is, "try-error"))) {
+      any(vapply(imported_spectra, is, "try-error", FUN.VALUE = logical(1)))) {
     warning(paste0("There is a problem in files for spectra: ",
                 paste(sample.names[!bpok(imported_spectra) |
-                                     sapply(imported_spectra, is, "try-error")],
+                                     vapply(imported_spectra, is, "try-error",
+                                            FUN.VALUE = logical(1))],
                       collapse = ", "),
                 ".\nFix the problem manually and re-execute the function " ,
                 "otherwise these spectra are ignored."), call. = FALSE)
     sample.names <- sample.names[bpok(imported_spectra) &
-                                   !sapply(imported_spectra, is, "try-error")]
+                                   !vapply(imported_spectra, is, "try-error",
+                                           FUN.VALUE = logical(1))]
     imported_spectra <- imported_spectra[bpok(imported_spectra) &
-                                           !sapply(imported_spectra, is,
-                                                   "try-error")]
+                                           !vapply(imported_spectra, is,
+                                                   "try-error",
+                                                   FUN.VALUE = logical(1))]
   }
 
   # convert in a data frame
@@ -337,17 +342,20 @@ baselineCorrection <- function(spectra, parallel = TRUE){
 
   # if error in a file
   if (any(!bpok(spectra_bc_list)) |
-      any(sapply(spectra_bc_list, is, "try-error"))) {
+      any(vapply(spectra_bc_list, is, "try-error", FUN.VALUE = logical(1)))) {
     warning(paste0("The baseline correction algorithm can not be used for spectra: ",
                    paste(colnames(spectra)[!bpok(spectra_bc_list) |
-                                             sapply(spectra_bc_list, is,
-                                                    "try-error")],
+                                             vapply(spectra_bc_list, is,
+                                                    "try-error",
+                                                    FUN.VALUE = logical(1))],
                          collapse = ", ")), call. = FALSE)
   }
-  spectra_list[!(!bpok(spectra_bc_list) | sapply(spectra_bc_list, is,
-                                               "try-error"))] <-
-    spectra_bc_list[!(!bpok(spectra_bc_list) | sapply(spectra_bc_list, is,
-                                                      "try-error"))]
+  spectra_list[!(!bpok(spectra_bc_list) | vapply(spectra_bc_list, is,
+                                               "try-error",
+                                               FUN.VALUE = logical(1)))] <-
+    spectra_bc_list[!(!bpok(spectra_bc_list) | vapply(spectra_bc_list, is,
+                                                      "try-error",
+                                                      FUN.VALUE = logical(1)))]
 
   # convert in a data frame
   spectra_bc <- as.data.frame(do.call(cbind, spectra_list))
@@ -616,14 +624,15 @@ binning <- function(spectra, bin = 0.01,
 .binningSpectrum <- function(spectrum, grid, buckets, bin){
 
   buckets_values <-
-    sapply(buckets,
+    vapply(buckets,
            function(x) ifelse(length(grid[grid >= x - bin / 2 &
                                             grid < x + bin / 2]) == 0,
                               0,
                               .AUC(grid[grid >= x - bin / 2 &
                                           grid < x + bin / 2],
                                    spectrum[grid >= x - bin / 2 &
-                                              grid < x + bin / 2])))
+                                              grid < x + bin / 2])),
+           FUN.VALUE = numeric(1))
 
   return(buckets_values)
 }

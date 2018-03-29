@@ -49,7 +49,7 @@ to_exclude <- matrix(c(4.5, 10), ncol = 2)
 pure_lib <- pure_library[getSampleName(pure_library) \%in\%
                          c("Lactate", "L-Alanine")]
 resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
-pure.library = pure_lib)
+                  pure.library = pure_lib)
 }
 \references{
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer

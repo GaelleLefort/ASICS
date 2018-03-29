@@ -142,18 +142,18 @@ setMethod(
                    "Explained variance" = object@results@modelDF$R2X * 100)
 
       cat("\n")
-      print(eigen_value[1:5, ])
+      print(eigen_value[seq_len(5), ])
       cat("[...]")
     } else if (object@type.analysis == "OPLS-DA") {
       cat(paste("Cross validation error:", object@cv.error))
       cat("\n\n")
       cat("Variable with the higher VIP: \n")
-      print(object@mean.by.group[1:10, ])
+      print(object@mean.by.group[seq_len(10), ])
       cat("[...]")
     } else if (object@type.analysis == "Kruskal-Wallis tests") {
       cat("Variable with the lower adjusted p-value: \n")
       cat("\n")
-      print(object@results[1:10, ])
+      print(object@results[seq_len(10), ])
       cat("[...]")
     }
   }

@@ -106,9 +106,11 @@
   max_extremities <- signal_peak_lib[!((signal_peak_lib + 1) %in%
                                          signal_peak_lib)] +
     floor(nb_points_shift / 10)
-  peaks_extremities <- cbind(sapply(min_extremities, max, 1),
-                             sapply(max_extremities, min,
-                                    length(pure_lib@ppm.grid)))
+  peaks_extremities <-
+    cbind(vapply(min_extremities, max, 1,
+                 FUN.VALUE = numeric(1)),
+          vapply(max_extremities, min, length(pure_lib@ppm.grid),
+                 FUN.VALUE = numeric(1)))
 
   # remove overlapping
   long_signal <- unique(unlist(apply(peaks_extremities, 1,
