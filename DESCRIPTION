@@ -12,7 +12,7 @@ Description: With a set of pure metabolite reference spectra, ASICS quantifies
     metabolites is performed by fitting a mixture model to the spectra of the
     library with a sparse penalty. The method and its statistical properties are 
     described in Tardivel et al. (2017) <doi:10.1007/s11306-017-1244-5>. 
-Depends: R (>= 3.4)
+Depends: R (>= 3.5)
 Imports:
     BiocParallel,
     ggplot2,
