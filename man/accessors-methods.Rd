@@ -24,6 +24,8 @@
 \alias{getDataset}
 \alias{getResults,AnalysisResults-method}
 \alias{getResults}
+\alias{getBestModel,AnalysisResults-method}
+\alias{getBestModel}
 \alias{getCVError,AnalysisResults-method}
 \alias{getCVError}
 \alias{getMeanByGroup,AnalysisResults-method}
@@ -51,6 +53,8 @@
 \S4method{getDataset}{AnalysisResults}(object)
 
 \S4method{getResults}{AnalysisResults}(object)
+
+\S4method{getBestModel}{AnalysisResults}(object)
 
 \S4method{getCVError}{AnalysisResults}(object)
 

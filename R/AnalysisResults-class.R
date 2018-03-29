@@ -17,6 +17,7 @@
 #' @slot results Results of the analysis. Can be a data frame for test results
 #' or an object of class \code{\link{opls}} from \code{\link{ropls}} for PCA and
 #' OPLS-DA.
+#' @slot best.model Best model (only for OPLS-DA analyses).
 #' @slot cv.error Cross validation error (only for OPLS-DA analyses).
 #' @slot mean.by.group Data frame with means by group and a variable indicating
 #' if there is a significant difference between groups for tests and if the VIP
@@ -40,6 +41,7 @@ setClass(
     type.data = "character",
     dataset = "SummarizedExperiment",
     results = "ANY",
+    best.model = "list",
     cv.error = "numeric",
     mean.by.group = "data.frame"
   )
@@ -58,6 +60,9 @@ setGeneric("getDataset",
 )
 setGeneric("getResults",
            function(object) standardGeneric("getResults")
+)
+setGeneric("getBestModel",
+           function(object) standardGeneric("getBestModel")
 )
 setGeneric("getCVError",
            function(object) standardGeneric("getCVError")
@@ -94,6 +99,13 @@ setMethod("getDataset", "AnalysisResults",
 #' @export
 setMethod("getResults", "AnalysisResults",
           function(object) return(object@results)
+)
+
+#' @rdname accessors-methods
+#' @aliases getBestModel
+#' @export
+setMethod("getBestModel", "AnalysisResults",
+          function(object) return(object@best.model)
 )
 
 #' @export
@@ -189,8 +201,7 @@ setMethod(
 #' visualisation of PCA results (eigen values, individuals and variables)
 #' \item OPLS-DA: a \code{\link[ggplot2]{ggplot}} plot that allows for the
 #' visualisation of OPLS-DA results (individuals and variables). If
-#' \code{cross.val > 1} in \code{\link{oplsda}}, only results on the first fold
-#' are plotted.
+#' \code{cross.val > 1} in \code{\link{oplsda}}, the best model is plotted.
 #' }
 #'
 #' @examples

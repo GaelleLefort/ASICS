@@ -25,6 +25,8 @@ the analysis.}
 or an object of class \code{\link{opls}} from \code{\link{ropls}} for PCA and
 OPLS-DA.}
 
+\item{\code{best.model}}{Best model (only for OPLS-DA analyses).}
+
 \item{\code{cv.error}}{Cross validation error (only for OPLS-DA analyses).}
 
 \item{\code{mean.by.group}}{Data frame with means by group and a variable indicating

@@ -42,8 +42,7 @@ to color the observations by groups for PCA individual plot.}
 visualisation of PCA results (eigen values, individuals and variables)
 \item OPLS-DA: a \code{\link[ggplot2]{ggplot}} plot that allows for the
 visualisation of OPLS-DA results (individuals and variables). If
-\code{cross.val > 1} in \code{\link{oplsda}}, only results on the first fold
-are plotted.
+\code{cross.val > 1} in \code{\link{oplsda}}, the best model is plotted.
 }
 }
 \description{

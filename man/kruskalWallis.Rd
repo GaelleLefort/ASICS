@@ -42,7 +42,8 @@ if (require("ASICSdata", quietly = TRUE)) {
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
 
-  # Create object for analysis and remove features with more than 25\% of zeros
+  # Create object for analysis and remove features with more than 25\% of
+  # zeros
   analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
   res_tests <- kruskalWallis(analysis_obj, "condition", method = "BH")

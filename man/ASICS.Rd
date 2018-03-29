@@ -46,8 +46,8 @@ spectra_obj <- createSpectra(spectra_data)
 
 # Estimation of relative quantification of Lactate and L-Alanine
 to_exclude <- matrix(c(4.5, 10), ncol = 2)
-pure_lib <- pure_library[pure_library@sample.name \%in\% c("Lactate",
-"L-Alanine")]
+pure_lib <- pure_library[getSampleName(pure_library) \%in\%
+                         c("Lactate", "L-Alanine")]
 resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
 pure.library = pure_lib)
 }

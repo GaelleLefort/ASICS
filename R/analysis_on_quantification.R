@@ -402,7 +402,8 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                    package = "ASICSdata"), header = TRUE)
 #'
-#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   # Create object for analysis and remove features with more than 25% of
+#'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
 #'   res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
@@ -411,6 +412,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @export
 #' @importFrom ropls opls getSubsetVi predict getVipVn
 #' @importFrom stats aggregate
+#' @importFrom plyr join_all
 oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
                    type.data = "quantifications", ...){
 
@@ -456,6 +458,48 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
                          param.args)
                ))
   }
+  # add condition to analysis_data with the variable name: conditionOPLSDA
+  colData(analysis_data)$conditionOPLSDA <- colData(analysis_data)[, condition]
+
+  # best model
+  # individuals
+  ind_x <- join_all(lapply(seq_along(cv_oplsda), .combineOPLSDAResults,
+                           cv_oplsda, "scoreMN"),
+                    by = "feature", type = "full")
+  rownames(ind_x) <- ind_x[, 1]
+  ind_x[, 1] <- NULL
+
+  ind_y <- join_all(lapply(seq_along(cv_oplsda), .combineOPLSDAResults,
+                           cv_oplsda, "orthoScoreMN"),
+                    by = "feature", type = "full")
+  rownames(ind_y) <- ind_y[, 1]
+  ind_y[, 1] <- NULL
+  ind <- merge(data.frame(x = rowMeans(ind_x, na.rm = TRUE)),
+               data.frame(y = rowMeans(ind_y, na.rm = TRUE)),
+               by = "row.names", sort = FALSE)
+  rownames(ind) <- ind[, 1]
+  ind[, 1] <- NULL
+
+  #variables
+  var_x <- join_all(lapply(seq_along(cv_oplsda), .combineOPLSDAResults,
+                           cv_oplsda, "loadingMN"),
+                    by = "feature", type = "full")
+  rownames(var_x) <- var_x[, 1]
+  var_x[, 1] <- NULL
+
+  var_y <- join_all(lapply(seq_along(cv_oplsda), .combineOPLSDAResults,
+                           cv_oplsda, "orthoLoadingMN"),
+                    by = "feature", type = "full")
+  rownames(var_y) <- var_y[, 1]
+  var_y[, 1] <- NULL
+  var <- merge(data.frame(x = rowMeans(var_x, na.rm = TRUE)),
+               data.frame(y = rowMeans(var_y, na.rm = TRUE)),
+               by = "row.names", sort = FALSE)
+  rownames(var) <- var[, 1]
+  var[, 1] <- NULL
+
+  best_model <- list(individuals = ind, variables = var)
+
 
   # prediction error
   cv_error <- round(mean(sapply(cv_oplsda, .errorPred,
@@ -480,12 +524,22 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
                      type.data = type.data,
                      dataset = analysis_data,
                      results = cv_oplsda,
+                     best.model = best_model,
                      cv.error = cv_error,
                      mean.by.group = mean_by_group)
 
 
   return(resOPLSDA_obj)
 
+}
+
+#' @importFrom methods slot
+.combineOPLSDAResults <- function(i, to_combine, which_param){
+  temp <- cbind(feature = rownames(as.data.frame(slot(to_combine[[i]],
+                                                      which_param))),
+                as.data.frame(slot(to_combine[[i]], which_param)[, 1])) ;
+  colnames(temp) <- c("feature", paste0("cv", i));
+  return(temp)
 }
 
 .errorPred <- function(x, analysis_data, condition){
@@ -505,23 +559,19 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
   # eigen values
   eigen_value <-
     data.frame(dim = factor(seq_len(2)), eigen_var = c(1, 1),
-               eigen_perc = res.oplsda@results[[1]]@modelDF$R2X[1:2] * 100)
+               eigen_perc = c(1, 1))
 
 
   if ("ind" %in% graph) {
-    indiv_coord <-
-      data.frame(x = res.oplsda@results[[1]]@scoreMN,
-                 y = res.oplsda@results[[1]]@orthoScoreMN,
-                 row.names = rownames(res.oplsda@results[[1]]@scoreMN))
-    colnames(indiv_coord) <- c("x", "y")
+    indiv_coord <- res.oplsda@best.model$individuals
 
-
+    condition <- merge(indiv_coord, colData(res.oplsda@dataset),
+                       by = "row.names", sort = FALSE)
 
     to_plot[[pos]] <-
       .plotIndiv(indiv_coord, eigen_value, add.label = add.label,
                  axes = c(1, 2),
-                 condition = res.oplsda@results[[1]]@suppLs$y[getSubsetVi(
-                   res.oplsda@results[[1]])]) +
+                 condition = condition$conditionOPLSDA) +
       coord_cartesian() + ylab("Orthogonal component 1") +
       xlab("Dimension 1") +
       ggtitle("OPLS-DA - Plot of individuals")
@@ -530,14 +580,11 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
   }
 
   if ("var" %in% graph) {
-    var_coord <-
-      data.frame(x = res.oplsda@results[[1]]@loadingMN,
-                 y = res.oplsda@results[[1]]@orthoLoadingMN,
-                 row.names = rownames(res.oplsda@results[[1]]@loadingMN))
-    colnames(var_coord) <- c("x", "y")
+    var_coord <- res.oplsda@best.model$variables
 
     # contributions of variables on selected axes
-    var_color <- getVipVn(res.oplsda@results[[1]])
+    var_color <- merge(var_coord, getMeanByGroup(res.oplsda), by = "row.names",
+                       sort = FALSE)$VIP
 
     to_plot[[pos]] <- .plotVar(var_coord, var_color, eigen_value,
                                axes = c(1, 2)) +
@@ -563,7 +610,8 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
     # another color
     data_res <- data.frame(buckets = c(buckets_num,
                                        buckets_num - diff(buckets_num)[1]/2),
-                           spectrum = c(spect_med, rep(NA, length(buckets_num))),
+                           spectrum = c(spect_med, rep(NA,
+                                                       length(buckets_num))),
                            important = rep(vip$influential, 2),
                            VIP = rep(vip$VIP, 2))
 
@@ -627,7 +675,8 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 #'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                    package = "ASICSdata"), header = TRUE)
 #'
-#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   # Create object for analysis and remove features with more than 25% of
+#'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
 #'   res_tests <- kruskalWallis(analysis_obj, "condition", method = "BH")
@@ -663,7 +712,7 @@ kruskalWallis <- function(analysis_data, condition,
                                decreasing = FALSE), ]
   rownames(res_tests) <- NULL
 
-  # âdd condition to analysis_data with the variable name: conditionTest
+  # add condition to analysis_data with the variable name: conditionTest
   colData(analysis_data)$conditionTest <- colData(analysis_data)[, condition]
 
   resTest_obj <- new(Class = "AnalysisResults",
@@ -752,7 +801,8 @@ kruskalWallis <- function(analysis_data, condition,
     # another color
     data_res <- data.frame(buckets = c(buckets_num,
                                        buckets_num - diff(buckets_num)[1]/2),
-                           spectrum = c(spect_med, rep(NA, length(buckets_num))),
+                           spectrum = c(spect_med, rep(NA,
+                                                       length(buckets_num))),
                            dir_change = as.factor(rep(dir_change, 2)))
 
 
