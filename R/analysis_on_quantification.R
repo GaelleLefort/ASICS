@@ -439,7 +439,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
     folds <- sample(cut(seq_len(ncol(analysis_data)), breaks = cross.val,
                         labels = FALSE), ncol(analysis_data))
     cv_oplsda <-
-      sapply(seq_len(cross.val),
+      lapply(seq_len(cross.val),
              function(i)
                do.call(opls,
                        c(x = list(t(assay(analysis_data, 1))),
@@ -449,14 +449,12 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
                        ))
   } else {
     cv_oplsda <-
-      sapply(1:1,
-             function(i)
-               do.call(opls,
-                       c(x = list(t(assay(analysis_data, 1))),
-                         y = list(colData(analysis_data)[, condition]),
-                         subset = "odd",
-                         param.args)
-               ))
+      list(do.call(opls,
+                   c(x = list(t(assay(analysis_data, 1))),
+                     y = list(colData(analysis_data)[, condition]),
+                     subset = "odd",
+                     param.args))
+      )
   }
   # add condition to analysis_data with the variable name: conditionOPLSDA
   colData(analysis_data)$conditionOPLSDA <- colData(analysis_data)[, condition]
@@ -502,11 +500,12 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 
 
   # prediction error
-  cv_error <- round(mean(sapply(cv_oplsda, .errorPred,
-                                analysis_data, condition)), 2)
+  cv_error <- round(mean(vapply(cv_oplsda, .errorPred,
+                                analysis_data, condition,
+                                FUN.VALUE = numeric(1))), 2)
 
   # VIP
-  VIP_all <- sapply(cv_oplsda, getVipVn)
+  VIP_all <- vapply(cv_oplsda, getVipVn, FUN.VALUE = numeric(nrow(var)))
   mean_VIP <- apply(VIP_all, 1, mean)
 
   # influencial feature

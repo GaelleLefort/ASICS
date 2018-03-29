@@ -83,7 +83,7 @@ default library and the four newly imported spectra imported.
 # Identification and quantification of metabolites with ASICS
 
 First, data are imported in a data frame from Bruker files with the 
-`import_spectra_bruker` function. These spectra are baseline corrected 
+`importSpectraBruker` function. These spectra are baseline corrected 
 (Wang *et al*, 2013) and normalised by the area under the curve.
 ```{r import_from_Bruker, results='hide'}
 spectra_data <- importSpectraBruker(system.file("extdata", 
@@ -102,8 +102,8 @@ spectra_data_txt <- read.table(diabetes, header = TRUE, row.names = 1)
 ```
 
 Several functions for the preprocessing of spectra are also available: baseline 
-correction, normalisation by the AUC and alignment on a reference spectrum (Vu et al., 2011). 
-For example, here, spectra are baseline corrected:
+correction, normalisation by the AUC and alignment on a reference spectrum 
+(Vu et al., 2011). For example, here, spectra are baseline corrected:
 ```{r preprocessing, results='hide'}
 spectra_base_cor <- baselineCorrection(spectra_data_txt)
 ```
