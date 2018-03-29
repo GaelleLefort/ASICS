@@ -3,7 +3,7 @@
 #correction of metabolomic 1D proton nuclear magnetic resonance spectra.
 #Analytical Chemistry, 85(2), 1231-1239."
 
-baseline_corrector <- function(intensity){
+.baselineCorrector <- function(intensity){
   sliding_windows <- 1
   convergence_ratio <- 0.999
   nb_central_points <- 1
@@ -11,19 +11,19 @@ baseline_corrector <- function(intensity){
   nb_interpolation_points <- 3
   nb_smooth_points <- 10
 
-  #1 - Calculating the expected value of noise standard deviation
-  SDset <- getSD(intensity, sliding_windows)
-  sigma <- findNoiseSD(SDset, convergence_ratio)
+  # 1 - calculating the expected value of noise standard deviation
+  SDset <- .getSD(intensity, sliding_windows)
+  sigma <- .findNoiseSD(SDset, convergence_ratio)
 
-  #2 & 3 - Classification of windows and spectral points
-  SNvector <- isSignal(sigma, SDset, nb_central_points, cutoff_threshold)
+  # 2 & 3 - classification of windows and spectral points
+  SNvector <- .isSignal(sigma, SDset, nb_central_points, cutoff_threshold)
 
-  #4 - Baseline fitting
-  sStart <- getSignalStart(SNvector)
-  sEnd <- sort(1 + length(intensity) - getSignalStart(rev(SNvector)))
-  tempBaseline <- getTempBaseline(intensity, sStart, sEnd,
+  # 4 - baseline fitting
+  sStart <- .getSignalStart(SNvector)
+  sEnd <- sort(1 + length(intensity) - .getSignalStart(rev(SNvector)))
+  tempBaseline <- .getTempBaseline(intensity, sStart, sEnd,
                                   nb_interpolation_points)
-  baseline <- smoothBaseline(tempBaseline, nb_smooth_points)
+  baseline <- .smoothBaseline(tempBaseline, nb_smooth_points)
 
   return(intensity - baseline)
 }
@@ -33,9 +33,9 @@ baseline_corrector <- function(intensity){
 #sliding windows
 #' @importFrom stats sd
 #' @keywords internal
-getSD <- function(intensity, sliding_windows){
+.getSD <- function(intensity, sliding_windows){
   SDset <- numeric(length(intensity))
-  for(i in 1:length(intensity)){
+  for(i in seq_along(intensity)){
     SDset[i] <- sd(intensity[max(1, i - sliding_windows):
                                min(i + sliding_windows, length(intensity))])
   }
@@ -48,7 +48,7 @@ getSD <- function(intensity, sliding_windows){
 #deviation
 #' @importFrom stats median
 #' @keywords internal
-findNoiseSD <- function(SDset, ratio){
+.findNoiseSD <- function(SDset, ratio){
   m1 <- median(SDset)
   SDset <- SDset[SDset < 2 * m1]
   m2 <- median(SDset)
@@ -63,10 +63,10 @@ findNoiseSD <- function(SDset, ratio){
 
 ## Use the noise standard deviation sigma to determine whether each data point
 #is signal or noise
-isSignal <- function(sigma, SDset, windows, threshold){
+.isSignal <- function(sigma, SDset, windows, threshold){
   SNvector <- SDset * 0
 
-  for(i in 1: length(SNvector)){
+  for(i in seq_along(SNvector)){
     if(SDset[i] > sigma * threshold){
       SNvector[max(1, i - windows):min(i + windows, length(SNvector))] <- 1
     }
@@ -75,7 +75,7 @@ isSignal <- function(sigma, SDset, windows, threshold){
 }
 
 ## Obtain the start point of each signal-fragment
-getSignalStart <- function(SNvector){
+.getSignalStart <- function(SNvector){
   sStart <- numeric()
 
   for(i in 2:length(SNvector)){
@@ -92,10 +92,10 @@ getSignalStart <- function(SNvector){
 }
 
 ## Linear interpolation of each signal segment according to the boundary
-getTempBaseline <- function(intensity, sStart, sEnd, windows){
+.getTempBaseline <- function(intensity, sStart, sEnd, windows){
   tempBaseline <- intensity
 
-  for(i in 1:length(sStart)){
+  for(i in seq_along(sStart)){
     tempBaseline[sStart[i]] <- mean(intensity[max(1, sStart[i] - windows):
                                                 min(sStart[i] + windows,
                                                     length(tempBaseline))])
@@ -114,10 +114,10 @@ getTempBaseline <- function(intensity, sStart, sEnd, windows){
 
 ## Use 2 * windows + 1 point mean filter over tempBaseline to obtain the
 #baseline
-smoothBaseline <- function(tempBaseline, windows){
+.smoothBaseline <- function(tempBaseline, windows){
   baseline <- tempBaseline
 
-  for(i in 1:length(tempBaseline)){
+  for(i in seq_along(tempBaseline)){
     baseline[i] <- mean(tempBaseline[max(1, i - windows):
                                        min(i + windows, length(tempBaseline))])
   }

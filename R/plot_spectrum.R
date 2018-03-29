@@ -1,39 +1,74 @@
-## Plot ASICS results
-plot_spectrum <- function(res_ASICS, xmin = 0, xmax = 10, ymin = 0, ymax = NULL,
-                         add_metab = NULL){
+#' @importFrom stats relevel
+.plotSpectrum <- function(ASICS.results, idx = 1, xlim = c(0, 10), ylim = NULL,
+                          pure.library = NULL, add.metab = NULL) {
 
-  # Original spectrum and reconstituted one
-  spectra <- data.frame(grid = rep(res_ASICS@ppm_grid, 2),
-                        mixture = c(res_ASICS@original_mixture,
-                                    res_ASICS@reconstituted_mixture),
+  # original spectrum and reconstituted one
+  spectra <- data.frame(grid = rep(ASICS.results@ppm.grid, 2),
+                        mixture = c(ASICS.results@spectra[, idx],
+                                    ASICS.results@reconstructed.spectra[, idx]),
                         which_mix  = c(rep("Original spectrum",
-                                           length(res_ASICS@ppm_grid)),
-                                       rep("Estimated spectrum",
-                                           length(res_ASICS@ppm_grid))))
+                                           length(ASICS.results@ppm.grid)),
+                                       rep("Reconstructed spectrum",
+                                           length(ASICS.results@ppm.grid))))
 
-  if(is.null(ymax)) ymax <- max(spectra$mixture)
+  if (is.null(ylim)) ylim <- c(0, max(spectra$mixture))
 
-  # Add a pure spectrum if the user wants
-  if(!is.null(add_metab)){
-    metab_to_add <- ASICS::pure_library$spectra[, ASICS::pure_library$name == add_metab]
-    metab_to_add <- metab_to_add * max(spectra$mixture) / max(metab_to_add)
-    spectra <- rbind(spectra, data.frame(grid = rep(res_ASICS@ppm_grid, 2),
-                                         mixture = metab_to_add,
-                                         which_mix  = rep(add_metab,
-                                                          length(res_ASICS@ppm_grid))))
+  if (is.null(pure.library)) {
+    pure_lib <- ASICS::pure_library
+  } else {
+    pure_lib <- pure.library
+  }
+
+  # add a pure spectrum if the user wants
+  if (!is.null(add.metab) && add.metab %in% pure_lib@sample.name) {
+
+    # original pure spectra
+    metab_to_add_pure <-
+      pure_lib@spectra[, pure_lib@sample.name == add.metab]
+    metab_to_add_pure <- metab_to_add_pure *
+      max(spectra$mixture) / max(metab_to_add_pure)
+
+    spectra <-
+      rbind(spectra,
+            data.frame(grid = ASICS.results@ppm.grid,
+                       mixture = metab_to_add_pure,
+                       which_mix  = rep(add.metab,
+                                        length(ASICS.results@ppm.grid))))
+
+    if (add.metab %in% ASICS.results@deformed.library$metabolite_name[
+      ASICS.results@deformed.library$sample ==
+      ASICS.results@sample.name[idx]]) {
+
+      metab_to_add_def_without0 <- ASICS.results@deformed.library[
+        ASICS.results@deformed.library$sample ==
+          ASICS.results@sample.name[idx] &
+          ASICS.results@deformed.library$metabolite_name == add.metab , ]
+
+      metab_to_add_def <-
+        merge(data.frame(ppm_grid = as.character(ASICS.results@ppm.grid)),
+              metab_to_add_def_without0[, c("intensity", "ppm_grid")],
+              all.x = TRUE)
+      metab_to_add_def[is.na(metab_to_add_def)] <- 0
+
+      spectra <-
+        rbind(spectra,
+              data.frame(grid = ASICS.results@ppm.grid,
+                         mixture = metab_to_add_def$intensity,
+                         which_mix  = rep(paste(add.metab, "deformed"),
+                                          length(ASICS.results@ppm.grid))))
+    }
   }
 
   spectra$which_mix <- relevel(spectra$which_mix, "Original spectrum")
-  # Plot with ggplot2
-  p1 <- ggplot2::ggplot(spectra) +
-    ggplot2::geom_line(ggplot2::aes_string(x = "grid", y = "mixture",
-                                           colour = "which_mix")) +
-    ggplot2::theme_bw() +
-    ggplot2::xlab("ppm") +
-    ggplot2::ylab("Standardized intensity") +
-    ggplot2::scale_x_reverse(limits = c(xmax, xmin)) +
-    ggplot2::ylim(c(ymin, ymax)) +
-    ggplot2::scale_color_manual(name = "", values = c("black", "blue", "red"))
+  # plot with ggplot2
+  p1 <- ggplot(spectra) +
+    geom_line(aes_string(x = "grid", y = "mixture",
+                         colour = "which_mix"), na.rm = TRUE) +
+    theme_bw() +
+    labs(x = "Chemical shift (ppm)", y = "Intensity") +
+    scale_x_reverse(limits = rev(xlim)) +
+    ylim(ylim) +
+    scale_color_manual(name = "", values = c("black", "blue", "red", "orange"))
 
-  print(p1)
+  return(p1)
 }

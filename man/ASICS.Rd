@@ -4,56 +4,52 @@
 \alias{ASICS}
 \title{Automatic Statistical Identification in Complex Spectra}
 \usage{
-ASICS(path, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
-  max.shift = 0.02, which.spectra = "last", library.metabolites = NULL,
-  threshold.noise = 0.02, seed = 1234, nb.iter.signif = 400)
+ASICS(spectra_obj, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
+  max.shift = 0.02, pure.library = NULL, threshold.noise = 0.02,
+  seed = 1234, parallel = TRUE)
 }
 \arguments{
-\item{path}{folder path of the Bruker files}
+\item{spectra_obj}{An object of class \linkS4class{Spectra} obtained with the
+function \link{createSpectra}.}
 
-\item{exclusion.areas}{definition domain of spectra to exclude (ppm)}
+\item{exclusion.areas}{Definition domain of spectra that has to be excluded
+for the quantification (ppm). By default, the water region is excluded
+(4.5-5.1 ppm).}
 
-\item{max.shift}{maximum chemical shift allowed (in ppm)}
+\item{max.shift}{Maximum chemical shift allowed (in ppm). Default to 0.02.}
 
-\item{which.spectra}{if more than one spectra by sample, spectra used to
-perform the quantification (either \code{"first"}, \code{"last"} or its
-number). Default to \code{"last"}}
+\item{pure.library}{An object of class \linkS4class{PureLibrary} containing
+the reference spectra (pure metabolite spectra). If \code{NULL}, the library
+included in the package (that contains 191 reference spectra) is used.}
 
-\item{library.metabolites}{path of the library containing the references
-(pure metabolite spectra). If \code{NULL}, the library included in the
-package is used}
+\item{threshold.noise}{Threshold for signal noise. Default to 0.02.}
 
-\item{threshold.noise}{threshold for signal noise}
+\item{seed}{Random seed to control randomness in the algorithm (used in the
+estimation of the significativity of a given metabolite concentration).}
 
-\item{seed}{random seed to control randomness in the algorithm (used in the
-estimation of significativity of a given metabolite concentration)}
-
-\item{nb.iter.signif}{number of iterations for the estimation of
-significativity of a given metabolite concentration. Default to 400}
+\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
+Default to \code{TRUE}.}
 }
 \value{
-An object of type \code{\link{resASICS-class}}
+An object of type \linkS4class{ASICSResults} containing the
+quantification results.
 }
 \description{
-Quantification of 1D 1H NMR spectrum with ASICS method using a library of 175
+Quantification of 1D 1H NMR spectra with ASICS method using a library of
 pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 }
 \examples{
-\dontshow{
-lib_file <- system.file("extdata", "library_for_examples.rda",
-                        package = "ASICS")
-cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
-                        package = "ASICS")
-to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-result <- ASICS(path = cur_path, exclusion.areas = to_exclude,
-                nb.iter.signif = 10, library.metabolites = lib_file)
-}
-\dontrun{
-cur_path <- system.file("extdata", "example_spectra", "AG_faq_Beck01",
-                        package = "ASICS")
-to_exclude <- matrix(c(4.5,5.1,5.5,6.5), ncol = 2, byrow = TRUE)
-result <- ASICS(path = cur_path, exclusion.areas = to_exclude)
-}
+# Import data and create object
+current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+spectra_data <- importSpectraBruker(current_path)
+spectra_obj <- createSpectra(spectra_data)
+
+# Estimation of relative quantification of Lactate and L-Alanine
+to_exclude <- matrix(c(4.5, 10), ncol = 2)
+pure_lib <- pure_library[getSampleName(pure_library) \%in\%
+                         c("Lactate", "L-Alanine")]
+resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
+pure.library = pure_lib)
 }
 \references{
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer
@@ -63,6 +59,6 @@ spectra. \emph{Metabolomics}, \strong{13}(10): 109.
 \url{https://doi.org/10.1007/s11306-017-1244-5}
 }
 \seealso{
-\code{\link{resASICS-class}} \code{\link{ASICS_multiFiles}}
-\code{\link{pure_library}}
+\linkS4class{ASICSResults} \code{\link{pure_library}}
+\code{\link{createSpectra}}
 }

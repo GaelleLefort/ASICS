@@ -1,26 +1,32 @@
 Package: ASICS
 Type: Package
 Title: Automatic Statistical Identification in Complex Spectra
-Version: 1.0.0
+Version: 0.99.0
 Authors@R: c(
     person("Gaëlle", "Lefort", email = "gaelle.lefort@inra.fr", role = c("aut", "cre")),
-    person("Rémi", "Sevien", email = "remi.servien@inra.fr", role = "aut"),
+    person("Rémi", "Servien", email = "remi.servien@inra.fr", role = "aut"),
     person("Patrick", "Tardivel", email = "patrick.tardivel@inra.fr", role = "aut"),
     person("Nathalie", "Villa-Vialaneix", email = "nathalie.villa-vialaneix@inra.fr", role = "aut"))
-Description: With a set of pure metabolite spectra, ASICS quantifies 
-    metabolites concentration in a complex spectrum. The identification of 
+Description: With a set of pure metabolite reference spectra, ASICS quantifies 
+    concentration of metabolites in a complex spectrum. The identification of 
     metabolites is performed by fitting a mixture model to the spectra of the
     library with a sparse penalty. The method and its statistical properties are 
     described in Tardivel et al. (2017) <doi:10.1007/s11306-017-1244-5>. 
-Depends: R (>= 2.14)
+Depends: R (>= 3.4)
 Imports:
-    doParallel,
+    BiocParallel,
     ggplot2,
-    foreach,
+    grDevices,
+    gridExtra,
     methods,
     parallel,
     plyr,
     quadprog,
+    ropls,
+    speaq,
+    stats,
+    SummarizedExperiment,
+    utils,
     zoo
 License: GPL (>= 2)
 Encoding: UTF-8
@@ -28,5 +34,27 @@ LazyData: true
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
-    BiocStyle
+    BiocStyle,
+    testthat,
+    ASICSdata
 VignetteBuilder: knitr
+Collate: 
+    'ASICS.R'
+    'Spectra-class.R'
+    'ASICSResults-class.R'
+    'AnalysisResults-class.R'
+    'PureLibrary-class.R'
+    'analysis_on_quantification.R'
+    'baseline_correction.R'
+    'concentration_optimisation.R'
+    'data.R'
+    'library_transformation.R'
+    'load_data.R'
+    'plot_spectrum.R'
+    'user_guide.R'
+    'utils.R'
+biocViews:
+    Software,
+    DataImport,
+    Cheminformatics,
+    Metabolomics

@@ -1,0 +1,27 @@
+RELEASE HISTORY OF ASICS PACKAGE
+========================================
+
+CHANGES in ASICS VERSION 0.99.0
+First version submitted to Bioconductor.
+
+New features
+* preprocessing functions: baseline correction, alignment,
+normalisation
+* library of pure spectra management functions
+* binning algorithm
+* diagnosis tool to assess the quality of the quantification
+* post-quantification statistical analysis functions: PCA, OPLS-DA
+and Kruskal-Wallis test
+
+Improvements
+* user's guide
+* spectra quantification
+* parallel with BiocParallel package
+
+
+PREVIOUS VERSIONS ON CRAN
+
+New features
+* data importation from Bruker files
+* spectra quantification
+* user's guide
