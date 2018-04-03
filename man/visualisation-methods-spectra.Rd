@@ -51,6 +51,7 @@ Methods available to plot one object in ASICS package.
 current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 spectra_data <- importSpectraBruker(current_path)
 spectra_obj <- createSpectra(spectra_data)
+spectra_obj <- createSpectra(spectra_data)
 
 # Plot the spectra
 plot(spectra_obj)
