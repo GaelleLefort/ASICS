@@ -30,6 +30,6 @@ pure_spectra <- importSpectraBruker(system.file("extdata",
                                                 "example_library",
                                                 package = "ASICS"))
 new_pure_library <- createPureLibrary(pure_spectra,
-                                      nb.protons = c(5, 4, 9, 9))
+                                      nb.protons = c(5, 4))
 
 }

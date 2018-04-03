@@ -70,9 +70,5 @@ if (require("ASICSdata", quietly = TRUE)) {
   # Perform an OPLS-DA and plot results
   res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
   plot(res_oplsda)
-
-  # Perform Kruskal-Wallis tests and plot results
-  res_tests <- kruskalWallis(analysis_obj, "condition")
-  plot(res_tests)
 }
 }

@@ -9,8 +9,11 @@ S4 object", {
   spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
   spectra_obj <- createSpectra(spectra_data)
 
-  to_exlude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2)
+  to_exclude <- matrix(c(4.5, 10), ncol = 2)
+  pure_lib <- pure_library[getSampleName(pure_library) %in%
+                             c("Lactate", "L-Alanine")]
 
-  expect_s4_class(ASICS(spectra_obj, exclusion.areas = to_exlude),
+  expect_s4_class(ASICS(spectra_obj[1], exclusion.areas = to_exclude,
+                        pure.library = pure_lib),
                   "ASICSResults")
 })

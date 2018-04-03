@@ -89,8 +89,9 @@ setGeneric("getSpectra",
 #'
 #' @examples
 #' # Import data and create object
-#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
-#' spectra_data <- importSpectraBruker(current_path)
+#' current_path <- file.path(system.file("extdata", package = "ASICS"),
+#'                           "spectra_example.txt")
+#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Sample names
@@ -142,8 +143,9 @@ setMethod("getSpectra", "Spectra",
 #'
 #' @examples
 #' # Import data and create object
-#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
-#' spectra_data <- importSpectraBruker(current_path)
+#' current_path <- file.path(system.file("extdata", package = "ASICS"),
+#'                           "spectra_example.txt")
+#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Summary
@@ -210,8 +212,9 @@ setMethod(f = "dim", signature(x = "Spectra"),
 #'
 #' @examples
 #' # Import data and create object
-#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
-#' spectra_data <- importSpectraBruker(current_path)
+#' current_path <- file.path(system.file("extdata", package = "ASICS"),
+#'                           "spectra_example.txt")
+#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Extract the first sample
@@ -290,6 +293,7 @@ setMethod(
 #' # Import data and create object
 #' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 #' spectra_data <- importSpectraBruker(current_path)
+#' spectra_obj <- createSpectra(spectra_data)
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Plot the spectra

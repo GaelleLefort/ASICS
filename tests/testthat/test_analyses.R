@@ -41,12 +41,8 @@ test_that("OPLS-DA on quantifications works well", {
   analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
 
-  expect_error(oplsda(analysis_obj, "condition", orthoI = 1), NA)
-  expect_error(plot(oplsda(analysis_obj, "condition", orthoI = 1)), NA)
-  expect_error(plot(oplsda(analysis_obj, "condition", orthoI = 1),
-                    graph = "buckets"),
-               paste("Type of plot 'buckets' is possible only with",
-                     "bucket data type"))
+  res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
+  expect_error(plot(res_oplsda), NA)
 
   spectra_path <- system.file("extdata", "spectra_diabetes_example.txt",
                               package = "ASICSdata")
@@ -76,17 +72,4 @@ test_that("Kruskall-Wallis on quantifications works well", {
                                     zero.threshold = 25, design = design)
   expect_error(kruskalWallis(analysis_obj, "condition"), NA)
   expect_error(plot(kruskalWallis(analysis_obj, "condition")), NA)
-  expect_error(plot(kruskalWallis(analysis_obj, "condition"),
-                    graph = "buckets"),
-               paste("Type of plot 'buckets' is possible only with",
-                     "bucket data type"))
-
-  spectra_path <- system.file("extdata", "spectra_diabetes_example.txt",
-                              package = "ASICSdata")
-  spectra <- read.table(spectra_path, header = TRUE, row.names = 1)
-  analysis_obj_buck <- formatForAnalysis(binning(spectra),
-                                         zero.threshold = 25, design = design)
-  expect_error(plot(kruskalWallis(analysis_obj_buck, "condition",
-                           type.data = "buckets"),
-                    graph = "buckets"), NA)
 })

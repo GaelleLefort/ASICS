@@ -465,7 +465,7 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
 #'                                                 "example_library",
 #'                                                 package = "ASICS"))
 #' new_pure_library <- createPureLibrary(pure_spectra,
-#'                                       nb.protons = c(5, 4, 9, 9))
+#'                                       nb.protons = c(5, 4))
 #'
 createPureLibrary <- function(spectra, nb.protons, threshold = 1){
   # create a new object PureLibrary with a data frame of intensities and a
