@@ -106,7 +106,7 @@ setMethod(
     cat("ASICS results: \n", nrow(object@quantification),
         "metabolites are identified for this set of spectra. \n")
     cat("Most concentrated metabolites are:",
-        paste(head(rownames(object@quantification)), collapse = ", "))
+        paste(head(rownames(object@quantification)), collapse = ", "), "\n")
   }
 )
 

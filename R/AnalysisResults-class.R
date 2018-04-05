@@ -143,18 +143,18 @@ setMethod(
 
       cat("\n")
       print(eigen_value[seq_len(5), ])
-      cat("[...]")
+      cat("[...] \n")
     } else if (object@type.analysis == "OPLS-DA") {
       cat(paste("Cross validation error:", object@cv.error))
       cat("\n\n")
       cat("Variable with the higher VIP: \n")
       print(object@mean.by.group[seq_len(10), ])
-      cat("[...]")
+      cat("[...] \n")
     } else if (object@type.analysis == "Kruskal-Wallis tests") {
       cat("Variable with the lower adjusted p-value: \n")
       cat("\n")
       print(object@results[seq_len(10), ])
-      cat("[...]")
+      cat("[...] \n")
     }
   }
 )
