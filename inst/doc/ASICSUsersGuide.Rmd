@@ -63,7 +63,7 @@ a new library can be created with:
 pure_spectra <- importSpectraBruker(system.file("extdata", "example_library", 
                                                 package = "ASICS"))
 new_pure_library <- createPureLibrary(pure_spectra, 
-                                        nb.protons = c(5, 4, 9, 9))
+                                        nb.protons = c(5, 4))
 ```
 A new library can also be created from txt or csv file, with samples in columns 
 and chemical shifts in rows (see help page of `createPureLibrary` function for
@@ -76,7 +76,7 @@ one:
 merged_pure_library <- c(pure_library[1:10], new_pure_library)
 ```
 The `PureLibrary` `merged_pure_library` contains the first ten spectra of the
-default library and the four newly imported spectra imported.
+default library and the two newly imported spectra imported.
 
 
 
@@ -117,7 +117,7 @@ spectra_obj <- createSpectra(spectra_base_cor)
 Identification and quantification of metabolites can now be carried out using 
 only the function `ASICS`. This function takes approximately 2 minutes by 
 spectrum to run. 
-```{r ASICS, results='hide', cache=TRUE}
+```{r ASICS, results='hide'}
 # part of the spectrum to exclude (water and urea)
 to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2, byrow = TRUE)
 ASICS_results <- ASICS(spectra_obj, exclusion.areas = to_exclude)
@@ -199,7 +199,7 @@ plot(resTests)
 
 An analysis on buckets can also be performed. An alignment is required before 
 the spectrum bucketing:
-```{r align_and_binning, cache=TRUE, results='hide'}
+```{r align_and_binning, results='hide'}
 spectra_align <- alignment(spectra_data_txt)
 spectra_bucket <- binning(spectra_align)
 ```
