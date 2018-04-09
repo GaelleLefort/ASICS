@@ -117,12 +117,14 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
       ncores <- min(snowWorkers(), length(cur_dir_spec))
       para_param <- SnowParam(workers = ncores,
                               progressbar = TRUE,
-                              tasks = length(cur_dir_spec))
+                              tasks = length(cur_dir_spec),
+                              stop.on.error = FALSE)
     } else {
       ncores <- min(multicoreWorkers(), length(cur_dir_spec))
       para_param <- MulticoreParam(workers = ncores,
                                    progressbar = TRUE,
-                                   tasks = length(cur_dir_spec))
+                                   tasks = length(cur_dir_spec),
+                                   stop.on.error = FALSE)
     }
   } else {
     ncores <- 1
