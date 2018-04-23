@@ -71,7 +71,7 @@
 
   # test of coefficients positivity
   B_final <- B_final_tot[B_final_tot > 0]
-  identified_metab[identified_metab][B_final_tot < 0] <- FALSE
+  identified_metab[identified_metab][B_final_tot <= 0] <- FALSE
   final_library <- deformed_library[which(identified_metab)]
 
   return(list(final_library = final_library, B_final = B_final,
