@@ -17,6 +17,12 @@
     pure_lib <- ASICS::pure_library
   } else {
     pure_lib <- pure.library
+    pure_lib@spectra <-
+      pure_lib@spectra[pure_lib@ppm.grid >= min(ASICS.results@ppm.grid) &
+                         pure_lib@ppm.grid <= max(ASICS.results@ppm.grid), ]
+    pure_lib@ppm.grid <-
+      pure_lib@ppm.grid[pure_lib@ppm.grid >= min(ASICS.results@ppm.grid) &
+                          pure_lib@ppm.grid <= max(ASICS.results@ppm.grid)]
   }
 
   # add a pure spectrum if the user wants
