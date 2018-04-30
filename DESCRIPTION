@@ -1,7 +1,7 @@
 Package: ASICS
 Type: Package
 Title: Automatic Statistical Identification in Complex Spectra
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
     person("Gaëlle", "Lefort", email = "gaelle.lefort@inra.fr", role = c("aut", "cre")),
     person("Rémi", "Servien", email = "remi.servien@inra.fr", role = "aut"),
