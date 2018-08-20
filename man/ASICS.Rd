@@ -6,7 +6,7 @@
 \usage{
 ASICS(spectra_obj, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
   max.shift = 0.02, pure.library = NULL, threshold.noise = 0.02,
-  seed = 1234, parallel = TRUE)
+  seed = 1234, ncores = 1)
 }
 \arguments{
 \item{spectra_obj}{An object of class \linkS4class{Spectra} obtained with the
@@ -27,8 +27,8 @@ included in the package (that contains 191 reference spectra) is used.}
 \item{seed}{Random seed to control randomness in the algorithm (used in the
 estimation of the significativity of a given metabolite concentration).}
 
-\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
-Default to \code{TRUE}.}
+\item{ncores}{Number of cores used in parallel evaluation. Default to
+\code{1}.}
 }
 \value{
 An object of type \linkS4class{ASICSResults} containing the

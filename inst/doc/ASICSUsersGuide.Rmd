@@ -39,9 +39,7 @@ the MetaboLights database (https://www.ebi.ac.uk/metabolights/, study MTBLS1).
 # Parallel environment
 
 For most of long time functions, a parallel implementation is available for
-unix-like OS using the BiocParallel package of Bioconductor. Parallel 
-environment is switched on/off with the option `parallel` of the relevant 
-functions.
+unix-like OS using the BiocParallel package of Bioconductor. Number of cores is chosen with the option `ncores` of the relevant functions (default to `1`, no parallel environment).
 
 # Library of pure NMR metabolite spectrum
 

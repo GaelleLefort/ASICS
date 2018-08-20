@@ -17,6 +17,12 @@
     pure_lib <- ASICS::pure_library
   } else {
     pure_lib <- pure.library
+    pure_lib@spectra <-
+      pure_lib@spectra[pure_lib@ppm.grid >= min(ASICS.results@ppm.grid) &
+                         pure_lib@ppm.grid <= max(ASICS.results@ppm.grid), ]
+    pure_lib@ppm.grid <-
+      pure_lib@ppm.grid[pure_lib@ppm.grid >= min(ASICS.results@ppm.grid) &
+                          pure_lib@ppm.grid <= max(ASICS.results@ppm.grid)]
   }
 
   # add a pure spectrum if the user wants
@@ -54,7 +60,7 @@
         rbind(spectra,
               data.frame(grid = ASICS.results@ppm.grid,
                          mixture = metab_to_add_def$intensity,
-                         which_mix  = rep(paste(add.metab, "deformed"),
+                         which_mix  = rep(paste("Pre-processed", add.metab),
                                           length(ASICS.results@ppm.grid))))
     }
   }
