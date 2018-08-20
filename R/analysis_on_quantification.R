@@ -290,7 +290,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
               size = 3, col = "gray30") +
     geom_hline(yintercept = 0, linetype = 2) +
     geom_vline(xintercept = 0, linetype = 2)  +
-    labs(title = "PCA - Plot of variables",
+    labs(title = "PCA - Variable plot",
          x = paste0("Dimension ", axes[1], " (",
                     round(eigen_value$eigen_perc[axes[1]], 1), "%)"),
          y = paste0("Dimension ", axes[2], " (",
@@ -343,7 +343,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
     geom_point() + col.label + ellipse + plot_centroids +
     geom_hline(yintercept = 0, linetype = 2) +
     geom_vline(xintercept = 0, linetype = 2) +
-    labs(title = "PCA - Plot of individuals",
+    labs(title = "PCA - Individual plot",
          x = paste0("Dimension ", axes[1], " (",
                     round(eigen_value$eigen_perc[axes[1]], 1), "%)"),
          y = paste0("Dimension ", axes[2], " (",
@@ -373,6 +373,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @param type.data Type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
+#' @param seed Random seed to control randomness of cross validation folds.
 #' @param ... Further arguments to be passed to the function
 #' \code{\link{opls}} for specifying the parameters of the algorithm, if
 #' necessary.
@@ -414,7 +415,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @importFrom stats aggregate
 #' @importFrom plyr join_all
 oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
-                   type.data = "quantifications", ...){
+                   type.data = "quantifications", seed = 12345, ...){
 
   param.args <- list(...)
 
@@ -436,6 +437,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 
   # opls-da and cross-validation
   if (cross.val > 1) {
+    set.seed(seed)
     folds <- sample(cut(seq_len(ncol(analysis_data)), breaks = cross.val,
                         labels = FALSE), ncol(analysis_data))
     cv_oplsda <-
@@ -573,7 +575,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
                  condition = condition$conditionOPLSDA) +
       coord_cartesian() + ylab("Orthogonal component 1") +
       xlab("Dimension 1") +
-      ggtitle("OPLS-DA - Plot of individuals")
+      ggtitle("OPLS-DA - Individual plot")
 
     pos <- pos + 1
   }
@@ -587,7 +589,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 
     to_plot[[pos]] <- .plotVar(var_coord, var_color, eigen_value,
                                axes = c(1, 2)) +
-      labs(title = "OPLS-DA - Plot of variables",
+      labs(title = "OPLS-DA - Variable plot",
            y = "Orthogonal component 1",
            x = "Dimension 1",
            color = "VIP")
@@ -771,6 +773,7 @@ kruskalWallis <- function(analysis_data, condition,
       group = rep(unlist(dimnames(stat)[2]),
                   each = length(unlist(dimnames(stat)[1])) * 5),
       quantif = unlist(stats))
+    df$group <- relevel(df$group, ref = levels(data_long$group)[1])
 
     p_boxplot <-
       ggplot(df, aes_string(x = "group", y = "quantif", fill = "group")) +

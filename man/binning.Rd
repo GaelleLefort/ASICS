@@ -5,7 +5,7 @@
 \title{Binning/Bucketing of NMR spectra}
 \usage{
 binning(spectra, bin = 0.01, exclusion.areas = matrix(c(4.5, 5.1), ncol =
-  2), parallel = TRUE)
+  2), ncores = 1)
 }
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shifts in
@@ -18,8 +18,8 @@ rownames to chemical shift grid (in ppm).}
 of the analysis (ppm). By default, the water region is excluded
 (4.5-5.1 ppm).}
 
-\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
-Default to \code{TRUE}.}
+\item{ncores}{Number of cores used in parallel evaluation. Default to
+\code{1}.}
 }
 \value{
 A data frame with normalised spectra in columns and buckets in rows

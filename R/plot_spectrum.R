@@ -60,7 +60,7 @@
         rbind(spectra,
               data.frame(grid = ASICS.results@ppm.grid,
                          mixture = metab_to_add_def$intensity,
-                         which_mix  = rep(paste(add.metab, "deformed"),
+                         which_mix  = rep(paste("Pre-processed", add.metab),
                                           length(ASICS.results@ppm.grid))))
     }
   }

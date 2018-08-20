@@ -4,15 +4,15 @@
 \alias{baselineCorrection}
 \title{Baseline correction}
 \usage{
-baselineCorrection(spectra, parallel = TRUE)
+baselineCorrection(spectra, ncores = 1)
 }
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shifts in
 rows. Colnames of this data frame correspond to pure metabolite names and
 rownames to chemical shift grid (in ppm).}
 
-\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
-Default to \code{TRUE}.}
+\item{ncores}{Number of cores used in parallel evaluation. Default to
+\code{1}.}
 }
 \value{
 A data frame with baseline corrected spectra in columns and chemical

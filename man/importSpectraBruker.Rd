@@ -6,7 +6,7 @@
 \usage{
 importSpectraBruker(name.dir, which.spectra = "last",
   baseline.correction = TRUE, alignment = FALSE, ppm.grid = NULL,
-  sample.names = NULL, parallel = TRUE, ...)
+  sample.names = NULL, ncores = 1, ...)
 }
 \arguments{
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each
@@ -32,8 +32,8 @@ the pure library is used).}
 \item{sample.names}{Character vector of sample names. Default to \code{NULL}
 (in which case, folder names are used).}
 
-\item{parallel}{Logical. If \code{TRUE}, the function is run in parallel.
-Default to \code{TRUE}.}
+\item{ncores}{Number of cores used in parallel evaluation. Default to
+\code{1}.}
 
 \item{...}{Further arguments to be passed to the function
 \code{\link{alignment}} for specifying the parameters of the algorithm, if

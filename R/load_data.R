@@ -21,8 +21,8 @@
 #' the pure library is used).
 #' @param sample.names Character vector of sample names. Default to \code{NULL}
 #' (in which case, folder names are used).
-#' @param parallel Logical. If \code{TRUE}, the function is run in parallel.
-#' Default to \code{TRUE}.
+#' @param ncores Number of cores used in parallel evaluation. Default to
+#' \code{1}.
 #' @param ... Further arguments to be passed to the function
 #' \code{\link{alignment}} for specifying the parameters of the algorithm, if
 #' necessary.
@@ -62,14 +62,14 @@
 importSpectraBruker <- function(name.dir, which.spectra = "last",
                                 baseline.correction = TRUE, alignment = FALSE,
                                 ppm.grid = NULL, sample.names = NULL,
-                                parallel = TRUE, ...){
+                                ncores = 1, ...){
 
   if(!dir.exists(name.dir)){
     stop("Path of the Bruker files doesn't exist!")
   }
 
   if (length(which.spectra) != 1 | (!(which.spectra %in% c("first", "last")) &
-      !is.numeric(which.spectra))) {
+                                    !is.numeric(which.spectra))) {
     stop(paste("'which.spectra' must be of length 1 and either 'first', 'last'",
                " or a number."))
   }
@@ -83,7 +83,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
 
   if (!is.null(sample.names) & length(sample.names) != length(cur_dir)) {
     stop(paste0("'sample.names' must be NULL or have the same length than the ",
-         "number of folder in ", name.dir, "."))
+                "number of folder in ", name.dir, "."))
   }
 
   # path of the chosen spectra
@@ -91,13 +91,13 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
     cur_dir_spec <- as.list(file.path(cur_dir,
                                       vapply(as.list(lapply(cur_dir, function(x)
                                         sort(as.numeric(dir(x))))),
-                                             head, 1,
+                                        head, 1,
                                         FUN.VALUE = numeric(1))))
   } else if (length(which.spectra) == 1 && which.spectra == "last") {
     cur_dir_spec <- as.list(file.path(cur_dir,
                                       vapply(as.list(lapply(cur_dir, function(x)
                                         sort(as.numeric(dir(x))))),
-                                             tail, 1,
+                                        tail, 1,
                                         FUN.VALUE = numeric(1))))
   } else {
     cur_dir_spec <- as.list(file.path(cur_dir, which.spectra))
@@ -112,22 +112,17 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   }
 
   # number of cores
-  if (parallel) {
-    if (.Platform$OS.type == "windows") {
-      ncores <- min(snowWorkers(), length(cur_dir_spec))
-      para_param <- SnowParam(workers = ncores,
-                              progressbar = TRUE,
-                              tasks = length(cur_dir_spec),
-                              stop.on.error = FALSE)
-    } else {
-      ncores <- min(multicoreWorkers(), length(cur_dir_spec))
-      para_param <- MulticoreParam(workers = ncores,
-                                   progressbar = TRUE,
-                                   tasks = length(cur_dir_spec),
-                                   stop.on.error = FALSE)
-    }
+  ncores <- min(ncores, length(cur_dir_spec))
+  if (.Platform$OS.type == "windows") {
+    para_param <- SnowParam(workers = ncores,
+                            progressbar = TRUE,
+                            tasks = length(cur_dir_spec),
+                            stop.on.error = FALSE)
   } else {
-    ncores <- 1
+    para_param <- MulticoreParam(workers = ncores,
+                                 progressbar = TRUE,
+                                 tasks = length(cur_dir_spec),
+                                 stop.on.error = FALSE)
   }
 
 
@@ -150,12 +145,12 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   if (any(!bpok(imported_spectra)) |
       any(vapply(imported_spectra, is, "try-error", FUN.VALUE = logical(1)))) {
     warning(paste0("There is a problem in files for spectra: ",
-                paste(sample.names[!bpok(imported_spectra) |
-                                     vapply(imported_spectra, is, "try-error",
-                                            FUN.VALUE = logical(1))],
-                      collapse = ", "),
-                ".\nFix the problem manually and re-execute the function " ,
-                "otherwise these spectra are ignored."), call. = FALSE)
+                   paste(sample.names[!bpok(imported_spectra) |
+                                        vapply(imported_spectra, is, "try-error",
+                                               FUN.VALUE = logical(1))],
+                         collapse = ", "),
+                   ".\nFix the problem manually and re-execute the function " ,
+                   "otherwise these spectra are ignored."), call. = FALSE)
     sample.names <- sample.names[bpok(imported_spectra) &
                                    !vapply(imported_spectra, is, "try-error",
                                            FUN.VALUE = logical(1))]
@@ -283,8 +278,8 @@ normalisation <- function(spectra){
 #' @param spectra Data frame with spectra in columns and chemical shifts in
 #' rows. Colnames of this data frame correspond to pure metabolite names and
 #' rownames to chemical shift grid (in ppm).
-#' @param parallel Logical. If \code{TRUE}, the function is run in parallel.
-#' Default to \code{TRUE}.
+#' @param ncores Number of cores used in parallel evaluation. Default to
+#' \code{1}.
 #'
 #' @return A data frame with baseline corrected spectra in columns and chemical
 #' shifts (in ppm) in rows.
@@ -303,28 +298,24 @@ normalisation <- function(spectra){
 #'                           "spectra_example.txt")
 #' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
 #' spectra_base_cor <- baselineCorrection(spectra_data)
-baselineCorrection <- function(spectra, parallel = TRUE){
+baselineCorrection <- function(spectra, ncores = 1){
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
     stop("Rownames of spectra data frame do not contain ppm grid.")
   }
 
   # number of cores
-  if (parallel) {
-    if (.Platform$OS.type == "windows") {
-      ncores <- snowWorkers()
-      para_param <- SnowParam(workers = ncores,
-                              progressbar = TRUE,
-                              tasks = ncol(spectra))
-    } else {
-      ncores <- multicoreWorkers()
-      para_param <- MulticoreParam(workers = ncores,
-                                   progressbar = TRUE,
-                                   tasks = ncol(spectra))
-    }
+  ncores <- min(ncores, ncol(spectra))
+  if (.Platform$OS.type == "windows") {
+    para_param <- SnowParam(workers = ncores,
+                            progressbar = TRUE,
+                            tasks = ncol(spectra))
   } else {
-    ncores <- 1
+    para_param <- MulticoreParam(workers = ncores,
+                                 progressbar = TRUE,
+                                 tasks = ncol(spectra))
   }
+
 
 
   spectra_list <- as.list(spectra)
@@ -337,9 +328,9 @@ baselineCorrection <- function(spectra, parallel = TRUE){
   } else {
     suppressWarnings(
       spectra_bc_list <- llply(spectra_list,
-                                function(x)
-                                  try(.baselineCorrector(x), silent=TRUE),
-                                .progress = "text"))
+                               function(x)
+                                 try(.baselineCorrector(x), silent=TRUE),
+                               .progress = "text"))
   }
 
   # if error in a file
@@ -353,8 +344,8 @@ baselineCorrection <- function(spectra, parallel = TRUE){
                          collapse = ", ")), call. = FALSE)
   }
   spectra_list[!(!bpok(spectra_bc_list) | vapply(spectra_bc_list, is,
-                                               "try-error",
-                                               FUN.VALUE = logical(1)))] <-
+                                                 "try-error",
+                                                 FUN.VALUE = logical(1)))] <-
     spectra_bc_list[!(!bpok(spectra_bc_list) | vapply(spectra_bc_list, is,
                                                       "try-error",
                                                       FUN.VALUE = logical(1)))]
@@ -535,8 +526,8 @@ createSpectra <- function(spectra){
 #' @param exclusion.areas Definition domain of spectra that have to be excluded
 #' of the analysis (ppm). By default, the water region is excluded
 #' (4.5-5.1 ppm).
-#' @param parallel Logical. If \code{TRUE}, the function is run in parallel.
-#' Default to \code{TRUE}.
+#' @param ncores Number of cores used in parallel evaluation. Default to
+#' \code{1}.
 #'
 #' @return A data frame with normalised spectra in columns and buckets in rows
 #' (bucket names correspond to the center of the bucket).
@@ -553,7 +544,7 @@ createSpectra <- function(spectra){
 #' spectra_bin <- binning(spectra_data, bin = 0.01)
 binning <- function(spectra, bin = 0.01,
                     exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
-                    parallel = TRUE){
+                    ncores = 1){
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
     stop("Rownames of spectra data frame don't contain ppm grid.")
@@ -571,27 +562,22 @@ binning <- function(spectra, bin = 0.01,
     idx_to_remove <-
       unlist(alply(exclusion.areas, 1,
                    function(area) which(old_grid >= area[[1]] &
-                                       old_grid <= area[[2]])),
+                                          old_grid <= area[[2]])),
              use.names = FALSE)
 
     spectra[idx_to_remove, ] <- 0
   }
 
   # number of cores
-  if (parallel) {
-    if (.Platform$OS.type == "windows") {
-      ncores <- snowWorkers()
-      para_param <- SnowParam(workers = ncores,
-                              progressbar = TRUE,
-                              tasks = ncol(spectra))
-    } else {
-      ncores <- multicoreWorkers()
-      para_param <- MulticoreParam(workers = ncores,
-                                   progressbar = TRUE,
-                                   tasks = ncol(spectra))
-    }
+  ncores <- min(ncores, ncol(spectra))
+  if (.Platform$OS.type == "windows") {
+    para_param <- SnowParam(workers = ncores,
+                            progressbar = TRUE,
+                            tasks = ncol(spectra))
   } else {
-    ncores <- 1
+    para_param <- MulticoreParam(workers = ncores,
+                                 progressbar = TRUE,
+                                 tasks = ncol(spectra))
   }
 
   # compute buckets
@@ -605,7 +591,7 @@ binning <- function(spectra, bin = 0.01,
   if (ncores > 1) {
     buckets_values_list <-
       bplapply(spectra_list, .binningSpectrum, old_grid, buckets, bin,
-                     BPPARAM = para_param)
+               BPPARAM = para_param)
   } else {
     buckets_values_list <- llply(spectra_list, .binningSpectrum, old_grid,
                                  buckets, bin, .progress = "text")

@@ -15,8 +15,8 @@
 #' @param threshold.noise Threshold for signal noise. Default to 0.02.
 #' @param seed Random seed to control randomness in the algorithm (used in the
 #' estimation of the significativity of a given metabolite concentration).
-#' @param parallel Logical. If \code{TRUE}, the function is run in parallel.
-#' Default to \code{TRUE}.
+#' @param ncores Number of cores used in parallel evaluation. Default to
+#' \code{1}.
 #'
 #' @return An object of type \linkS4class{ASICSResults} containing the
 #' quantification results.
@@ -52,7 +52,7 @@ ASICS <- function(spectra_obj,
                   exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, pure.library = NULL,
                   threshold.noise = 0.02, seed = 1234,
-                  parallel = TRUE) {
+                  ncores = 1) {
 
   if(!is.null(exclusion.areas) &&
      (!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2)){
@@ -73,29 +73,23 @@ ASICS <- function(spectra_obj,
   }
 
   # number of cores
-  if (parallel) {
-    if (.Platform$OS.type == "windows") {
-      ncores <- min(snowWorkers(), length(spectra_obj))
-      para_param <- SnowParam(workers = ncores,
-                              progressbar = TRUE,
-                              tasks = length(spectra_obj))
-    } else {
-      ncores <- min(multicoreWorkers(), length(spectra_obj))
-      para_param <- MulticoreParam(workers = ncores,
-                                   progressbar = TRUE,
-                                   tasks = length(spectra_obj))
-    }
+  ncores <- min(ncores, length(spectra_obj))
+  if (.Platform$OS.type == "windows") {
+    para_param <- SnowParam(workers = ncores,
+                            progressbar = TRUE,
+                            tasks = length(spectra_obj))
   } else {
-    ncores <- 1
+    para_param <- MulticoreParam(workers = ncores,
+                                 progressbar = TRUE,
+                                 tasks = length(spectra_obj))
   }
-
 
   list_spec <- lapply(seq_along(spectra_obj), function(x) spectra_obj[x])
 
   res_estimation_list <- bplapply(list_spec,
-                          .ASICSInternal, exclusion.areas, max.shift,
-                          pure.library, threshold.noise, seed,
-                          BPPARAM = para_param)
+                                  .ASICSInternal, exclusion.areas, max.shift,
+                                  pure.library, threshold.noise, seed,
+                                  BPPARAM = para_param)
 
   res_estimation <- do.call(c, res_estimation_list)
 
