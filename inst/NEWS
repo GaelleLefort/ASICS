@@ -1,7 +1,7 @@
 RELEASE HISTORY OF ASICS PACKAGE
 ========================================
 
-CHANGES in ASICS VERSION 1.0.1
+CHANGES in ASICS VERSION 1.1.1
 
 Improvements
 * need to specify number of cores to use a parallel environment
