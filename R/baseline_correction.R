@@ -56,7 +56,7 @@
   while(m2 / m1 < ratio){
     m1 <- m2
     SDset <- SDset[SDset < 2 * m1]
-    m2 <- median(SDset)
+    m2 <- median(SDset) + 1e-5
   }
   return(m2)
 }

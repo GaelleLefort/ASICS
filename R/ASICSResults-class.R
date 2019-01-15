@@ -42,7 +42,7 @@
 setClass(
   Class = "ASICSResults",
   slots = list(
-    reconstructed.spectra = "matrix",
+    reconstructed.spectra = "dgeMatrix",
     quantification = "data.frame",
     deformed.library = "data.frame"
   ),

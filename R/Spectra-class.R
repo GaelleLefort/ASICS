@@ -5,6 +5,7 @@
 #' \code{\link{createSpectra}}.
 #'
 #' @name Spectra-class
+#' @import Matrix
 #' @exportClass Spectra
 #'
 #'
@@ -33,7 +34,7 @@ setClass(
   slots = list(
     sample.name = "character",
     ppm.grid = "numeric",
-    spectra = "matrix"
+    spectra = "generalMatrix"
   )
 )
 
@@ -122,7 +123,7 @@ setMethod("getSpectra", "Spectra",
             spectra <- object@spectra
             rownames(spectra) <- object@ppm.grid
             colnames(spectra) <- object@sample.name
-            return(object@spectra)
+            return(spectra)
           }
 )
 
@@ -231,7 +232,7 @@ setMethod(
     return(new("Spectra",
                sample.name = x@sample.name[i],
                ppm.grid = x@ppm.grid,
-               spectra = as.matrix(x@spectra[ ,i])))
+               spectra = Matrix(x@spectra[ ,i])))
   }
 )
 
@@ -313,7 +314,7 @@ setMethod(
   definition = function(x, y, xlim = c(0.5, 10), ylim = NULL, ...) {
 
     # reshape data
-    data_to_plot <- reshape(as.data.frame(x@spectra),
+    data_to_plot <- reshape(as.data.frame(as.matrix(x@spectra)),
                             varying = seq_len(ncol(x@spectra)),
                             times = x@sample.name,
                             ids = as.numeric(x@ppm.grid),

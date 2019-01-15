@@ -4,7 +4,7 @@
 \alias{baselineCorrection}
 \title{Baseline correction}
 \usage{
-baselineCorrection(spectra, ncores = 1)
+baselineCorrection(spectra, ncores = 1, verbose = TRUE)
 }
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shifts in
@@ -13,6 +13,8 @@ rownames to chemical shift grid (in ppm).}
 
 \item{ncores}{Number of cores used in parallel evaluation. Default to
 \code{1}.}
+
+\item{verbose}{A boolean value to allow print out process information.}
 }
 \value{
 A data frame with baseline corrected spectra in columns and chemical
@@ -23,9 +25,9 @@ Apply a baseline correction to a spectra with the algorithm described in
 Wang et al. (2013).
 }
 \examples{
-current_path <- file.path(system.file("extdata", package = "ASICS"),
-                          "spectra_example.txt")
-spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+current_path <- system.file("extdata", package = "ASICS")
+spectra_data <- importSpectra(name.dir = current_path,
+                     name.file = "spectra_example.txt", type.import = "txt")
 spectra_base_cor <- baselineCorrection(spectra_data)
 }
 \references{

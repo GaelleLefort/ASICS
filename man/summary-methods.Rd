@@ -15,7 +15,6 @@
 \alias{show,ASICSResults-method}
 \alias{show.ASICSResults}
 \alias{dim,ASICSResults-method}
-\alias{dim.Spectra}
 \alias{show,AnalysisResults-method}
 \alias{show.AnalysisResults}
 \alias{summary,AnalysisResults-method}

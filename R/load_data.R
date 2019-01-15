@@ -1,8 +1,179 @@
-#' Import metabolomic spectra from Bruker files
+#' Import metabolomic spectra
 #'
-#' Import spectra from Bruker files contained in a single folder. This folder
-#' contains one subfolder for each sample. Spectra are baseline corrected
-#' (optional) and normalised by the area under the curve during the importation.
+#' Import spectra from text or CSV, fid or 1r (preprocessed spectrum) files.
+#' (optional) Spectra are baseline corrected, aligned and normalised during the
+#' importation.
+#'
+#' @param name.dir Path of the folder containing the spectra. Each
+#' subfolder contains the fid or the 1r (preprocessed spectrum) files of this
+#' sample if \code{type = "fid"} or \code{type = "1r"}.
+#' @param name.file Name of the txt or csv file containing the spectra in
+#' columns (spectrum names in the first line and ppm grid in the first column).
+#' @param type.import Type of import. Either \code{"txt"}, \code{"csv"},
+#' \code{"fid"} or \code{"1r"}.
+#' @param baseline.correction Logical. If \code{TRUE} a baseline correction is
+#' applied for each spectrum (Wang et al (2013)). Default to \code{FALSE}.
+#' @param alignment Logical. If \code{TRUE} a peak alignment is
+#' applied between all spectra. Default to \code{FALSE}.
+#' @param normalisation Logical. If \code{TRUE} a normalisation is applied for
+#' each spectrum (see \code{\link{normaliseSpectra}} for details). Default to
+#' \code{TRUE}.
+#' @param ncores Number of cores used in parallel evaluation. Default to
+#' \code{1}.
+#' @param verbose A boolean value to allow print out process information.
+#' @param ... Further arguments to be passed to the functions
+#' \code{\link{read.table}}, \code{\link{importSpectraBruker}},
+#' \code{\link[PepsNMR]{Normalization}} (\code{\link[PepsNMR]{PepsNMR-package}}),
+#' \code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
+#' \code{\link{normaliseSpectra}} for specifying the parameters of the algorithm,
+#' if necessary.
+#'
+#' @details
+#' Some preprocessing steps are included during the importation. First, spectra
+#' are baseline corrected if \code{baseline.correction = TRUE}. Then, all
+#' spectrum definition domains are aligned to a unique one (either the one
+#' specified in \code{ppm.grid} or the grid of the default library). Finally,
+#' all spectra are normalised if \code{normalisation = TRUE} and aligned if
+#' \code{alignment = TRUE}.
+#'
+#' @references Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
+#' Distribution-based classification method for baseline correction of
+#' metabolomic 1D proton nuclear magnetic resonance spectra.
+#' \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
+#'
+#' @return A data frame with spectra in columns and chemical shifts (in ppm)
+#' in rows.
+#'
+#' @import PepsNMR
+#' @importFrom utils read.table capture.output
+#'
+#' @export
+#'
+#' @seealso \code{\link{importSpectraBruker}} \code{\link{baselineCorrection}}
+#' \code{\link{normaliseSpectra}} \code{\link{alignSpectra}}
+#'
+#' @examples
+#' ## Import from txt file
+#' current_path <- system.file("extdata", package = "ASICS")
+#' spectra_data <- importSpectra(name.dir = current_path,
+#'                      name.file = "spectra_example.txt", type.import = "txt")
+#'
+#' ## Import from fid file
+#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' spectra_data <- importSpectra(name.dir = current_path, type.import = "fid",
+#'                              subdirs = TRUE, dirs.names = TRUE)
+#'
+#' ## Import from txt file
+#' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
+#' spectra_data <- importSpectra(name.dir = current_path, type.import = "1r")
+importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
+                          baseline.correction = FALSE, alignment = FALSE,
+                          normalisation = TRUE, ncores = 1,
+                          verbose = TRUE, ...){
+
+  import.args <- list(...)
+
+  if (!type.import %in% c("txt", "csv", "fid", "1r")) {
+    stop("This import method is not available.")
+  }
+
+  if (type.import == "txt" | type.import == "csv") {
+    if (verbose) cat("Import spectra from txt or csv files... \n")
+    import.param <- c(list(file = file.path(name.dir, name.file)),
+                      import.args[names(import.args) %in%
+                                    names(formals(args(read.table)))])
+
+    imported_spectra <- do.call("read.table", import.param)
+  } else if (type.import == "fid") {
+    if (verbose) cat("Import spectra from fid files...  \n")
+    import.param <- c(list(Fid_data = NULL, Fid_info = NULL, data.path = name.dir,
+                           readFids = TRUE,
+                           groupDelayCorr = TRUE, solventSuppression = TRUE,
+                           apodization = TRUE, fourierTransform = TRUE,
+                           zeroOrderPhaseCorr = TRUE, internalReferencing = TRUE,
+                           baselineCorrection = FALSE, negativeValues0 = TRUE,
+                           warping = FALSE, windowSelection = TRUE,
+                           bucketing = FALSE, regionRemoval = FALSE,
+                           zoneAggregation = FALSE, normalization = FALSE,
+                           export = FALSE, writeArg = "none"),
+                      import.args[names(import.args) %in%
+                                    names(formals(args(ReadFids)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(GroupDelayCorrection)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(SolventSuppression)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(Apodization)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(FourierTransform)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(ZeroOrderPhaseCorrection)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(InternalReferencing)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(NegativeValuesZeroing)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(WindowSelection)))])
+
+    if (verbose) {
+      imported_spectra <-
+        do.call("PreprocessingChain", import.param)$Spectrum_data
+    } else {
+      capture.output(imported_spectra <-
+                       do.call("PreprocessingChain", import.param)$Spectrum_data)
+    }
+    imported_spectra <- as.data.frame(t(Re(imported_spectra)))
+    imported_spectra <- imported_spectra[nrow(imported_spectra):1, ]
+  } else if (type.import == "1r") {
+    if (verbose) cat("Import spectra from 1r files... \n")
+    import.param <- c(list(name.dir = name.dir,
+                           ncores = ncores,
+                           verbose = verbose),
+                      import.args[names(import.args) %in%
+                                    names(formals(args(importSpectraBruker)))])
+
+    imported_spectra <- do.call("importSpectraBruker", import.param)
+  }
+
+  # baseline correction
+  if (baseline.correction) {
+    imported_spectra <- baselineCorrection(imported_spectra, ncores = ncores,
+                                           verbose = verbose)
+  }
+
+  # normalisation
+  if (normalisation) {
+    norm.param <- c(list(spectra = imported_spectra,
+                         verbose = verbose),
+                    import.args[names(import.args) %in%
+                                  c(names(formals(args(Normalization))))])
+
+    imported_spectra <- do.call("normaliseSpectra", norm.param)
+  }
+
+  # peak alignment
+  if (alignment) {
+    align.param <- c(list(spectra = imported_spectra,
+                          ncores = ncores,
+                          verbose = verbose),
+                     import.args[names(import.args) %in%
+                                   c(names(formals(args(alignSpectra))))])
+
+    imported_spectra <- do.call("alignSpectra", align.param)
+  }
+
+  return(imported_spectra)
+}
+
+
+
+
+#' Import preprocessed metabolomic spectra from Bruker files
+#'
+#' Import preprocessed spectra from Bruker files contained in a single folder.
+#' This folder contains one subfolder for each sample.
+#' (optional) Spectra are baseline corrected, aligned and normalised by the area
+#' under the curve during the importation.
 #'
 #' @param name.dir Path of the folder containing one subfolder by sample. Each
 #' subfolder contains the Bruker files of this sample.
@@ -11,11 +182,7 @@
 #' = "first"}, always the last one with \code{which.spectra = "last"} or a
 #' vector of length the number of spectra that specifies the number of each
 #' spectrum to import).
-#' Default to \code{"last"}.
-#' @param baseline.correction Logical. If \code{TRUE} a baseline correction is
-#' applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.
-#' @param alignment Logical. If \code{TRUE} a peak alignment is
-#' applied between all spectra (Vu et al (2011)). Default to \code{FALSE}.
+#' Default to \code{"first"}.
 #' @param ppm.grid Numeric vector of a unique grid (definition domain) for all
 #' spectra (in ppm). Default to \code{NULL} (in which case, the default grid of
 #' the pure library is used).
@@ -23,46 +190,43 @@
 #' (in which case, folder names are used).
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
-#' @param ... Further arguments to be passed to the function
-#' \code{\link{alignment}} for specifying the parameters of the algorithm, if
-#' necessary.
+#' @param verbose A boolean value to allow print out process information.
+#' @param ... Further arguments to be passed to the functions
+#' \code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
+#' \code{\link{normaliseSpectra}} for specifying the parameters of the algorithm,
+#' if necessary.
 #'
 #' @details
 #' Some preprocessing steps are included during the importation. First, spectra
 #' are baseline corrected if \code{baseline.correction = TRUE}. Then, all
 #' spectrum definition domains are aligned to a unique one (either the one
 #' specified in \code{ppm.grid} or the grid of the default library). Finally,
-#' all spectra are normalised by the area under the curve.
+#' all spectra are normalised if \code{normalisation = TRUE}.
 #'
 #' @references Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
 #' Distribution-based classification method for baseline correction of
 #' metabolomic 1D proton nuclear magnetic resonance spectra.
 #' \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
 #'
-#' @references Vu, T. N., Valkenborg, D., Smets, K., Verwaest, K. A., Dommisse,
-#' R., Lemiere, F., ... & Laukens, K. (2011). An integrated workflow for robust
-#' alignment and simplified quantitative analysis of NMR spectrometry data.
-#' \emph{BMC Bioinformatics}, \strong{12}(1), 405.
-#'
 #' @return A data frame with spectra in columns and chemical shifts (in ppm)
 #' in rows.
 #'
-#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SnowParam
-#' @importFrom BiocParallel snowWorkers bptry bpok
-#' @importFrom plyr llply
+#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SerialParam
+#' @importFrom BiocParallel bptry bpok
 #' @importFrom utils head tail
 #' @export
 #'
-#' @seealso \code{\link{baselineCorrection}} \code{\link{normalisation}}
-#' \code{\link{alignment}}
+#' @seealso \code{\link{baselineCorrection}} \code{\link{normaliseSpectra}}
+#' \code{\link{alignSpectra}}
 #'
 #' @examples
 #' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 #' spectra_data <- importSpectraBruker(current_path)
-importSpectraBruker <- function(name.dir, which.spectra = "last",
-                                baseline.correction = TRUE, alignment = FALSE,
+importSpectraBruker <- function(name.dir, which.spectra = "first",
                                 ppm.grid = NULL, sample.names = NULL,
-                                ncores = 1, ...){
+                                ncores = 1, verbose = TRUE, ...){
+
+  import.args <- list(...)
 
   if(!dir.exists(name.dir)){
     stop("Path of the Bruker files doesn't exist!")
@@ -113,51 +277,31 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
 
   # number of cores
   ncores <- min(ncores, length(cur_dir_spec))
-  if (.Platform$OS.type == "windows") {
-    para_param <- SnowParam(workers = ncores,
-                            progressbar = TRUE,
-                            tasks = length(cur_dir_spec),
-                            stop.on.error = FALSE)
+  if (.Platform$OS.type == "windows" | ncores == 1) {
+    para_param <- SerialParam(progressbar = verbose,
+                              stop.on.error = FALSE)
   } else {
     para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = TRUE,
+                                 progressbar = verbose,
                                  tasks = length(cur_dir_spec),
+                                 manager.hostname = "localhost",
                                  stop.on.error = FALSE)
   }
 
-
   # import spectra
-  if (ncores > 1) {
-    imported_spectra <-
-      bptry(bplapply(cur_dir_spec, .readNMRBruker, ppm.grid,
-                     baseline.correction,
-                     BPPARAM = para_param))
-  } else {
-    suppressWarnings(
-      imported_spectra <- llply(cur_dir_spec,
-                                function(x, ppm, bc)
-                                  try(.readNMRBruker(x, ppm, bc), silent=TRUE),
-                                ppm.grid, baseline.correction,
-                                .progress = "text"))
-  }
+  imported_spectra <-
+    bptry(bplapply(cur_dir_spec, .readNMRBruker, ppm.grid,
+                   BPPARAM = para_param))
 
   # if error in a file
-  if (any(!bpok(imported_spectra)) |
-      any(vapply(imported_spectra, is, "try-error", FUN.VALUE = logical(1)))) {
+  if (any(!bpok(imported_spectra))) {
     warning(paste0("There is a problem in files for spectra: ",
-                   paste(sample.names[!bpok(imported_spectra) |
-                                        vapply(imported_spectra, is, "try-error",
-                                               FUN.VALUE = logical(1))],
+                   paste(sample.names[!bpok(imported_spectra)],
                          collapse = ", "),
                    ".\nFix the problem manually and re-execute the function " ,
                    "otherwise these spectra are ignored."), call. = FALSE)
-    sample.names <- sample.names[bpok(imported_spectra) &
-                                   !vapply(imported_spectra, is, "try-error",
-                                           FUN.VALUE = logical(1))]
-    imported_spectra <- imported_spectra[bpok(imported_spectra) &
-                                           !vapply(imported_spectra, is,
-                                                   "try-error",
-                                                   FUN.VALUE = logical(1))]
+    sample.names <- sample.names[bpok(imported_spectra)]
+    imported_spectra <- imported_spectra[bpok(imported_spectra)]
   }
 
   # convert in a data frame
@@ -165,17 +309,12 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
                                     row.names = as.character(ppm.grid))
   colnames(imported_spectra) <- sample.names
 
-  # peak alignment
-  if (alignment) {
-    imported_spectra <- alignment(imported_spectra, ...)
-  }
-
   return(imported_spectra)
 }
 
 
 ## Extract a spectrum from Bruker files
-.readNMRBruker <- function(path, ppm.grid, baseline.correction){
+.readNMRBruker <- function(path, ppm.grid){
 
   # file paths
   acq_file <- file.path(path, "acqus")
@@ -186,9 +325,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   ACQ <- readLines(acq_file)
   TD <- .getBrukerParam(ACQ, "TD")
   SW <- .getBrukerParam(ACQ, "SW")
-  SWH <- .getBrukerParam(ACQ, "SW_h")
   DTYPA <- .getBrukerParam(ACQ, "DTYPA")
-  BYTORDA <- .getBrukerParam(ACQ, "BYTORDA")
   ENDIAN <- "little"
   SIZE <- ifelse(DTYPA == 0, 4, 8)
 
@@ -212,17 +349,8 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
   ppmseq <- seq(from = pmin, to = pmax, by = dppm)
   signal <- 100 * signal / max(signal)
 
-  # baseline correction
-  if (baseline.correction) {
-    signal <- .baselineCorrector(signal)
-    signal[signal < 0] <- 0
-  }
-
   # adapt the grid
   new_signal <- .changeGrid(signal, ppmseq, ppm.grid)
-
-  # normalisation by area under the curve
-  new_signal <- new_signal / .AUC(ppm.grid, new_signal)
 
   return(new_signal)
 }
@@ -238,30 +366,50 @@ importSpectraBruker <- function(name.dir, which.spectra = "last",
 
 #' Normalisation
 #'
-#' Normalise a data frame of spectra by the area under the curve.
+#' Normalise a data frame of spectra to a constant sum (CS) or with a
+#' method of \code{PepsNMR} package (see \code{\link[PepsNMR]{Normalization}}).
 #'
 #' @param spectra Data frame with spectra in columns and chemical shifts in
 #' rows. Colnames of this data frame correspond to pure metabolite names and
 #' rownames to chemical shift grid (in ppm).
+#' @param type.norm Type of normalisation : "CS", "mean", "pqn", "median",
+#' "firstquartile" or "peak". Default to "CS".
+#' @param verbose A boolean value to allow print out process information.
+#' @param ... other arguments to be passed to
+#' \code{\link[PepsNMR]{Normalization}}
 #'
 #' @return A data frame with normalised spectra in columns and chemical shifts
 #' (in ppm) in rows.
 #'
+#' @importFrom utils capture.output
 #' @export
 #'
 #' @examples
-#' current_path <- file.path(system.file("extdata", package = "ASICS"),
-#'                           "spectra_example.txt")
-#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-#' spectra_norm <- normalisation(spectra_data)
-normalisation <- function(spectra){
+#' current_path <- system.file("extdata", package = "ASICS")
+#' spectra_data <- importSpectra(name.dir = current_path,
+#'                      name.file = "spectra_example.txt", type.import = "txt")
+#' spectra_norm <- normaliseSpectra(spectra_data, type.norm = "pqn")
+normaliseSpectra <- function(spectra, type.norm = "CS", verbose = TRUE, ...){
+
+  if (!type.norm %in% c("CS", "mean", "pqn", "median", "firstquartile",
+                        "peak")) {
+    stop("This normalisation method is not available.")
+  }
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
     stop("Rownames of spectra data frame don't contain ppm grid.")
   }
 
-  spectra_norm <- data.frame(apply(spectra, 2, function(x)
-    t(x / .AUC(as.numeric(rownames(spectra)), x))))
+  if (verbose) cat("Normalisation... \n")
+
+  if (type.norm == "CS") {
+    spectra_norm <- data.frame(apply(spectra, 2, function(x)
+      t(x / .AUC(as.numeric(rownames(spectra)), x))))
+  } else {
+    capture.output(spectra_norm  <- data.frame(t(Normalization(t(spectra),
+                                                               type.norm = type.norm, ...))))
+  }
+
   rownames(spectra_norm) <- rownames(spectra)
   colnames(spectra_norm) <- colnames(spectra)
 
@@ -280,6 +428,7 @@ normalisation <- function(spectra){
 #' rownames to chemical shift grid (in ppm).
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
+#' @param verbose A boolean value to allow print out process information.
 #'
 #' @return A data frame with baseline corrected spectra in columns and chemical
 #' shifts (in ppm) in rows.
@@ -289,95 +438,76 @@ normalisation <- function(spectra){
 #' metabolomic 1D proton nuclear magnetic resonance spectra.
 #' \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
 #'
-#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SnowParam
-#' @importFrom BiocParallel snowWorkers
+#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SerialParam
 #' @export
 #'
 #' @examples
-#' current_path <- file.path(system.file("extdata", package = "ASICS"),
-#'                           "spectra_example.txt")
-#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+#' current_path <- system.file("extdata", package = "ASICS")
+#' spectra_data <- importSpectra(name.dir = current_path,
+#'                      name.file = "spectra_example.txt", type.import = "txt")
 #' spectra_base_cor <- baselineCorrection(spectra_data)
-baselineCorrection <- function(spectra, ncores = 1){
+baselineCorrection <- function(spectra, ncores = 1, verbose = TRUE){
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
     stop("Rownames of spectra data frame do not contain ppm grid.")
   }
 
+  if (verbose) cat("Baseline correction... \n")
+
   # number of cores
   ncores <- min(ncores, ncol(spectra))
-  if (.Platform$OS.type == "windows") {
-    para_param <- SnowParam(workers = ncores,
-                            progressbar = TRUE,
-                            tasks = ncol(spectra))
+  if (.Platform$OS.type == "windows" | ncores == 1) {
+    para_param <- SerialParam(progressbar = verbose)
   } else {
     para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = TRUE,
-                                 tasks = ncol(spectra))
+                                 progressbar = verbose,
+                                 tasks = ncol(spectra),
+                                 manager.hostname = "localhost")
   }
-
-
 
   spectra_list <- as.list(spectra)
 
   # baseline correction
-  if (ncores > 1) {
-    spectra_bc_list <-
-      bptry(bplapply(spectra_list, .baselineCorrector,
-                     BPPARAM = para_param))
-  } else {
-    suppressWarnings(
-      spectra_bc_list <- llply(spectra_list,
-                               function(x)
-                                 try(.baselineCorrector(x), silent=TRUE),
-                               .progress = "text"))
-  }
+  spectra_bc_list <-
+    bptry(bplapply(spectra_list, .baselineCorrector,
+                   BPPARAM = para_param))
 
   # if error in a file
-  if (any(!bpok(spectra_bc_list)) |
-      any(vapply(spectra_bc_list, is, "try-error", FUN.VALUE = logical(1)))) {
+  if (any(!bpok(spectra_bc_list))) {
     warning(paste0("The baseline correction algorithm can not be used for spectra: ",
-                   paste(colnames(spectra)[!bpok(spectra_bc_list) |
-                                             vapply(spectra_bc_list, is,
-                                                    "try-error",
-                                                    FUN.VALUE = logical(1))],
+                   paste(colnames(spectra)[!bpok(spectra_bc_list)],
                          collapse = ", ")), call. = FALSE)
   }
-  spectra_list[!(!bpok(spectra_bc_list) | vapply(spectra_bc_list, is,
-                                                 "try-error",
-                                                 FUN.VALUE = logical(1)))] <-
-    spectra_bc_list[!(!bpok(spectra_bc_list) | vapply(spectra_bc_list, is,
-                                                      "try-error",
-                                                      FUN.VALUE = logical(1)))]
+  spectra_list[!(!bpok(spectra_bc_list))] <-
+    spectra_bc_list[!(!bpok(spectra_bc_list))]
 
   # convert in a data frame
   spectra_bc <- as.data.frame(do.call(cbind, spectra_list))
   spectra_bc[spectra_bc < 0] <- 0
+  rownames(spectra_bc) <- rownames(spectra)
+  colnames(spectra_bc) <- colnames(spectra)
 
-  spectra_norm <- data.frame(apply(spectra_bc, 2, function(x)
-    t(x / .AUC(as.numeric(rownames(spectra)), x))))
-  rownames(spectra_norm) <- rownames(spectra)
-  colnames(spectra_norm) <- colnames(spectra)
-
-  return(spectra_norm)
+  return(spectra_bc)
 }
 
 
 
 #' Alignment
 #'
-#' Align spectra of a data frame with the CluPA algorithm (Vu et al., (2011))
+#' Align spectra of a data frame by a method based on the CluPA algorithm
+#' (Vu et al., (2011))
 #'
 #' @param spectra Data frame with spectra in columns and chemical shift in rows.
 #' Colnames of this data frame correspond to pure metabolite names and rownames
 #' to chemical shift grid (in ppm).
-#' @param baseline.threshold Value of baseline threshold used to identify peaks.
-#' Default to 0.02.
 #' @param reference Index of the reference spectrum used for the alignment.
 #' Default to \code{NULL}, \emph{i.e.} the reference spectrum is automatically
 #' detected with the \code{\link[speaq]{findRef}} function of the \code{speaq}
 #' package.
 #' @param max.shift Maximum shift allowed for the alignment. Default to 0.002.
+#' @param ncores Number of cores used in parallel evaluation. Default to
+#' \code{1}.
+#' @param verbose A boolean value to allow print out process information.
 #'
 #' @return A data frame with aligned spectra in columns and chemical shifts
 #' (in ppm) in rows.
@@ -388,18 +518,31 @@ baselineCorrection <- function(spectra, ncores = 1){
 #' \emph{BMC Bioinformatics}, \strong{12}(1), 405.
 #'
 #' @export
-#' @importFrom speaq findRef detectSpecPeaks dohCluster
+#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SerialParam
 #'
 #' @examples
-#' current_path <- file.path(system.file("extdata", package = "ASICS"),
-#'                           "spectra_example.txt")
-#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-#' spectra_base_cor <- alignment(spectra_data)
-alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
-                      max.shift = 0.002){
+#' current_path <- system.file("extdata", package = "ASICS")
+#' spectra_data <- importSpectra(name.dir = current_path,
+#'                      name.file = "spectra_example.txt", type.import = "txt")
+#' spectra_align <- alignSpectra(spectra_data)
+alignSpectra <- function(spectra, reference = NULL, max.shift = 0.02,
+                         ncores = 1, verbose = TRUE){
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
     stop("Rownames of spectra data frame do not contain ppm grid.")
+  }
+
+  if (verbose) cat("Alignment... \n")
+
+  # number of cores
+  ncores <- min(ncores, ncol(spectra))
+  if (.Platform$OS.type == "windows" | ncores == 1) {
+    para_param <- SerialParam(progressbar = verbose)
+  } else {
+    para_param <- MulticoreParam(workers = ncores,
+                                 progressbar = verbose,
+                                 tasks = ncol(spectra),
+                                 manager.hostname = "localhost")
   }
 
   # maximum shift
@@ -407,33 +550,47 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
                                     ASICS::pure_library@ppm.grid[1]))
 
   # detect peaks
-  peak_list <- detectSpecPeaks(t(spectra),
-                               nDivRange = 64,
-                               scales = seq(1, 16, 2),
-                               baselineThresh = baseline.threshold,
-                               SNR.Th = -1,
-                               verbose = FALSE)
+  if (verbose) cat("Peak detection \n")
+  peak_list <- bplapply(as.list(seq_len(ncol(spectra))),
+                        .findPeaks, spectra, BPPARAM = para_param)
+
 
   # reference spectrum
   if (is.null(reference)) {
-    reference <- findRef(peak_list)$refInd
+    if (verbose) cat("Finding reference spectrum \n")
+    reference <- .findReference(spectra, ncores, verbose)
   }
 
-  spectra_align <- dohCluster(t(spectra),
-                              peakList = peak_list,
-                              refInd = reference,
-                              maxShift  = max_shift,
-                              acceptLostPeak = TRUE,
-                              verbose = FALSE)
-  spectra_align <- data.frame(t(spectra_align))
+  # import spectra
+  if (verbose) cat("Align spectra \n")
+  align_spectra <-
+    bplapply(as.list(seq_len(ncol(spectra))),
+             .alignmentIdx, spectra, peak_list, reference, max_shift,
+             BPPARAM = para_param)
 
-  spectra_norm <- data.frame(apply(spectra_align, 2, function(x)
-    t(x / .AUC(as.numeric(rownames(spectra_align)), x))))
-  rownames(spectra_norm) <- rownames(spectra)
-  colnames(spectra_norm) <- colnames(spectra)
+  align_spectra_df <- as.data.frame(do.call(cbind, align_spectra),
+                                    row.names = rownames(spectra))
+  colnames(align_spectra_df) <- colnames(spectra)
 
-  return(spectra_norm)
+  return(align_spectra_df)
 }
+
+
+.alignmentIdx <- function(idx, spectra, peak_list, reference, max_shift) {
+  spectrum_align <- as.numeric(spectra[, idx])
+  if (idx != reference) {
+    spectrum_align <- .doAlignment(spectra[, idx], peak_list[[idx]],
+                                   spectra[, reference],
+                                   peak_list[[reference]],
+                                   max_shift,
+                                   acceptLostPeak = TRUE)
+  }
+
+  names(spectrum_align) <- NULL
+  return(spectrum_align)
+}
+
+
 
 #' Create a pure library
 #'
@@ -446,11 +603,12 @@ alignment <- function(spectra, baseline.threshold = 0.02, reference = NULL,
 #' rownames to chemical shift grid (in ppm).
 #' @param nb.protons Numeric vector of the number of protons for each pure
 #' metabolite spectrum contained in \code{spectra} data frame.
-#' @param threshold Numeric value below which pure spectrum values are
-#' considered to be zero. Default to 1.
+#' @param threshold Numeric value or numeric vector of length \code{ncol(spectra)}
+#' below which pure spectrum values are considered to be zero. Default to 1.
 #' @return A \linkS4class{PureLibrary} object with the newly created library.
 #'
 #' @importFrom methods new
+#' @importFrom Matrix Matrix
 #' @export
 #'
 #' @examples
@@ -466,13 +624,19 @@ createPureLibrary <- function(spectra, nb.protons, threshold = 1){
   new_library <- new("PureLibrary",
                      sample.name = colnames(spectra),
                      ppm.grid = as.numeric(rownames(spectra)),
-                     spectra = as.matrix(spectra),
+                     spectra = Matrix(as.matrix(spectra)),
                      nb.protons = nb.protons)
   colnames(new_library@spectra) <- NULL
   rownames(new_library@spectra) <- NULL
 
   # spectra thresholding
-  new_library@spectra[new_library@spectra < threshold] <- 0
+  if(length(threshold) == 1) {
+    new_library@spectra[new_library@spectra < threshold] <- 0
+  } else {
+    for(i in seq_along(threshold)) {
+      new_library@spectra[new_library@spectra[, i] < threshold[i], i] <- 0
+    }
+  }
 
   return(new_library)
 }
@@ -491,6 +655,7 @@ createPureLibrary <- function(spectra, nb.protons, threshold = 1){
 #'
 #' @export
 #' @importFrom BiocParallel bplapply multicoreWorkers
+#' @importFrom Matrix Matrix
 #'
 #' @seealso \linkS4class{Spectra}
 #'
@@ -504,7 +669,7 @@ createSpectra <- function(spectra){
   new_spectra <- new("Spectra",
                      sample.name = colnames(spectra),
                      ppm.grid = as.numeric(rownames(spectra)),
-                     spectra = as.matrix(spectra))
+                     spectra = Matrix(as.matrix(spectra)))
 
   rownames(new_spectra@spectra) <- NULL
   colnames(new_spectra@spectra) <- NULL
@@ -520,31 +685,38 @@ createSpectra <- function(spectra){
 #' Apply a binning function on a spectrum.
 #'
 #' @param spectra Data frame with spectra in columns and chemical shifts in
-#' rows. Colnames of this data frame correspond to pure metabolite names and
+#' rows. Colnames of this data frame correspond to sample names and
 #' rownames to chemical shift grid (in ppm).
 #' @param bin Numeric value specifying the bin width.
 #' @param exclusion.areas Definition domain of spectra that have to be excluded
 #' of the analysis (ppm). By default, the water region is excluded
 #' (4.5-5.1 ppm).
+#' @param normalisation Logical. If \code{TRUE} a normalisation is applied for
+#' each spectrum (see \code{\link{normaliseSpectra}} for details). Default to
+#' \code{TRUE}.
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
+#' @param verbose A boolean value to allow print out process information.
+#' @param ... Further arguments to be passed to the function
+#' \code{\link{normaliseSpectra}}
 #'
 #' @return A data frame with normalised spectra in columns and buckets in rows
 #' (bucket names correspond to the center of the bucket).
 #'
 #' @export
 #' @importFrom plyr alply
-#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SnowParam
-#' @importFrom BiocParallel snowWorkers
+#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SerialParam
 #'
 #' @examples
-#' current_path <- file.path(system.file("extdata", package = "ASICS"),
-#'                           "spectra_example.txt")
-#' spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-#' spectra_bin <- binning(spectra_data, bin = 0.01)
+#' current_path <- system.file("extdata", package = "ASICS")
+#' spectra_data <- importSpectra(name.dir = current_path,
+#'                      name.file = "spectra_example.txt", type.import = "txt")
+#' spectra_bin <- binning(spectra_data, bin = 0.01, type.norm = "pqn")
 binning <- function(spectra, bin = 0.01,
                     exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
-                    ncores = 1){
+                    normalisation= TRUE, ncores = 1, verbose = TRUE, ...){
+
+  extra.args <- list(...)
 
   if (!is.numeric(as.numeric(rownames(spectra)))) {
     stop("Rownames of spectra data frame don't contain ppm grid.")
@@ -554,6 +726,8 @@ binning <- function(spectra, bin = 0.01,
      (!is.matrix(exclusion.areas) | ncol(exclusion.areas) != 2)){
     stop("'exclusion.areas' needs to be a matrix with 2 columns.")
   }
+
+  if (verbose) cat("Binning \n")
 
   old_grid <- as.numeric(rownames(spectra))
 
@@ -570,14 +744,13 @@ binning <- function(spectra, bin = 0.01,
 
   # number of cores
   ncores <- min(ncores, ncol(spectra))
-  if (.Platform$OS.type == "windows") {
-    para_param <- SnowParam(workers = ncores,
-                            progressbar = TRUE,
-                            tasks = ncol(spectra))
+  if (.Platform$OS.type == "windows" | ncores == 1) {
+    para_param <- SerialParam(progressbar = verbose)
   } else {
     para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = TRUE,
-                                 tasks = ncol(spectra))
+                                 progressbar = verbose,
+                                 tasks = ncol(spectra),
+                                 manager.hostname = "localhost")
   }
 
   # compute buckets
@@ -588,20 +761,25 @@ binning <- function(spectra, bin = 0.01,
 
   spectra_list <- as.list(spectra)
   # buckets values for each spectrum
-  if (ncores > 1) {
-    buckets_values_list <-
-      bplapply(spectra_list, .binningSpectrum, old_grid, buckets, bin,
-               BPPARAM = para_param)
-  } else {
-    buckets_values_list <- llply(spectra_list, .binningSpectrum, old_grid,
-                                 buckets, bin, .progress = "text")
-  }
+  buckets_values_list <-
+    bplapply(spectra_list, .binningSpectrum, old_grid, buckets, bin,
+             BPPARAM = para_param)
+
   # convert in a data frame
   buckets_values <- as.data.frame(do.call(cbind, buckets_values_list))
 
   # normalisation
-  spectra_norm <- data.frame(apply(buckets_values, 2, function(value)
-    t(value / .AUC(buckets, value))))
+  # normalisation
+  spectra_norm <- buckets_values
+  if (normalisation) {
+    norm.param <- c(list(spectra = buckets_values,
+                         verbose = verbose),
+                    extra.args[names(extra.args) %in%
+                                 c(names(formals(args(Normalization))))])
+
+    spectra_norm <- do.call("normaliseSpectra", norm.param)
+  }
+
   rownames(spectra_norm) <- buckets
   colnames(spectra_norm) <- colnames(spectra)
 

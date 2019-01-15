@@ -22,7 +22,7 @@ obtain metabolic profiles. In addition to the quantification method, several
 functions allowing spectrum preprocessing or statistical analyses of quantified 
 metabolites are available.
 
-```{r ASICSload}
+```{r ASICSload, warning=FALSE}
 library(ASICS)
 library(ASICSdata)
 ```
@@ -89,7 +89,7 @@ spectra_data <- importSpectraBruker(system.file("extdata",
                                                 package = "ASICSdata"))
 ```
 
-Data can also be imported from other file types with standard `R` function. 
+Data can also be imported from other file types with `importSpectra` function. 
 The only constraint is to have a data frame with spectra in columns 
 (column names are sample names) and chemical shifts in rows (row names 
 correspond to the ppm grid).
@@ -100,8 +100,8 @@ spectra_data_txt <- read.table(diabetes, header = TRUE, row.names = 1)
 ```
 
 Several functions for the preprocessing of spectra are also available: baseline 
-correction, normalisation by the AUC and alignment on a reference spectrum 
-(Vu et al., 2011). For example, here, spectra are baseline corrected:
+correction, normalisation and alignment on a reference spectrum 
+(based on Vu et al. (2011)). For example, here, spectra are baseline corrected:
 ```{r preprocessing, results='hide'}
 spectra_base_cor <- baselineCorrection(spectra_data_txt)
 ```
@@ -115,7 +115,7 @@ spectra_obj <- createSpectra(spectra_base_cor)
 Identification and quantification of metabolites can now be carried out using 
 only the function `ASICS`. This function takes approximately 2 minutes by 
 spectrum to run. 
-```{r ASICS, results='hide'}
+```{r ASICS, results='hide', cache=TRUE}
 # part of the spectrum to exclude (water and urea)
 to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2, byrow = TRUE)
 ASICS_results <- ASICS(spectra_obj, exclusion.areas = to_exclude)
@@ -198,7 +198,7 @@ plot(resTests)
 An analysis on buckets can also be performed. An alignment is required before 
 the spectrum bucketing:
 ```{r align_and_binning, results='hide'}
-spectra_align <- alignment(spectra_data_txt)
+spectra_align <- alignSpectra(spectra_data_txt)
 spectra_bucket <- binning(spectra_align)
 ```
 

@@ -7,9 +7,9 @@
 \alias{plot.AnalysisResults}
 \title{Visualisation methods}
 \usage{
-\S4method{plot}{AnalysisResults,ANY}(x, y, ..., graph = c("default", "ind",
-  "var", "eig", "boxplot", "buckets"), add.label = TRUE, axes = c(1, 2),
-  col.ind = NULL, xlim = c(0.5, 10), ylim = NULL)
+\S4method{plot}{AnalysisResults,ANY}(x, y, ..., graph = c("default",
+  "ind", "var", "eig", "boxplot", "buckets"), add.label = TRUE,
+  axes = c(1, 2), col.ind = NULL, xlim = c(0.5, 10), ylim = NULL)
 }
 \arguments{
 \item{x}{An object of class \linkS4class{AnalysisResults}.}
