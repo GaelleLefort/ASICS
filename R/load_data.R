@@ -91,7 +91,7 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
                            groupDelayCorr = TRUE, solventSuppression = TRUE,
                            apodization = TRUE, fourierTransform = TRUE,
                            zeroOrderPhaseCorr = TRUE, internalReferencing = TRUE,
-                           baselineCorrection = FALSE, negativeValues0 = TRUE,
+                           baselineCorrection = FALSE, negativeValues0 = FALSE,
                            warping = FALSE, windowSelection = TRUE,
                            bucketing = FALSE, regionRemoval = FALSE,
                            zoneAggregation = FALSE, normalization = FALSE,
@@ -124,6 +124,8 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
     }
     imported_spectra <- as.data.frame(t(Re(imported_spectra)))
     imported_spectra <- imported_spectra[nrow(imported_spectra):1, ]
+    colnames(imported_spectra) <- sapply(strsplit(colnames(imported_spectra), "_"),
+                                         utils::head, 1)
   } else if (type.import == "1r") {
     if (verbose) cat("Import spectra from 1r files... \n")
     import.param <- c(list(name.dir = name.dir,
@@ -141,16 +143,6 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
                                            verbose = verbose)
   }
 
-  # normalisation
-  if (normalisation) {
-    norm.param <- c(list(spectra = imported_spectra,
-                         verbose = verbose),
-                    import.args[names(import.args) %in%
-                                  c(names(formals(args(Normalization))))])
-
-    imported_spectra <- do.call("normaliseSpectra", norm.param)
-  }
-
   # peak alignment
   if (alignment) {
     align.param <- c(list(spectra = imported_spectra,
@@ -160,6 +152,16 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
                                    c(names(formals(args(alignSpectra))))])
 
     imported_spectra <- do.call("alignSpectra", align.param)
+  }
+
+  # normalisation
+  if (normalisation) {
+    norm.param <- c(list(spectra = imported_spectra,
+                         verbose = verbose),
+                    import.args[names(import.args) %in%
+                                  c(names(formals(args(Normalization))))])
+
+    imported_spectra <- do.call("normaliseSpectra", norm.param)
   }
 
   return(imported_spectra)
@@ -213,7 +215,6 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
 #'
 #' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SerialParam
 #' @importFrom BiocParallel bptry bpok
-#' @importFrom utils head tail
 #' @export
 #'
 #' @seealso \code{\link{baselineCorrection}} \code{\link{normaliseSpectra}}
@@ -255,13 +256,13 @@ importSpectraBruker <- function(name.dir, which.spectra = "first",
     cur_dir_spec <- as.list(file.path(cur_dir,
                                       vapply(as.list(lapply(cur_dir, function(x)
                                         sort(as.numeric(dir(x))))),
-                                        head, 1,
+                                        utils::head, 1,
                                         FUN.VALUE = numeric(1))))
   } else if (length(which.spectra) == 1 && which.spectra == "last") {
     cur_dir_spec <- as.list(file.path(cur_dir,
                                       vapply(as.list(lapply(cur_dir, function(x)
                                         sort(as.numeric(dir(x))))),
-                                        tail, 1,
+                                        utils::tail, 1,
                                         FUN.VALUE = numeric(1))))
   } else {
     cur_dir_spec <- as.list(file.path(cur_dir, which.spectra))
@@ -457,12 +458,13 @@ baselineCorrection <- function(spectra, ncores = 1, verbose = TRUE){
   # number of cores
   ncores <- min(ncores, ncol(spectra))
   if (.Platform$OS.type == "windows" | ncores == 1) {
-    para_param <- SerialParam(progressbar = verbose)
+    para_param <- SerialParam(progressbar = verbose, stop.on.error = FALSE)
   } else {
     para_param <- MulticoreParam(workers = ncores,
                                  progressbar = verbose,
                                  tasks = ncol(spectra),
-                                 manager.hostname = "localhost")
+                                 manager.hostname = "localhost",
+                                 stop.on.error = FALSE)
   }
 
   spectra_list <- as.list(spectra)

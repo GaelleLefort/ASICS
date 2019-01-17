@@ -94,7 +94,6 @@ setMethod("getDeformedLibrary", "ASICSResults",
 
 #' @rdname summary-methods
 #' @aliases show.ASICSResults
-#' @importFrom utils head
 #' @export
 setMethod(
   f = "show",
@@ -106,7 +105,7 @@ setMethod(
     cat("ASICS results: \n", nrow(object@quantification),
         "metabolites are identified for this set of spectra. \n")
     cat("Most concentrated metabolites are:",
-        paste(head(rownames(object@quantification)), collapse = ", "), "\n")
+        paste(utils::head(rownames(object@quantification)), collapse = ", "), "\n")
   }
 )
 
