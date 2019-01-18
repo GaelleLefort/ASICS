@@ -23,10 +23,10 @@
 #' @param verbose A boolean value to allow print out process information.
 #' @param ... Further arguments to be passed to the functions
 #' \code{\link{read.table}}, \code{\link{importSpectraBruker}},
-#' \code{\link[PepsNMR]{Normalization}} (\code{\link[PepsNMR]{PepsNMR-package}}),
-#' \code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
-#' \code{\link{normaliseSpectra}} for specifying the parameters of the algorithm,
-#' if necessary.
+#' \code{\link[PepsNMR]{Normalization}}
+#' (\code{\link[PepsNMR]{PepsNMR-package}}), \code{\link{alignSpectra}},
+#' \code{\link{baselineCorrection}} or \code{\link{normaliseSpectra}} for
+#' specifying the parameters of the algorithm, if necessary.
 #'
 #' @details
 #' Some preprocessing steps are included during the importation. First, spectra
@@ -86,11 +86,12 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
     imported_spectra <- do.call("read.table", import.param)
   } else if (type.import == "fid") {
     if (verbose) cat("Import spectra from fid files...  \n")
-    import.param <- c(list(Fid_data = NULL, Fid_info = NULL, data.path = name.dir,
-                           readFids = TRUE,
+    import.param <- c(list(Fid_data = NULL, Fid_info = NULL,
+                           data.path = name.dir, readFids = TRUE,
                            groupDelayCorr = TRUE, solventSuppression = TRUE,
                            apodization = TRUE, fourierTransform = TRUE,
-                           zeroOrderPhaseCorr = TRUE, internalReferencing = TRUE,
+                           zeroOrderPhaseCorr = TRUE,
+                           internalReferencing = TRUE,
                            baselineCorrection = FALSE, negativeValues0 = FALSE,
                            warping = FALSE, windowSelection = TRUE,
                            bucketing = FALSE, regionRemoval = FALSE,
@@ -107,11 +108,11 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
                       import.args[names(import.args) %in%
                                     names(formals(args(FourierTransform)))],
                       import.args[names(import.args) %in%
-                                    names(formals(args(ZeroOrderPhaseCorrection)))],
+                                names(formals(args(ZeroOrderPhaseCorrection)))],
                       import.args[names(import.args) %in%
                                     names(formals(args(InternalReferencing)))],
                       import.args[names(import.args) %in%
-                                    names(formals(args(NegativeValuesZeroing)))],
+                                  names(formals(args(NegativeValuesZeroing)))],
                       import.args[names(import.args) %in%
                                     names(formals(args(WindowSelection)))])
 
@@ -120,12 +121,11 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
         do.call("PreprocessingChain", import.param)$Spectrum_data
     } else {
       capture.output(imported_spectra <-
-                       do.call("PreprocessingChain", import.param)$Spectrum_data)
+                       do.call("PreprocessingChain",
+                               import.param)$Spectrum_data)
     }
     imported_spectra <- as.data.frame(t(Re(imported_spectra)))
     imported_spectra <- imported_spectra[nrow(imported_spectra):1, ]
-    colnames(imported_spectra) <- sapply(strsplit(colnames(imported_spectra), "_"),
-                                         utils::head, 1)
   } else if (type.import == "1r") {
     if (verbose) cat("Import spectra from 1r files... \n")
     import.param <- c(list(name.dir = name.dir,
@@ -195,8 +195,8 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
 #' @param verbose A boolean value to allow print out process information.
 #' @param ... Further arguments to be passed to the functions
 #' \code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
-#' \code{\link{normaliseSpectra}} for specifying the parameters of the algorithm,
-#' if necessary.
+#' \code{\link{normaliseSpectra}} for specifying the parameters of the
+#' algorithm, if necessary.
 #'
 #' @details
 #' Some preprocessing steps are included during the importation. First, spectra
@@ -299,7 +299,7 @@ importSpectraBruker <- function(name.dir, which.spectra = "first",
     warning(paste0("There is a problem in files for spectra: ",
                    paste(sample.names[!bpok(imported_spectra)],
                          collapse = ", "),
-                   ".\nFix the problem manually and re-execute the function " ,
+                   ".\nFix the problem manually and re-execute the function ",
                    "otherwise these spectra are ignored."), call. = FALSE)
     sample.names <- sample.names[bpok(imported_spectra)]
     imported_spectra <- imported_spectra[bpok(imported_spectra)]
@@ -407,8 +407,9 @@ normaliseSpectra <- function(spectra, type.norm = "CS", verbose = TRUE, ...){
     spectra_norm <- data.frame(apply(spectra, 2, function(x)
       t(x / .AUC(as.numeric(rownames(spectra)), x))))
   } else {
-    capture.output(spectra_norm  <- data.frame(t(Normalization(t(spectra),
-                                                               type.norm = type.norm, ...))))
+    capture.output(spectra_norm  <-
+                     data.frame(t(Normalization(t(spectra),
+                                                type.norm = type.norm, ...))))
   }
 
   rownames(spectra_norm) <- rownames(spectra)
@@ -476,7 +477,8 @@ baselineCorrection <- function(spectra, ncores = 1, verbose = TRUE){
 
   # if error in a file
   if (any(!bpok(spectra_bc_list))) {
-    warning(paste0("The baseline correction algorithm can not be used for spectra: ",
+    warning(paste0("The baseline correction algorithm can not be used for",
+                   "spectra: ",
                    paste(colnames(spectra)[!bpok(spectra_bc_list)],
                          collapse = ", ")), call. = FALSE)
   }
@@ -605,8 +607,9 @@ alignSpectra <- function(spectra, reference = NULL, max.shift = 0.02,
 #' rownames to chemical shift grid (in ppm).
 #' @param nb.protons Numeric vector of the number of protons for each pure
 #' metabolite spectrum contained in \code{spectra} data frame.
-#' @param threshold Numeric value or numeric vector of length \code{ncol(spectra)}
-#' below which pure spectrum values are considered to be zero. Default to 1.
+#' @param threshold Numeric value or numeric vector of length
+#' \code{ncol(spectra)} below which pure spectrum values are considered to be
+#' zero. Default to 1.
 #' @return A \linkS4class{PureLibrary} object with the newly created library.
 #'
 #' @importFrom methods new
