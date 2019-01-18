@@ -40,10 +40,13 @@
 
   # do alignment only if length of segment > 2
   if (endCheckP - startCheckP >= 2) {
-    maxShift_seg <- c(-min(abs(maxShift[1]), endCheckP - startCheckP - 2,
-                           min(peakList_align$peak[peakList_align$peakLabel == 0]) - startCheckP - 2),
-                      min(maxShift[2], endCheckP - startCheckP - 2,
-                          endCheckP - max(peakList_align$peak[peakList_align$peakLabel == 0]) - 2))
+    maxShift_seg <-
+      c(-min(abs(maxShift[1]), endCheckP - startCheckP - 2,
+             min(peakList_align$peak[peakList_align$peakLabel == 0]) -
+               startCheckP - 2),
+        min(maxShift[2], endCheckP - startCheckP - 2,
+            endCheckP -
+              max(peakList_align$peak[peakList_align$peakLabel == 0]) - 2))
     # shift
     adj <- .findBestShift(refSpec[startCheckP:endCheckP],
                                    tarSpec[startCheckP:endCheckP],
@@ -97,10 +100,10 @@
         # cluster 1
         if (length(unique(peakList_align$peakLabel[clusterLabel == 1])) > 1) {
           res1 <- .alignAlgo(refSpec = refSpec, tarSpec = tarSpec_align,
-                                     peakList = peakList_align[clusterLabel == 1, ],
-                                     startP = startCheckP, endP = endP1,
-                                     maxShift = maxShift,
-                                     acceptLostPeak = acceptLostPeak)
+                             peakList = peakList_align[clusterLabel == 1, ],
+                             startP = startCheckP, endP = endP1,
+                             maxShift = maxShift,
+                             acceptLostPeak = acceptLostPeak)
           tarSpec_align <- res1$tarSpec
 
           if (nrow(peakList_align[clusterLabel == 1, ]) ==
@@ -119,9 +122,9 @@
         # cluster 2
         if (length(unique(peakList_align$peakLabel[clusterLabel == 2])) > 1) {
           res2 <- .alignAlgo(refSpec = refSpec, tarSpec = tarSpec_align,
-                                     peakList = peakList_align[clusterLabel == 2, ],
-                                     startP = startP2, endP = endCheckP, maxShift = maxShift,
-                                     acceptLostPeak=acceptLostPeak)
+                             peakList = peakList_align[clusterLabel == 2, ],
+                             startP = startP2, endP = endCheckP,
+                             maxShift = maxShift, acceptLostPeak=acceptLostPeak)
           tarSpec_align <- res2$tarSpec
 
           if (nrow(peakList_align[clusterLabel == 2, ]) ==
@@ -172,8 +175,8 @@
     stepAdj <- 0
   } else {
     maxVals <- c(ifelse(maxShift[1] != 0,
-                        max(rev(vals)[seq_len(abs(maxShift[1]))], na.rm = TRUE), 1),
-                 max(vals[seq_len(maxShift[2] + 1)], na.rm = TRUE))
+                        max(rev(vals)[seq_len(abs(maxShift[1]))], na.rm = TRUE),
+                        1), max(vals[seq_len(maxShift[2] + 1)], na.rm = TRUE))
     corValue <- max(maxVals)
 
     if (corValue < 0.1) {
@@ -218,7 +221,8 @@
 .findReference <- function (spectra, ncores = 1, verbose) {
 
   # binning
-  spec_bin <- binning(as.data.frame(spectra), ncores = ncores, verbose = verbose)
+  spec_bin <- binning(as.data.frame(spectra), ncores = ncores,
+                      verbose = verbose)
 
   ncores <- min(ncores, ncol(spec_bin))
   if (.Platform$OS.type == "windows" | ncores == 1) {
@@ -354,11 +358,13 @@
         if (opt_seg$opti[j] == "min") {
           toRemove <- which.max(c(spectrum[opt_seg$idx[j]],
                                   spectrum[opt_seg$idx[j + 1]])) - 1
-          optimum_df <- optimum_df[optimum_df$idx != opt_seg$idx[j + toRemove], ]
+          optimum_df <- optimum_df[optimum_df$idx != opt_seg$idx[j +
+                                                                   toRemove], ]
         } else {
           toRemove <- which.min(c(spectrum[opt_seg$idx[j]],
                                   spectrum[opt_seg$idx[j + 1]])) - 1
-          optimum_df <- optimum_df[optimum_df$idx != opt_seg$idx[j + toRemove], ]
+          optimum_df <- optimum_df[optimum_df$idx != opt_seg$idx[j +
+                                                                   toRemove], ]
         }
       }
     }

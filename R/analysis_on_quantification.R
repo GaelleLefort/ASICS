@@ -36,7 +36,8 @@
 #'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                    package = "ASICSdata"), header = TRUE)
 #'
-#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   # Create object for analysis and remove features with more than 25% of
+#'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     design = design,
 #'                                     zero.threshold = 25,
@@ -138,7 +139,8 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
 #'                               package = "ASICSdata")
 #'   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 #'
-#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   # Create object for analysis and remove features with more than 25% of
+#'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
 #'   res_pca <- pca(analysis_obj)
 #' }
@@ -373,7 +375,6 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @param type.data Type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
-#' @param seed Random seed to control randomness of cross validation folds.
 #' @param ... Further arguments to be passed to the function
 #' \code{\link{opls}} for specifying the parameters of the algorithm, if
 #' necessary.
@@ -407,6 +408,8 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
+#'   set.seed(1234) # Random seed to control randomness of cross validation
+#'                  #folds.
 #'   res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
 #' }
 #'
@@ -415,7 +418,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @importFrom stats aggregate
 #' @importFrom plyr join_all
 oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
-                   type.data = "quantifications", seed = 12345, ...){
+                   type.data = "quantifications", ...){
 
   param.args <- list(...)
 
@@ -437,7 +440,6 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 
   # opls-da and cross-validation
   if (cross.val > 1) {
-    set.seed(seed)
     folds <- sample(cut(seq_len(ncol(analysis_data)), breaks = cross.val,
                         labels = FALSE), ncol(analysis_data))
     cv_oplsda <-

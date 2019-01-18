@@ -18,26 +18,31 @@
 
 
   # create a matrix of all pure spectra with shift
-  spectra_all_shift <- rbind(matrix(0, nrow = nb_points_shift,
-                                    ncol = ncol(spectrum_obj[["cleaned_library"]]@spectra)),
-                             spectrum_obj[["cleaned_library"]]@spectra,
-                             matrix(0, nrow = nb_points_shift,
-                                    ncol = ncol(spectrum_obj[["cleaned_library"]]@spectra)))
+  spectra_all_shift <-
+    rbind(matrix(0, nrow = nb_points_shift,
+                 ncol = ncol(spectrum_obj[["cleaned_library"]]@spectra)),
+          spectrum_obj[["cleaned_library"]]@spectra,
+          matrix(0, nrow = nb_points_shift,
+                 ncol = ncol(spectrum_obj[["cleaned_library"]]@spectra)))
 
   # shift library according to FFT cross-correlation
   spectrum_obj[["cleaned_library"]]@spectra <-
-    Matrix(t(laply(as.list(seq_len(ncol(spectrum_obj[["cleaned_library"]]@spectra))),
-            function(i)
-              as.matrix(spectra_all_shift[(nb_points_shift - which_shift[i] + 1):
-                                  (nb_points_shift - which_shift[i] +
-                                     nrow(spectrum_obj[["cleaned_library"]]@spectra)), i]))))
+    Matrix(t(laply(as.list(seq_len(ncol(
+      spectrum_obj[["cleaned_library"]]@spectra))),
+      function(i)
+        as.matrix(
+          spectra_all_shift[(nb_points_shift - which_shift[i] + 1):
+                              (nb_points_shift - which_shift[i] +
+                              nrow(spectrum_obj[["cleaned_library"]]@spectra)),
+                            i]))))
 
   # optimal residuals
   residuals_opti <-
     unlist(lapply(as.list(seq_along(spectrum_obj[["cleaned_library"]])),
-                  function(i) sum((lm(as.matrix(spectrum_obj[["cleaned_spectrum"]]@spectra)~
-                                        as.matrix(spectrum_obj[["cleaned_library"]]@spectra)[, i] -
-                                        1)$residuals) ^ 2)))
+                  function(i) sum((lm(
+                    as.matrix(spectrum_obj[["cleaned_spectrum"]]@spectra)~
+                    as.matrix(spectrum_obj[["cleaned_library"]]@spectra)[, i] -
+                      1)$residuals) ^ 2)))
 
   # metabolites sorted by decreasing residual sum
   order <- sort(residuals_opti, decreasing = FALSE, index.return = TRUE)$ix
@@ -91,7 +96,8 @@
                         BPPARAM = para_param)
 
   # compute correlation
-  if (verbose) cat("Compute correlations between buckets and quantifications \n")
+  if (verbose)
+    cat("Compute correlations between buckets and quantifications \n")
   list_all_cor <- bplapply(all_conc, .compute_correlation, spec_bin,
                            pure.library, nb_points_shift, BPPARAM = para_param)
   list_all_cor <- lapply(seq_along(list_all_cor),
@@ -136,7 +142,7 @@
   which_shift <-
     apply(spectrum_obj[["cleaned_library"]]@spectra, 2,
           function(x) .findBestShift(ref, x,
-                                              maxShift = nb_points_shift_i)$stepAdj)
+                                     maxShift = nb_points_shift_i)$stepAdj)
 
   # data-frame of shifts
   shift_i <- data.frame(D = which_shift)
@@ -166,8 +172,9 @@
   relative_conc_i <-
     data.frame(RC = B2 / spectrum_obj[["cleaned_library"]]@nb.protons)
   colnames(relative_conc_i) <- spectrum_obj[["cleaned_spectrum"]]@sample.name
-  relative_conc_i <- cbind(metab = spectrum_obj[["cleaned_library"]]@sample.name,
-                           relative_conc_i)
+  relative_conc_i <-
+    cbind(metab = spectrum_obj[["cleaned_library"]]@sample.name,
+          relative_conc_i)
 
   return(list(shift = shift_i, relative_conc = relative_conc_i))
 }
@@ -284,14 +291,16 @@
 .deformLibrary <- function(spectrum_obj){
 
   # linear regression between mixture and each pure spectra
-  least_square <- try(.lmConstrained(as.numeric(spectrum_obj[["cleaned_spectrum"]]@spectra),
-                                     spectrum_obj[["cleaned_library"]]@spectra,
-                                     spectrum_obj[["mixture_weights"]]), silent = TRUE)
+  least_square <-
+    try(.lmConstrained(as.numeric(spectrum_obj[["cleaned_spectrum"]]@spectra),
+                       spectrum_obj[["cleaned_library"]]@spectra,
+                       spectrum_obj[["mixture_weights"]]), silent = TRUE)
 
   if(is(least_square, "try-error")){
-    least_square <- .lmConstrained(as.numeric(spectrum_obj[["cleaned_spectrum"]]@spectra),
-                                   spectrum_obj[["cleaned_library"]]@spectra,
-                                   spectrum_obj[["mixture_weights"]], 10e-3)
+    least_square <-
+      .lmConstrained(as.numeric(spectrum_obj[["cleaned_spectrum"]]@spectra),
+                     spectrum_obj[["cleaned_library"]]@spectra,
+                     spectrum_obj[["mixture_weights"]], 10e-3)
   }
 
   # deform each spectrum
@@ -360,10 +369,10 @@
       grid_to_deform <- pure_lib@ppm.grid[peak_area]
 
       # parameter of deformation
-      range_a <- seq(- (max.shift[idx_to_deform] / 10) / (max(grid_to_deform) -
-                                                            min(grid_to_deform)) / 0.5^2,
-                     (max.shift[idx_to_deform] / 10) / (max(grid_to_deform) -
-                                                          min(grid_to_deform)) / 0.5^2,
+      range_a <- seq(-(max.shift[idx_to_deform] / 10) /
+                       (max(grid_to_deform) - min(grid_to_deform)) / 0.5^2,
+                     (max.shift[idx_to_deform] / 10) /
+                       (max(grid_to_deform) - min(grid_to_deform)) / 0.5^2,
                      length.out = 20)
       range_a <- range_a[range_a < 1 & range_a > -1]
 

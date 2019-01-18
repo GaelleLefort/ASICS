@@ -32,8 +32,8 @@ the pure library is used).}
 
 \item{...}{Further arguments to be passed to the functions
 \code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
-\code{\link{normaliseSpectra}} for specifying the parameters of the algorithm,
-if necessary.}
+\code{\link{normaliseSpectra}} for specifying the parameters of the
+algorithm, if necessary.}
 }
 \value{
 A data frame with spectra in columns and chemical shifts (in ppm)

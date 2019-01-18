@@ -60,11 +60,13 @@
   # concentration lasso estimation with positive constraints
   identified_metab <- (B2 > .tuning(delta0, ZMLE) / delta0) & (B2 > 0)
 
-  identified_library <- spectrum_obj[["cleaned_library"]][which(identified_metab)]
+  identified_library <-
+    spectrum_obj[["cleaned_library"]][which(identified_metab)]
 
-  B_final_tot <- try(.lmConstrained(spectrum_obj[["cleaned_spectrum"]]@spectra,
-                                    identified_library@spectra,
-                                    spectrum_obj[["mixture_weights"]])$coefficients,
+  B_final_tot <-
+    try(.lmConstrained(spectrum_obj[["cleaned_spectrum"]]@spectra,
+                       identified_library@spectra,
+                       spectrum_obj[["mixture_weights"]])$coefficients,
                      silent = TRUE)
   if(is(B_final_tot,"try-error")){
     B_final_tot <- .lmConstrained(spectrum_obj[["cleaned_spectrum"]]@spectra,
@@ -76,7 +78,8 @@
   # test of coefficients positivity
   B_final <- B_final_tot[B_final_tot > 0]
   identified_metab[identified_metab][B_final_tot <= 0] <- FALSE
-  spectrum_obj[["cleaned_library"]] <- spectrum_obj[["cleaned_library"]][which(identified_metab)]
+  spectrum_obj[["cleaned_library"]] <-
+    spectrum_obj[["cleaned_library"]][which(identified_metab)]
 
   # reconstituted mixture with estimated coefficents
   spectrum_obj[["est_mixture"]] <-
@@ -88,8 +91,8 @@
   spectrum_obj[["relative_concentration"]] <-
     B_final / spectrum_obj[["cleaned_library"]]@nb.protons
   # sort library according to relative concentration
-  sorted_idx <- sort(spectrum_obj[["relative_concentration"]], decreasing = TRUE,
-                     index.return = TRUE)$ix
+  sorted_idx <- sort(spectrum_obj[["relative_concentration"]],
+                     decreasing = TRUE, index.return = TRUE)$ix
   spectrum_obj[["cleaned_library"]] <-
     spectrum_obj[["cleaned_library"]][sorted_idx]
 

@@ -15,8 +15,6 @@
 #' @param threshold.noise Threshold for signal noise. Default to 0.02.
 #' @param combine Logical. If \code{TRUE}, information from all spectra are
 #' taken into account to align individual library.
-#' @param seed Random seed to control randomness in the algorithm (used in the
-#' estimation of the significativity of a given metabolite concentration).
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
 #' @param verbose A boolean value to allow print out process information.
@@ -45,6 +43,9 @@
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Estimation of relative quantification of Lactate and L-Alanine
+#' set.seed(1234) # Random seed to control randomness in the algorithm (used in
+#'                # the estimation of the significativity of a given metabolite
+#'                # concentration).
 #' to_exclude <- matrix(c(4.5, 10), ncol = 2)
 #' pure_lib <- pure_library[getSampleName(pure_library) %in%
 #'                          c("Lactate", "L-Alanine")]
@@ -53,7 +54,7 @@
 ASICS <- function(spectra_obj,
                   exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, pure.library = NULL,
-                  threshold.noise = 0.02, combine = TRUE, seed = 1234,
+                  threshold.noise = 0.02, combine = TRUE,
                   ncores = 1, verbose = TRUE) {
 
   if(!is.null(exclusion.areas) &&
@@ -75,7 +76,7 @@ ASICS <- function(spectra_obj,
   }
 
   res_estimation <- .ASICSInternal(spectra_obj, exclusion.areas, max.shift,
-                                   pure.library, threshold.noise, seed, ncores,
+                                   pure.library, threshold.noise, ncores,
                                    combine, verbose)
 
   return(res_estimation)
@@ -87,11 +88,9 @@ ASICS <- function(spectra_obj,
 .ASICSInternal <- function(spectra_obj_raw,
                            exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                            max.shift = 0.02, pure.library = NULL,
-                           threshold.noise = 0.02, seed = 1234, ncores = 1,
+                           threshold.noise = 0.02, ncores = 1,
                            combine = TRUE, verbose = TRUE){
 
-  # seed and parallel environment
-  set.seed(seed)
 
   ncores <- min(ncores, length(spectra_obj_raw))
   if (.Platform$OS.type == "windows" | ncores == 1) {
@@ -146,11 +145,12 @@ ASICS <- function(spectra_obj,
   s1 <- 0.172 #standard deviation of multiplicative noise
   s2 <- 0.15 #standard deviation of additive noise
   if (verbose) cat("Compute weights \n")
-  spectra_obj <- bplapply(spectra_obj,
-                          function(x){x[["mixture_weights"]] <-
-                            as.numeric(1 / (abs(x[["cleaned_spectrum"]]@spectra) *
-                                         s1 ^ 2 + s2 ^ 2)); return(x)},
-                          BPPARAM = para_param)
+  spectra_obj <-
+    bplapply(spectra_obj,
+             function(x){x[["mixture_weights"]] <-
+               as.numeric(1 / (abs(x[["cleaned_spectrum"]]@spectra) *
+                                 s1 ^ 2 + s2 ^ 2)); return(x)},
+             BPPARAM = para_param)
 
   if (verbose) cat("Translate library \n")
   if (length(spectra_list) == 1 | !combine) {
@@ -183,23 +183,29 @@ ASICS <- function(spectra_obj,
   #-----------------------------------------------------------------------------
   #### Results ####
   if (verbose) cat("Format results... \n")
-  sample_name <- unlist(vapply(spectra_obj,
-                                 function(x) return(x[["cleaned_spectrum"]]@sample.name),
-                                 "character"))
-  spectra <- do.call("cbind", lapply(spectra_obj,
-                                       function(x) return(x[["cleaned_spectrum"]]@spectra)))
-  rec_spectra <- do.call("cbind", lapply(spectra_obj,
-                                       function(x) return(x[["est_mixture"]])))
+  sample_name <-
+    unlist(vapply(spectra_obj,
+                  function(x) return(x[["cleaned_spectrum"]]@sample.name),
+                  "character"))
+  spectra <-
+    do.call("cbind",
+            lapply(spectra_obj,
+                   function(x) return(x[["cleaned_spectrum"]]@spectra)))
+  rec_spectra <-
+    do.call("cbind", lapply(spectra_obj,
+                            function(x) return(x[["est_mixture"]])))
 
   rel_conc <- lapply(spectra_obj, function(x) {
     x[["relative_concentration"]]$row_names <-
-      x[["cleaned_library"]]@sample.name ; return(x[["relative_concentration"]])})
+      x[["cleaned_library"]]@sample.name ;
+    return(x[["relative_concentration"]])})
   metab_conc <- join_all(rel_conc, by = "row_names", type = "full")
   rownames(metab_conc) <- metab_conc$row_names
   metab_conc$row_names <- NULL
   metab_conc[is.na(metab_conc)] <- 0
-  pure_lib_format <- do.call("rbind", lapply(spectra_obj,
-                                           function(x) return(x[["format_library"]])))
+  pure_lib_format <- do.call("rbind",
+                             lapply(spectra_obj,
+                                    function(x) return(x[["format_library"]])))
   # Object to return
   res_object <- new(Class = "ASICSResults",
                     sample.name = sample_name,

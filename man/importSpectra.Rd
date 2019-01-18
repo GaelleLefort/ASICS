@@ -36,10 +36,10 @@ each spectrum (see \code{\link{normaliseSpectra}} for details). Default to
 
 \item{...}{Further arguments to be passed to the functions
 \code{\link{read.table}}, \code{\link{importSpectraBruker}},
-\code{\link[PepsNMR]{Normalization}} (\code{\link[PepsNMR]{PepsNMR-package}}),
-\code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
-\code{\link{normaliseSpectra}} for specifying the parameters of the algorithm,
-if necessary.}
+\code{\link[PepsNMR]{Normalization}}
+(\code{\link[PepsNMR]{PepsNMR-package}}), \code{\link{alignSpectra}},
+\code{\link{baselineCorrection}} or \code{\link{normaliseSpectra}} for
+specifying the parameters of the algorithm, if necessary.}
 }
 \value{
 A data frame with spectra in columns and chemical shifts (in ppm)

@@ -6,7 +6,7 @@
 on a \code{\link{SummarizedExperiment}} object}
 \usage{
 oplsda(analysis_data, condition, cross.val = 1, thres.VIP = 1,
-  type.data = "quantifications", seed = 12345, ...)
+  type.data = "quantifications", ...)
 }
 \arguments{
 \item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
@@ -23,8 +23,6 @@ influential variables.}
 \item{type.data}{Type of data used for the analyses (\emph{e.g.,}
 \code{"quantifications"}, \code{"buckets"}...). Default to
 \code{"quantifications"}.}
-
-\item{seed}{Random seed to control randomness of cross validation folds.}
 
 \item{...}{Further arguments to be passed to the function
 \code{\link{opls}} for specifying the parameters of the algorithm, if
@@ -54,6 +52,8 @@ if (require("ASICSdata", quietly = TRUE)) {
   # zeros
   analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
+  set.seed(1234) # Random seed to control randomness of cross validation
+                 #folds.
   res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
 }
 
