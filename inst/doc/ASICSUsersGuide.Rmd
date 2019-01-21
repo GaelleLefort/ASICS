@@ -38,24 +38,27 @@ the MetaboLights database (https://www.ebi.ac.uk/metabolights/, study MTBLS1).
 
 # Parallel environment
 
-For most of long time functions, a parallel implementation is available for
-unix-like OS using the BiocParallel package of Bioconductor. Number of cores is chosen with the option `ncores` of the relevant functions (default to `1`, no parallel environment).
+For most time consumming functions, a parallel implementation is available for
+unix-like OS using the BiocParallel package of Bioconductor. The number of used 
+cores is set with the option `ncores` of the corresponding functions (default 
+to `1`, no parallel environment).
 
 # Library of pure NMR metabolite spectrum
 
-An object of class `PureLibrary` with spectra of 191 pure metabolites is 
-required to perform the quantification. These spectra are metabolite spectra 
-used as references for quantification: only metabolites that are present in the 
-library object can be quantified with ASICS.
+An object of class `PureLibrary` with spectra of pure metabolites is required to
+perform the quantification. Such a reference library is provided in `ASICS` with
+191 pure metabolite spectra. These spectra are metabolite spectra used as 
+references for quantification: only metabolites that are present in the library 
+object can be identified and quantified with `ASICS`.
 
-A default library is available and is automatically loaded at package start. 
-Available metabolites are displayed with:
+The default library is automatically loaded at package start. Available 
+metabolites are displayed with:
 ```{r lib}
 head(getSampleName(pure_library), n = 8)
 ```
 
-This library can be complemented or another library can be created with 
-new spectra of pure metabolite. These spectra are imported from Bruker files and
+This library can be complemented or another library can be created with new 
+spectra of pure metabolites. These spectra are imported from Bruker files and
 a new library can be created with:
 ```{r import_create_lib, results='hide'}
 pure_spectra <- importSpectraBruker(system.file("extdata", "example_library", 
@@ -63,7 +66,7 @@ pure_spectra <- importSpectraBruker(system.file("extdata", "example_library",
 new_pure_library <- createPureLibrary(pure_spectra, 
                                         nb.protons = c(5, 4))
 ```
-A new library can also be created from txt or csv file, with samples in columns 
+A new library can also be created from txt or csv files, with samples in columns 
 and chemical shifts in rows (see help page of `createPureLibrary` function for
 all details).
 
@@ -74,7 +77,7 @@ one:
 merged_pure_library <- c(pure_library[1:10], new_pure_library)
 ```
 The `PureLibrary` `merged_pure_library` contains the first ten spectra of the
-default library and the two newly imported spectra imported.
+default library and the two newly imported spectra.
 
 
 
@@ -101,7 +104,7 @@ spectra_data_txt <- read.table(diabetes, header = TRUE, row.names = 1)
 
 Several functions for the preprocessing of spectra are also available: baseline 
 correction, normalisation and alignment on a reference spectrum 
-(based on Vu et al. (2011)). For example, here, spectra are baseline corrected:
+(based on Vu et al. (2011)). For example, spectra are baseline corrected with:
 ```{r preprocessing, results='hide'}
 spectra_base_cor <- baselineCorrection(spectra_data_txt)
 ```
@@ -113,7 +116,7 @@ spectra_obj <- createSpectra(spectra_base_cor)
 ```
 
 Identification and quantification of metabolites can now be carried out using 
-only the function `ASICS`. This function takes approximately 2 minutes by 
+only the function `ASICS`. This function takes approximately 2 minutes per 
 spectrum to run. 
 ```{r ASICS, results='hide', cache=TRUE}
 # part of the spectrum to exclude (water and urea)
@@ -143,7 +146,7 @@ head(getQuantification(ASICS_results), 10)[, 1:2]
 
 # Analysis on relative quantifications
 
-Some analysis functions are available in ASICS package.
+Some analysis functions are also available in `ASICS`.
 
 First, a design data frame is imported. In this data frame, the first column 
 needs to correspond to sample names of all spectra. 
