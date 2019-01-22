@@ -15,6 +15,8 @@
 #' @param threshold.noise Threshold for signal noise. Default to 0.02.
 #' @param combine Logical. If \code{TRUE}, information from all spectra are
 #' taken into account to align individual library.
+#' @param seed Random seed to control randomness in the algorithm (used in the
+#' estimation of the significativity of a given metabolite concentration).
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
 #' @param verbose A boolean value to allow print out process information.
@@ -43,9 +45,6 @@
 #' spectra_obj <- createSpectra(spectra_data)
 #'
 #' # Estimation of relative quantification of Lactate and L-Alanine
-#' set.seed(1234) # Random seed to control randomness in the algorithm (used in
-#'                # the estimation of the significativity of a given metabolite
-#'                # concentration).
 #' to_exclude <- matrix(c(4.5, 10), ncol = 2)
 #' pure_lib <- pure_library[getSampleName(pure_library) %in%
 #'                          c("Lactate", "L-Alanine")]
@@ -54,7 +53,7 @@
 ASICS <- function(spectra_obj,
                   exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, pure.library = NULL,
-                  threshold.noise = 0.02, combine = TRUE,
+                  threshold.noise = 0.02, combine = TRUE, seed = 1234,
                   ncores = 1, verbose = TRUE) {
 
   if(!is.null(exclusion.areas) &&
@@ -76,7 +75,7 @@ ASICS <- function(spectra_obj,
   }
 
   res_estimation <- .ASICSInternal(spectra_obj, exclusion.areas, max.shift,
-                                   pure.library, threshold.noise, ncores,
+                                   pure.library, threshold.noise,  seed, ncores,
                                    combine, verbose)
 
   return(res_estimation)
@@ -88,9 +87,11 @@ ASICS <- function(spectra_obj,
 .ASICSInternal <- function(spectra_obj_raw,
                            exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                            max.shift = 0.02, pure.library = NULL,
-                           threshold.noise = 0.02, ncores = 1,
+                           threshold.noise = 0.02, seed = 1234, ncores = 1,
                            combine = TRUE, verbose = TRUE){
 
+  # seed and parallel environment
+  set.seed(seed)
 
   ncores <- min(ncores, length(spectra_obj_raw))
   if (.Platform$OS.type == "windows" | ncores == 1) {

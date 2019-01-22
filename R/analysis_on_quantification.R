@@ -375,6 +375,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @param type.data Type of data used for the analyses (\emph{e.g.,}
 #' \code{"quantifications"}, \code{"buckets"}...). Default to
 #' \code{"quantifications"}.
+#' @param seed Random seed to control randomness of cross validation folds.
 #' @param ... Further arguments to be passed to the function
 #' \code{\link{opls}} for specifying the parameters of the algorithm, if
 #' necessary.
@@ -408,8 +409,6 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     zero.threshold = 25, design = design)
-#'   set.seed(1234) # Random seed to control randomness of cross validation
-#'                  #folds.
 #'   res_oplsda <- oplsda(analysis_obj, "condition", orthoI = 1)
 #' }
 #'
@@ -418,7 +417,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #' @importFrom stats aggregate
 #' @importFrom plyr join_all
 oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
-                   type.data = "quantifications", ...){
+                   type.data = "quantifications", seed = 12345, ...){
 
   param.args <- list(...)
 
@@ -440,6 +439,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 
   # opls-da and cross-validation
   if (cross.val > 1) {
+    set.seed(seed)
     folds <- sample(cut(seq_len(ncol(analysis_data)), breaks = cross.val,
                         labels = FALSE), ncol(analysis_data))
     cv_oplsda <-

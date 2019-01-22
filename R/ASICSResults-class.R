@@ -42,7 +42,7 @@
 setClass(
   Class = "ASICSResults",
   slots = list(
-    reconstructed.spectra = "dgeMatrix",
+    reconstructed.spectra = "generalMatrix",
     quantification = "data.frame",
     deformed.library = "data.frame"
   ),
@@ -132,8 +132,8 @@ setMethod(
     return(new("ASICSResults",
                sample.name = x@sample.name[i],
                ppm.grid = x@ppm.grid,
-               spectra = as.matrix(x@spectra[, i]),
-               reconstructed.spectra = as.matrix(x@reconstructed.spectra[, i]),
+               spectra = Matrix(x@spectra[, i]),
+               reconstructed.spectra = Matrix(x@reconstructed.spectra[, i]),
                quantification = quantification,
                deformed.library = x@deformed.library[x@deformed.library$sample
                                                      %in% x@sample.name[i], ]))

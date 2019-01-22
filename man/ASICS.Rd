@@ -6,7 +6,7 @@
 \usage{
 ASICS(spectra_obj, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
   max.shift = 0.02, pure.library = NULL, threshold.noise = 0.02,
-  combine = TRUE, ncores = 1, verbose = TRUE)
+  combine = TRUE, seed = 1234, ncores = 1, verbose = TRUE)
 }
 \arguments{
 \item{spectra_obj}{An object of class \linkS4class{Spectra} obtained with the
@@ -26,6 +26,9 @@ included in the package (that contains 191 reference spectra) is used.}
 
 \item{combine}{Logical. If \code{TRUE}, information from all spectra are
 taken into account to align individual library.}
+
+\item{seed}{Random seed to control randomness in the algorithm (used in the
+estimation of the significativity of a given metabolite concentration).}
 
 \item{ncores}{Number of cores used in parallel evaluation. Default to
 \code{1}.}
@@ -48,9 +51,6 @@ spectra_data <- importSpectra(name.dir = current_path,
 spectra_obj <- createSpectra(spectra_data)
 
 # Estimation of relative quantification of Lactate and L-Alanine
-set.seed(1234) # Random seed to control randomness in the algorithm (used in
-               # the estimation of the significativity of a given metabolite
-               # concentration).
 to_exclude <- matrix(c(4.5, 10), ncol = 2)
 pure_lib <- pure_library[getSampleName(pure_library) \%in\%
                          c("Lactate", "L-Alanine")]

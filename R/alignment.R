@@ -16,7 +16,6 @@
   return(res$tarSpec)
 }
 
-
 ## Clustering algorithm for spectrum alignment
 #' @importFrom stats hclust dist cutree
 .alignAlgo <- function(refSpec, tarSpec, peakList, startP,
@@ -176,8 +175,8 @@
   } else {
     maxVals <- c(ifelse(maxShift[1] != 0,
                         max(rev(vals)[seq_len(abs(maxShift[1]))], na.rm = TRUE),
-                        1), max(vals[seq_len(maxShift[2] + 1)], na.rm = TRUE))
-    corValue <- max(maxVals)
+                        NA), max(vals[seq_len(maxShift[2] + 1)], na.rm = TRUE))
+    corValue <- max(maxVals, na.rm = TRUE)
 
     if (corValue < 0.1) {
       stepAdj <- 0
