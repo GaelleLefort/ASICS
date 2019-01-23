@@ -162,6 +162,13 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
                                   c(names(formals(args(Normalization))))])
 
     imported_spectra <- do.call("normaliseSpectra", norm.param)
+    attr(imported_spectra, "type.norm") <-
+      ifelse(!is.null(norm.param$type.norm), norm.param$type.norm, "CS")
+    params <- norm.param[!(names(norm.param) %in% c("spectra", "verbose",
+                                                    "type.norm"))]
+    if (!is.null(norm.param$type.norm) & length(params) != 0) {
+      attr(imported_spectra, "norm.param") <- params
+    }
   }
 
   return(imported_spectra)
@@ -655,6 +662,11 @@ createPureLibrary <- function(spectra, nb.protons, threshold = 1){
 #' @param spectra Data frame with spectra in columns and chemical shifts in
 #' rows. Colnames of this data frame correspond to pure metabolite names and
 #' rownames to chemical shift grid (in ppm).
+#' @param norm.method Character specifying the normalisation method to use on
+#' spectra ONLY if the \code{\link{importSpectra}} function was not used.
+#' @param norm.params List containing normalisation parameteres (see
+#' \code{\link{normaliseSpectra}} for details) ONLY if the
+#' \code{\link{importSpectra}} function was not used.
 #'
 #' @return A \linkS4class{Spectra} object with spectra to quantify.
 #'
@@ -668,13 +680,33 @@ createPureLibrary <- function(spectra, nb.protons, threshold = 1){
 #' current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 #' spectra_data <- importSpectraBruker(current_path)
 #' spectra_obj <- createSpectra(spectra_data)
-createSpectra <- function(spectra){
+createSpectra <- function(spectra, norm.method = NULL, norm.params = NULL){
+
+  if (!is.null(attr(spectra, "type.norm")) && !is.null(norm.method) &&
+               attr(spectra, "type.norm") != norm.method) {
+    warning(paste("Normalisation method is not the same than the one use",
+                  "during data import."))
+  }
+
+  if (is.null(norm.method) & !is.null(attr(spectra, "type.norm"))) {
+    norm.method <- attr(spectra, "type.norm")
+  } else if (is.null(norm.method) & is.null(attr(spectra, "type.norm"))) {
+    norm.method <- "CS"
+  }
+
+  if (is.null(norm.params) & !is.null(attr(spectra, "norm.param"))) {
+    norm.params <- attr(spectra, "norm.param")
+  } else if (is.null(norm.params) & is.null(attr(spectra, "norm.param"))) {
+    norm.params <- list()
+  }
 
   # create a new object Spectra with a data frame of intensities
   new_spectra <- new("Spectra",
                      sample.name = colnames(spectra),
                      ppm.grid = as.numeric(rownames(spectra)),
-                     spectra = Matrix(as.matrix(spectra)))
+                     spectra = Matrix(as.matrix(spectra)),
+                     norm.method = norm.method,
+                     norm.params = norm.params)
 
   rownames(new_spectra@spectra) <- NULL
   colnames(new_spectra@spectra) <- NULL

@@ -86,9 +86,15 @@
   cleaned_library@spectra <- Matrix(apply(cleaned_library@spectra, 2,
                                    function(x)
                                      t(x / .AUC(cleaned_library@ppm.grid, x))))
-  spectrum_obj@spectra <- Matrix(apply(spectrum_obj@spectra, 2,
-                                    function(x)
-                                      t(x / .AUC(cleaned_library@ppm.grid, x))))
+
+  spectra_to_norm <- as.data.frame(as.matrix(spectrum_obj@spectra))
+  rownames(spectra_to_norm) <- spectrum_obj@ppm.grid
+  norm.param <- c(list(spectra = spectra_to_norm,
+                       verbose = FALSE,
+                       type.norm = spectrum_obj@norm.method),
+                  spectrum_obj@norm.params)
+  spectrum_obj@spectra <-
+    Matrix(as.matrix(do.call("normaliseSpectra", norm.param)))
 
   return(list("cleaned_spectrum" = spectrum_obj,
               "cleaned_library" = cleaned_library))
