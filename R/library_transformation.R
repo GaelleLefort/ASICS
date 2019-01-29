@@ -62,7 +62,7 @@
 ## various max.shift to find the best one) then sort
 # metabolites by regression residuals
 #' @importFrom stats lm
-#' @importFrom plyr laply
+#' @importFrom plyr laply adply
 #' @keywords internal
 .translateLibrary_combineVersion <- function(spectra_obj, max.shift,
                                              nb_points_shift, spec_bin,
@@ -106,6 +106,9 @@
   all_cor <- join_all(list_all_cor, by = "metab", type = "full")
 
   # best shift by metabolite and sample
+  all_cor <- adply(all_cor, 1,
+                   function(x) {if (all(is.na(x[2:length(x)]))) x[2] <- 1;
+                   return(x)})
   which_corr_max <- apply(all_cor[, 2:ncol(all_cor)], 1, which.max)
   names(which_corr_max) <- all_cor[, 1]
 
