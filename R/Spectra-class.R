@@ -5,6 +5,7 @@
 #' \code{\link{createSpectra}}.
 #'
 #' @name Spectra-class
+#' @import Matrix
 #' @exportClass Spectra
 #'
 #'
@@ -14,6 +15,10 @@
 #' @slot spectra Numeric matrix with all spectra in columns. Columns must be in
 #' the same order as for \code{sample.name} and rows correspond to points of
 #' \code{ppm.grid}.
+#' @slot norm.method Character specifying the normalisation method to use on
+#' spectra
+#' @slot norm.params List containing normalisation parameteres (see
+#' \code{\link{normaliseSpectra}} for details).
 #'
 #' @section Methods:
 #'   Multiple methods can be applied on \linkS4class{Spectra} objects.
@@ -33,7 +38,9 @@ setClass(
   slots = list(
     sample.name = "character",
     ppm.grid = "numeric",
-    spectra = "matrix"
+    spectra = "generalMatrix",
+    norm.method = "character",
+    norm.params = "list"
   )
 )
 
@@ -73,7 +80,12 @@ setGeneric("getPpmGrid",
 setGeneric("getSpectra",
            function(object) standardGeneric("getSpectra")
 )
-
+setGeneric("getNormMethod",
+           function(object) standardGeneric("getNormMethod")
+)
+setGeneric("getNormParams",
+           function(object) standardGeneric("getNormParams")
+)
 
 #' Accessors
 #'
@@ -122,11 +134,23 @@ setMethod("getSpectra", "Spectra",
             spectra <- object@spectra
             rownames(spectra) <- object@ppm.grid
             colnames(spectra) <- object@sample.name
-            return(object@spectra)
+            return(spectra)
           }
 )
 
+#' @export
+#' @aliases getNormMethod
+#' @rdname accessors-methods
+setMethod("getNormMethod", "Spectra",
+          function(object) return(object@norm.method)
+)
 
+#' @export
+#' @aliases getNormParams
+#' @rdname accessors-methods
+setMethod("getNormParams", "Spectra",
+          function(object) return(object@norm.params)
+)
 
 #### Basic methods
 
@@ -231,7 +255,9 @@ setMethod(
     return(new("Spectra",
                sample.name = x@sample.name[i],
                ppm.grid = x@ppm.grid,
-               spectra = as.matrix(x@spectra[ ,i])))
+               spectra = Matrix(x@spectra[ ,i]),
+               norm.method = x@norm.method,
+               norm.params = x@norm.params))
   }
 )
 
@@ -249,6 +275,12 @@ setMethod(
       stop("Sample names need to be unique.")
     }
 
+    if (!all(do.call("c", lapply(elements, getNormMethod)) ==
+             elements[[1]]@norm.method)) {
+      warning(paste("Elements not have the same normalisation method, the",
+                    "first one is used"))
+    }
+
     # first grid for all objects
     for(i in 2:length(elements)){
       if(!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)){
@@ -261,7 +293,9 @@ setMethod(
     return(new("Spectra",
                sample.name = do.call("c", lapply(elements, getSampleName)),
                ppm.grid = x@ppm.grid,
-               spectra = do.call("cbind", lapply(elements, getSpectra))))
+               spectra = do.call("cbind", lapply(elements, getSpectra)),
+               norm.method = x@norm.method,
+               norm.params = x@norm.params))
   }
 )
 
@@ -313,7 +347,7 @@ setMethod(
   definition = function(x, y, xlim = c(0.5, 10), ylim = NULL, ...) {
 
     # reshape data
-    data_to_plot <- reshape(as.data.frame(x@spectra),
+    data_to_plot <- reshape(as.data.frame(as.matrix(x@spectra)),
                             varying = seq_len(ncol(x@spectra)),
                             times = x@sample.name,
                             ids = as.numeric(x@ppm.grid),

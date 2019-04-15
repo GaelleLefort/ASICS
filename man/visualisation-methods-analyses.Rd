@@ -7,9 +7,9 @@
 \alias{plot.AnalysisResults}
 \title{Visualisation methods}
 \usage{
-\S4method{plot}{AnalysisResults,ANY}(x, y, ..., graph = c("default", "ind",
-  "var", "eig", "boxplot", "buckets"), add.label = TRUE, axes = c(1, 2),
-  col.ind = NULL, xlim = c(0.5, 10), ylim = NULL)
+\S4method{plot}{AnalysisResults,ANY}(x, y, ..., graph = c("default",
+  "ind", "var", "eig", "boxplot", "buckets"), add.label = TRUE,
+  axes = c(1, 2), col.ind = NULL, xlim = c(0.5, 10), ylim = NULL)
 }
 \arguments{
 \item{x}{An object of class \linkS4class{AnalysisResults}.}
@@ -59,7 +59,8 @@ if (require("ASICSdata", quietly = TRUE)) {
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
 
-  # Create object for analysis and remove metabolites with more than 25\% of zeros
+  # Create object for analysis and remove metabolites with more than 25\% of
+  # zeros
   analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
 

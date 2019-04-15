@@ -19,19 +19,37 @@ data frame", {
 })
 
 
+test_that("Importation from txt files works well and gives a well formatted
+data frame", {
+  example_path <- system.file("extdata", package = "ASICS")
+  expect_is(importSpectra(name.dir = example_path,
+                          name.file = "spectra_example.txt", type.import = "txt"),
+            "data.frame")
+})
+
+test_that("Importation from fid files works well and gives a well formatted
+data frame (no problem with PepsNMR package)", {
+  example_path <-  system.file("extdata", "example_spectra", package = "ASICS")
+  expect_is(importSpectra(name.dir = example_path, type.import = "fid",
+                          subdirs = TRUE, dirs.names = TRUE),
+            "data.frame")
+})
+
+
 test_that("Preprocessing functions work well and give a data frame", {
-  current_path <- system.file("extdata", "spectra_example.txt",
-                              package = "ASICS")
-  spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-  expect_is(normalisation(spectra_data), "data.frame")
-  expect_is(baselineCorrection(spectra_data), "data.frame")
-  expect_is(alignment(spectra_data), "data.frame")
+  current_path <- system.file("extdata", package = "ASICS")
+  spectra_data <- importSpectra(name.dir = current_path,
+                                name.file = "spectra_example.txt",
+                                type.import = "txt")
+  expect_is(normaliseSpectra(spectra_data, type.norm = "CS"), "data.frame")
+  expect_is(alignSpectra(spectra_data), "data.frame")
 })
 
 test_that("Bucketing function works well and gives a data frame", {
-  current_path <- system.file("extdata", "spectra_example.txt",
-                              package = "ASICS")
-  spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+  current_path <- system.file("extdata", package = "ASICS")
+  spectra_data <- importSpectra(name.dir = current_path,
+                                name.file = "spectra_example.txt",
+                                type.import = "txt")
   expect_is(binning(spectra_data), "data.frame")
 })
 
@@ -48,7 +66,6 @@ without error", {
   current_path <- system.file("extdata", "spectra_example.txt",
                               package = "ASICS")
   spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-  spectra_data <- baselineCorrection(spectra_data)
   spectra_obj <- createSpectra(spectra_data)
 
   expect_s4_class(spectra_obj, "Spectra")

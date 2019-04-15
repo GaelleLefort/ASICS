@@ -36,7 +36,8 @@
 #'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                    package = "ASICSdata"), header = TRUE)
 #'
-#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   # Create object for analysis and remove features with more than 25% of
+#'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification,
 #'                                     design = design,
 #'                                     zero.threshold = 25,
@@ -138,7 +139,8 @@ formatForAnalysis <- function(data, design = NULL, feature_info = NULL,
 #'                               package = "ASICSdata")
 #'   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 #'
-#'   # Create object for analysis and remove features with more than 25% of zeros
+#'   # Create object for analysis and remove features with more than 25% of
+#'   # zeros
 #'   analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
 #'   res_pca <- pca(analysis_obj)
 #' }

@@ -6,7 +6,7 @@
 \usage{
 ASICS(spectra_obj, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
   max.shift = 0.02, pure.library = NULL, threshold.noise = 0.02,
-  seed = 1234, ncores = 1)
+  combine = TRUE, seed = 1234, ncores = 1, verbose = TRUE)
 }
 \arguments{
 \item{spectra_obj}{An object of class \linkS4class{Spectra} obtained with the
@@ -24,11 +24,16 @@ included in the package (that contains 191 reference spectra) is used.}
 
 \item{threshold.noise}{Threshold for signal noise. Default to 0.02.}
 
+\item{combine}{Logical. If \code{TRUE}, information from all spectra are
+taken into account to align individual library.}
+
 \item{seed}{Random seed to control randomness in the algorithm (used in the
 estimation of the significativity of a given metabolite concentration).}
 
 \item{ncores}{Number of cores used in parallel evaluation. Default to
 \code{1}.}
+
+\item{verbose}{A boolean value to allow print out process information.}
 }
 \value{
 An object of type \linkS4class{ASICSResults} containing the
@@ -40,9 +45,9 @@ pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 }
 \examples{
 # Import data and create object
-current_path <- file.path(system.file("extdata", package = "ASICS"),
-                          "spectra_example.txt")
-spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
+current_path <- system.file("extdata", package = "ASICS")
+spectra_data <- importSpectra(name.dir = current_path,
+                     name.file = "spectra_example.txt", type.import = "txt")
 spectra_obj <- createSpectra(spectra_data)
 
 # Estimation of relative quantification of Lactate and L-Alanine
@@ -50,7 +55,7 @@ to_exclude <- matrix(c(4.5, 10), ncol = 2)
 pure_lib <- pure_library[getSampleName(pure_library) \%in\%
                          c("Lactate", "L-Alanine")]
 resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
-                  pure.library = pure_lib)
+                  pure.library = pure_lib, combine = FALSE)
 }
 \references{
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer

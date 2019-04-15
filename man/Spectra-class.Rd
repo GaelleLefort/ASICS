@@ -20,6 +20,12 @@ spectra (in ppm).}
 \item{\code{spectra}}{Numeric matrix with all spectra in columns. Columns must be in
 the same order as for \code{sample.name} and rows correspond to points of
 \code{ppm.grid}.}
+
+\item{\code{norm.method}}{Character specifying the normalisation method to use on
+spectra}
+
+\item{\code{norm.params}}{List containing normalisation parameteres (see
+\code{\link{normaliseSpectra}} for details).}
 }}
 
 \section{Methods}{

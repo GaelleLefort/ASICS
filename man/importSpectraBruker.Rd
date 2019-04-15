@@ -2,11 +2,10 @@
 % Please edit documentation in R/load_data.R
 \name{importSpectraBruker}
 \alias{importSpectraBruker}
-\title{Import metabolomic spectra from Bruker files}
+\title{Import preprocessed metabolomic spectra from Bruker files}
 \usage{
-importSpectraBruker(name.dir, which.spectra = "last",
-  baseline.correction = TRUE, alignment = FALSE, ppm.grid = NULL,
-  sample.names = NULL, ncores = 1, ...)
+importSpectraBruker(name.dir, which.spectra = "first", ppm.grid = NULL,
+  sample.names = NULL, ncores = 1, verbose = TRUE)
 }
 \arguments{
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each
@@ -17,13 +16,7 @@ the spectrum to import (either always the first one with \code{which.spectra
 = "first"}, always the last one with \code{which.spectra = "last"} or a
 vector of length the number of spectra that specifies the number of each
 spectrum to import).
-Default to \code{"last"}.}
-
-\item{baseline.correction}{Logical. If \code{TRUE} a baseline correction is
-applied for each spectrum (Wang et al (2013)). Default to \code{TRUE}.}
-
-\item{alignment}{Logical. If \code{TRUE} a peak alignment is
-applied between all spectra (Vu et al (2011)). Default to \code{FALSE}.}
+Default to \code{"first"}.}
 
 \item{ppm.grid}{Numeric vector of a unique grid (definition domain) for all
 spectra (in ppm). Default to \code{NULL} (in which case, the default grid of
@@ -35,42 +28,23 @@ the pure library is used).}
 \item{ncores}{Number of cores used in parallel evaluation. Default to
 \code{1}.}
 
-\item{...}{Further arguments to be passed to the function
-\code{\link{alignment}} for specifying the parameters of the algorithm, if
-necessary.}
+\item{verbose}{A boolean value to allow print out process information.}
 }
 \value{
 A data frame with spectra in columns and chemical shifts (in ppm)
 in rows.
 }
 \description{
-Import spectra from Bruker files contained in a single folder. This folder
-contains one subfolder for each sample. Spectra are baseline corrected
-(optional) and normalised by the area under the curve during the importation.
-}
-\details{
-Some preprocessing steps are included during the importation. First, spectra
-are baseline corrected if \code{baseline.correction = TRUE}. Then, all
-spectrum definition domains are aligned to a unique one (either the one
-specified in \code{ppm.grid} or the grid of the default library). Finally,
-all spectra are normalised by the area under the curve.
+Import preprocessed spectra from Bruker files contained in a single folder.
+This folder contains one subfolder for each sample.
+(optional) Spectra are baseline corrected, aligned and normalised by the area
+under the curve during the importation.
 }
 \examples{
 current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 spectra_data <- importSpectraBruker(current_path)
 }
-\references{
-Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
-Distribution-based classification method for baseline correction of
-metabolomic 1D proton nuclear magnetic resonance spectra.
-\emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
-
-Vu, T. N., Valkenborg, D., Smets, K., Verwaest, K. A., Dommisse,
-R., Lemiere, F., ... & Laukens, K. (2011). An integrated workflow for robust
-alignment and simplified quantitative analysis of NMR spectrometry data.
-\emph{BMC Bioinformatics}, \strong{12}(1), 405.
-}
 \seealso{
-\code{\link{baselineCorrection}} \code{\link{normalisation}}
-\code{\link{alignment}}
+\code{\link{normaliseSpectra}}
+\code{\link{alignSpectra}}
 }

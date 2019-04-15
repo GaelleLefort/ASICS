@@ -22,7 +22,7 @@ obtain metabolic profiles. In addition to the quantification method, several
 functions allowing spectrum preprocessing or statistical analyses of quantified 
 metabolites are available.
 
-```{r ASICSload}
+```{r ASICSload, warning=FALSE}
 library(ASICS)
 library(ASICSdata)
 ```
@@ -38,24 +38,27 @@ the MetaboLights database (https://www.ebi.ac.uk/metabolights/, study MTBLS1).
 
 # Parallel environment
 
-For most of long time functions, a parallel implementation is available for
-unix-like OS using the BiocParallel package of Bioconductor. Number of cores is chosen with the option `ncores` of the relevant functions (default to `1`, no parallel environment).
+For most time consumming functions, a parallel implementation is available for
+unix-like OS using the BiocParallel package of Bioconductor. The number of used 
+cores is set with the option `ncores` of the corresponding functions (default 
+to `1`, no parallel environment).
 
 # Library of pure NMR metabolite spectrum
 
-An object of class `PureLibrary` with spectra of 191 pure metabolites is 
-required to perform the quantification. These spectra are metabolite spectra 
-used as references for quantification: only metabolites that are present in the 
-library object can be quantified with ASICS.
+An object of class `PureLibrary` with spectra of pure metabolites is required to
+perform the quantification. Such a reference library is provided in `ASICS` with
+191 pure metabolite spectra. These spectra are metabolite spectra used as 
+references for quantification: only metabolites that are present in the library 
+object can be identified and quantified with `ASICS`.
 
-A default library is available and is automatically loaded at package start. 
-Available metabolites are displayed with:
+The default library is automatically loaded at package start. Available 
+metabolites are displayed with:
 ```{r lib}
 head(getSampleName(pure_library), n = 8)
 ```
 
-This library can be complemented or another library can be created with 
-new spectra of pure metabolite. These spectra are imported from Bruker files and
+This library can be complemented or another library can be created with new 
+spectra of pure metabolites. These spectra are imported from Bruker files and
 a new library can be created with:
 ```{r import_create_lib, results='hide'}
 pure_spectra <- importSpectraBruker(system.file("extdata", "example_library", 
@@ -63,7 +66,7 @@ pure_spectra <- importSpectraBruker(system.file("extdata", "example_library",
 new_pure_library <- createPureLibrary(pure_spectra, 
                                         nb.protons = c(5, 4))
 ```
-A new library can also be created from txt or csv file, with samples in columns 
+A new library can also be created from txt or csv files, with samples in columns 
 and chemical shifts in rows (see help page of `createPureLibrary` function for
 all details).
 
@@ -74,7 +77,7 @@ one:
 merged_pure_library <- c(pure_library[1:10], new_pure_library)
 ```
 The `PureLibrary` `merged_pure_library` contains the first ten spectra of the
-default library and the two newly imported spectra imported.
+default library and the two newly imported spectra.
 
 
 
@@ -89,32 +92,56 @@ spectra_data <- importSpectraBruker(system.file("extdata",
                                                 package = "ASICSdata"))
 ```
 
-Data can also be imported from other file types with standard `R` function. 
+Data can also be imported from other file types with `importSpectra` function. 
 The only constraint is to have a data frame with spectra in columns 
 (column names are sample names) and chemical shifts in rows (row names 
 correspond to the ppm grid).
 ```{r import_from_txt, results='hide'}
-diabetes <- system.file("extdata", "spectra_diabetes_example.txt", 
-                        package = "ASICSdata")
-spectra_data_txt <- read.table(diabetes, header = TRUE, row.names = 1)
+diabetes <- system.file("extdata", package = "ASICSdata")
+spectra_data_txt <- importSpectra(name.dir = diabetes, 
+                                  name.file = "spectra_diabetes_example.txt",
+                                  type = "txt")
 ```
 
 Several functions for the preprocessing of spectra are also available: baseline 
-correction, normalisation by the AUC and alignment on a reference spectrum 
-(Vu et al., 2011). For example, here, spectra are baseline corrected:
+correction, normalisation and alignment on a reference spectrum 
+(based on Vu et al. (2011)). For example, spectra are baseline corrected with:
 ```{r preprocessing, results='hide'}
 spectra_base_cor <- baselineCorrection(spectra_data_txt)
+```
+
+Many types of normalisation are available. By default, spectra are normalised
+to a constant sum (`type.norm = "CS"`). Otherwise, a normalisation method 
+implemented in the `PepsNMR` package could be used. For example:
+```{r normalisation}
+spectra_norm <- normaliseSpectra(spectra_base_cor, type.norm = "pqn")
+```
+
+The alignment algorithm is based on Vu et al. (2011). To find the reference 
+spectrum, the LCSS similarity is used (Vlachos et al. (2002)). Then the 
+alignment is performed using the FFT cross-correlation and a hierarchical
+classification.
+```{r alignment, results='hide'}
+spectra_align <- alignSpectra(spectra_norm)
 ```
 
 Finally, from the data frame, a `Spectra` object is created. This is a required 
 step for the quantification.
 ```{r create_spectra, results='hide'}
-spectra_obj <- createSpectra(spectra_base_cor)
+spectra_obj <- createSpectra(spectra_norm)
 ```
 
 Identification and quantification of metabolites can now be carried out using 
+<<<<<<< HEAD
 only the function `ASICS`. This function takes approximately 2 minutes by 
 spectrum to run. 
+=======
+only the function `ASICS`. This function takes approximately 2 minutes per 
+spectrum to run. To control randomness in the algorithm (used in the estimation 
+of the significativity of a given metabolite concentration), the `set.seed` 
+parameter can be used.
+
+>>>>>>> dev
 ```{r ASICS, results='hide', cache=TRUE}
 # part of the spectrum to exclude (water and urea)
 to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2, byrow = TRUE)
@@ -143,7 +170,7 @@ head(getQuantification(ASICS_results), 10)[, 1:2]
 
 # Analysis on relative quantifications
 
-Some analysis functions are available in ASICS package.
+Some analysis functions are also available in `ASICS`.
 
 First, a design data frame is imported. In this data frame, the first column 
 needs to correspond to sample names of all spectra. 
@@ -198,8 +225,16 @@ plot(resTests)
 An analysis on buckets can also be performed. An alignment is required before 
 the spectrum bucketing:
 ```{r align_and_binning, results='hide'}
-spectra_align <- alignment(spectra_data_txt)
+spectra_align <- alignSpectra(spectra_norm)
 spectra_bucket <- binning(spectra_align)
+```
+
+Alignment visualization:
+```{r plot_align}
+spectra_obj_align <- createSpectra(spectra_align)
+
+plotAlignment(spectra_obj, xlim = c(3.5,4))
+plotAlignment(spectra_obj_align, xlim = c(3.5,4))
 ```
 
 Then, a `SummarizedExperiment` object is created with the `formatForAnalysis` 
@@ -240,6 +275,11 @@ changes in type 2 diabetes in mouse, rat, and human. *Physiological genomics*,
 Wang, K. C., Wang, S. Y., Kuo, C. H., Tseng, Y. J. (2013). Distribution-based 
 classification method for baseline correction of metabolomic 1D proton nuclear 
 magnetic resonance spectra. *Analytical Chemistry*, **85**(2), 1231–1239.
+
+Vlachos, M., Kollios, G., & Gunopulos, D. (2002). Discovering similar 
+multidimensional trajectories. In *Data Engineering, 2002. Proceedings. 18th* 
+*International Conference on* (pp. 673-684). IEEE.
+
 
 Vu, T. N., Valkenborg, D., Smets, K., Verwaest, K. A., Dommisse, R., Lemiere, 
 F., ... & Laukens, K. (2011). An integrated workflow for robust alignment and 

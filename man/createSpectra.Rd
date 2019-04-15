@@ -4,12 +4,19 @@
 \alias{createSpectra}
 \title{Create a \linkS4class{Spectra} object}
 \usage{
-createSpectra(spectra)
+createSpectra(spectra, norm.method = NULL, norm.params = NULL)
 }
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shifts in
 rows. Colnames of this data frame correspond to pure metabolite names and
 rownames to chemical shift grid (in ppm).}
+
+\item{norm.method}{Character specifying the normalisation method to use on
+spectra ONLY if the \code{\link{importSpectra}} function was not used.}
+
+\item{norm.params}{List containing normalisation parameteres (see
+\code{\link{normaliseSpectra}} for details) ONLY if the
+\code{\link{importSpectra}} function was not used.}
 }
 \value{
 A \linkS4class{Spectra} object with spectra to quantify.

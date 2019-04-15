@@ -10,6 +10,10 @@
 \alias{getPpmGrid}
 \alias{getSpectra,Spectra-method}
 \alias{getSpectra}
+\alias{getNormMethod,Spectra-method}
+\alias{getNormMethod}
+\alias{getNormParams,Spectra-method}
+\alias{getNormParams}
 \alias{getReconstructedSpectra,ASICSResults-method}
 \alias{getReconstructedSpectra}
 \alias{getQuantification,ASICSResults-method}
@@ -39,6 +43,10 @@
 \S4method{getPpmGrid}{Spectra}(object)
 
 \S4method{getSpectra}{Spectra}(object)
+
+\S4method{getNormMethod}{Spectra}(object)
+
+\S4method{getNormParams}{Spectra}(object)
 
 \S4method{getReconstructedSpectra}{ASICSResults}(object)
 

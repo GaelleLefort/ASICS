@@ -14,8 +14,9 @@ rownames to chemical shift grid (in ppm).}
 \item{nb.protons}{Numeric vector of the number of protons for each pure
 metabolite spectrum contained in \code{spectra} data frame.}
 
-\item{threshold}{Numeric value below which pure spectrum values are
-considered to be zero. Default to 1.}
+\item{threshold}{Numeric value or numeric vector of length
+\code{ncol(spectra)} below which pure spectrum values are considered to be
+zero. Default to 1.}
 }
 \value{
 A \linkS4class{PureLibrary} object with the newly created library.

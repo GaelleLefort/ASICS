@@ -93,7 +93,7 @@ setMethod(
     return(new("PureLibrary",
                sample.name = x@sample.name[i],
                ppm.grid = x@ppm.grid,
-               spectra = as.matrix(x@spectra[, i]),
+               spectra = Matrix(x@spectra[, i]),
                nb.protons = x@nb.protons[i]))
   }
 )

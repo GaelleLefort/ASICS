@@ -1,10 +1,8 @@
 ## Compute the area under the curve (y = f(x)) using the trapezoidal rule
-#' @importFrom zoo rollmean
 .AUC <- function(x, y) {
-  auc <- sum(diff(x) * rollmean(y, 2))
+  auc <- sum(diff(x) * (y[seq_len(length(y) - 1)] + y[2:length(y)]) / 2)
   return(auc)
 }
-
 
 ## Linear interpolation to adapt old_spectrum on the old grid to the new grid
 .changeGrid <- function(old_spectrum, old_grid, new_grid) {
@@ -43,14 +41,8 @@
 ## Main function to load library, import a spectrum from Bruker files and
 #perform the first preprocessing
 #' @importFrom plyr alply
-.removeAreas <- function(spectrum_obj, exclusion.areas, pure.library){
-
-  # default library or not
-  if(is.null(pure.library)){
-    cleaned_library <- ASICS::pure_library
-  } else {
-    cleaned_library <- pure.library
-  }
+#' @importFrom Matrix colSums
+.removeAreas <- function(spectrum_obj, exclusion.areas, cleaned_library){
 
   # remove extremities of library grid if the spectrum is shorter
   cleaned_library@spectra <-
@@ -66,14 +58,10 @@
 
 
   # adapt spectrum grid to have the same than library
-  cleaned_spectrum <- new("Spectra",
-                          sample.name = spectrum_obj@sample.name,
-                          ppm.grid = cleaned_library@ppm.grid,
-                          spectra =
-                            matrix(.changeGrid(spectrum_obj@spectra,
-                                               spectrum_obj@ppm.grid,
-                                               cleaned_library@ppm.grid),
-                                   ncol = 1))
+  spectrum_obj@spectra <- Matrix(.changeGrid(spectrum_obj@spectra,
+                                             spectrum_obj@ppm.grid,
+                                             cleaned_library@ppm.grid))
+  spectrum_obj@ppm.grid <- cleaned_library@ppm.grid
 
 
   # for signal in exclusion.areas, intensity is null (mixture and library)
@@ -84,8 +72,10 @@
                                        cleaned_library@ppm.grid <= x[[2]])),
              use.names = FALSE)
 
-    cleaned_spectrum@spectra[idx_to_remove, ] <- 0
-    cleaned_library@spectra[idx_to_remove, ] <- 0
+    if (length(idx_to_remove) != 0) {
+      spectrum_obj@spectra[idx_to_remove, ] <- 0
+      cleaned_library@spectra[idx_to_remove, ] <- 0
+    }
   }
 
   # remove metabolite without any signal
@@ -93,14 +83,20 @@
   cleaned_library <- cleaned_library[with_signal]
 
   # re-normalisation of mixture and pure spectra library
-  cleaned_library@spectra <- apply(cleaned_library@spectra, 2,
+  cleaned_library@spectra <- Matrix(apply(cleaned_library@spectra, 2,
                                    function(x)
-                                     t(x / .AUC(cleaned_library@ppm.grid, x)))
-  cleaned_spectrum@spectra <- apply(cleaned_spectrum@spectra, 2,
-                                    function(x)
-                                      t(x / .AUC(cleaned_library@ppm.grid, x)))
+                                     t(x / .AUC(cleaned_library@ppm.grid, x))))
 
-  return(list("cleaned_spectrum" = cleaned_spectrum,
+  spectra_to_norm <- as.data.frame(as.matrix(spectrum_obj@spectra))
+  rownames(spectra_to_norm) <- spectrum_obj@ppm.grid
+  norm.param <- c(list(spectra = spectra_to_norm,
+                       verbose = FALSE,
+                       type.norm = spectrum_obj@norm.method),
+                  spectrum_obj@norm.params)
+  spectrum_obj@spectra <-
+    Matrix(as.matrix(do.call("normaliseSpectra", norm.param)))
+
+  return(list("cleaned_spectrum" = spectrum_obj,
               "cleaned_library" = cleaned_library))
 
 }
@@ -108,15 +104,15 @@
 
 ## Remove metabolites that cannot belong to the mixture
 #' @importFrom plyr aaply
-.cleanLibrary <- function(cleaned_spectrum, cleaned_library,
-                          threshold.noise, nb_points_shift){
+.cleanLibrary <- function(obj, threshold.noise, nb_points_shift){
+
   #support of mixture superior to threshold
-  signal_mixture <- 1 * (cleaned_spectrum@spectra > threshold.noise)
+  signal_mixture <- 1 * (obj[["cleaned_spectrum"]]@spectra > threshold.noise)
   signal_mixture_shift <- .signalWithShift(signal_mixture, nb_points_shift)
 
   #normalize each spectra with the maximum of mixture
-  norm_library <- t(aaply(cleaned_library@spectra, 2, function(x) x *
-                            max(cleaned_spectrum@spectra) / max(x)))
+  norm_library <- t(aaply(obj[["cleaned_library"]]@spectra, 2, function(x) x *
+                            max(obj[["cleaned_spectrum"]]@spectra) / max(x)))
   signal_library <- 1 * (norm_library > threshold.noise)
 
   #keep metabolites for which signal is included in mixture signal
@@ -124,8 +120,8 @@
                                function(x)
                                  sum(x - signal_mixture_shift == 1) == 0))
 
-  cleaned_library <- cleaned_library[metab_to_keep]
-  return(cleaned_library)
+  obj[["cleaned_library"]] <- obj[["cleaned_library"]][metab_to_keep]
+  return(obj)
 }
 
 
@@ -175,5 +171,22 @@
   residuals <- y - x %*% coefficients
 
   return(list(coefficients = coefficients, residuals = residuals))
+}
+
+
+## To create a parallel environment
+#' @importFrom BiocParallel SerialParam MulticoreParam register
+.createEnv <- function(ncores, ntasks, verbose){
+  ncores <- min(ncores, ntasks)
+
+  para_param <- NULL
+  if (.Platform$OS.type == "windows" | ncores == 1) {
+    para_param <- SerialParam(progressbar = verbose)
+  } else {
+    para_param <- MulticoreParam(workers = ncores,
+                                 progressbar = verbose,
+                                 tasks = ntasks)
+  }
+  return(para_param)
 }
 

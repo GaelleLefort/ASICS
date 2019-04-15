@@ -39,7 +39,8 @@ if (require("ASICSdata", quietly = TRUE)) {
                               package = "ASICSdata")
   quantification <- read.table(quantif_path, header = TRUE, row.names = 1)
 
-  # Create object for analysis and remove features with more than 25\% of zeros
+  # Create object for analysis and remove features with more than 25\% of
+  # zeros
   analysis_obj <- formatForAnalysis(quantification, zero.threshold = 25)
   res_pca <- pca(analysis_obj)
 }

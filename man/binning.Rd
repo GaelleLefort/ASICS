@@ -4,12 +4,12 @@
 \alias{binning}
 \title{Binning/Bucketing of NMR spectra}
 \usage{
-binning(spectra, bin = 0.01, exclusion.areas = matrix(c(4.5, 5.1), ncol =
-  2), ncores = 1)
+binning(spectra, bin = 0.01, exclusion.areas = matrix(c(4.5, 5.1), ncol
+  = 2), normalisation = TRUE, ncores = 1, verbose = TRUE, ...)
 }
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shifts in
-rows. Colnames of this data frame correspond to pure metabolite names and
+rows. Colnames of this data frame correspond to sample names and
 rownames to chemical shift grid (in ppm).}
 
 \item{bin}{Numeric value specifying the bin width.}
@@ -18,8 +18,17 @@ rownames to chemical shift grid (in ppm).}
 of the analysis (ppm). By default, the water region is excluded
 (4.5-5.1 ppm).}
 
+\item{normalisation}{Logical. If \code{TRUE} a normalisation is applied for
+each spectrum (see \code{\link{normaliseSpectra}} for details). Default to
+\code{TRUE}.}
+
 \item{ncores}{Number of cores used in parallel evaluation. Default to
 \code{1}.}
+
+\item{verbose}{A boolean value to allow print out process information.}
+
+\item{...}{Further arguments to be passed to the function
+\code{\link{normaliseSpectra}}}
 }
 \value{
 A data frame with normalised spectra in columns and buckets in rows
@@ -29,8 +38,8 @@ A data frame with normalised spectra in columns and buckets in rows
 Apply a binning function on a spectrum.
 }
 \examples{
-current_path <- file.path(system.file("extdata", package = "ASICS"),
-                          "spectra_example.txt")
-spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-spectra_bin <- binning(spectra_data, bin = 0.01)
+current_path <- system.file("extdata", package = "ASICS")
+spectra_data <- importSpectra(name.dir = current_path,
+                     name.file = "spectra_example.txt", type.import = "txt")
+spectra_bin <- binning(spectra_data, bin = 0.01, type.norm = "pqn")
 }

@@ -1,7 +1,17 @@
 RELEASE HISTORY OF ASICS PACKAGE
 ========================================
 
-CHANGES in ASICS VERSION 1.1.1
+CHANGES in ASICS VERSION 2.0
+
+New features
+* preprocessing functions from PepsNMR package
+
+Improvements
+* changes in alignment function
+* new step to improve library alignment and thus quantifications
+
+
+CHANGES in ASICS VERSION 1.0.1
 
 Improvements
 * need to specify number of cores to use a parallel environment
