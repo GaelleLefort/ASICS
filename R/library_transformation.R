@@ -66,40 +66,44 @@
 #' @keywords internal
 .translateLibrary_combineVersion <- function(spectra_obj, max.shift,
                                              nb_points_shift, spec_bin,
-                                             pure.library, para_param,
+                                             pure.library, ncores, ntasks,
                                              verbose){
 
   # compute all shifts and relative concentrations
   if (verbose) cat("Compute shifts for all maximum shift values \n")
   all_res <- bplapply(spectra_obj, .allShift, nb_points_shift,
-                      BPPARAM = para_param)
+                      BPPARAM = .createEnv(ncores, ntasks, verbose))
 
   all_shift <- bplapply(seq_along(nb_points_shift), function(y)
     join_all(lapply(all_res, function(x, y) x[[y]][["shift"]], y),
-             by = "metab", type = "full"), BPPARAM = para_param)
+             by = "metab", type = "full"),
+    BPPARAM = .createEnv(ncores, ntasks, verbose))
   all_shift <- bplapply(all_shift,
                         function(x) {rownames(x) <- x$metab; x$metab <- NULL;
                         x[is.na(x)] <- 0; return(x)},
-                        BPPARAM = para_param)
+                        BPPARAM = .createEnv(ncores, ntasks, verbose))
 
   # same shift for all sample
   if (verbose) cat("Put the median shift for extreme shift values \n")
-  all_shift <- bplapply(all_shift, .same_shift, BPPARAM = para_param)
+  all_shift <- bplapply(all_shift, .same_shift,
+                        BPPARAM = .createEnv(ncores, ntasks, verbose))
 
 
   all_conc <- bplapply(seq_along(nb_points_shift), function(y)
     join_all(lapply(all_res, function(x, y) x[[y]][["relative_conc"]], y),
-             by = "metab", type = "full"), BPPARAM = para_param)
+             by = "metab", type = "full"),
+    BPPARAM = .createEnv(ncores, ntasks, verbose))
   all_conc <- bplapply(all_conc,
                         function(x) {rownames(x) <- x$metab; x$metab <- NULL;
                         x[is.na(x)] <- 0; return(x)},
-                        BPPARAM = para_param)
+                       BPPARAM = .createEnv(ncores, ntasks, verbose))
 
   # compute correlation
   if (verbose)
     cat("Compute correlations between buckets and quantifications \n")
   list_all_cor <- bplapply(all_conc, .compute_correlation, spec_bin,
-                           pure.library, nb_points_shift, BPPARAM = para_param)
+                           pure.library, nb_points_shift,
+                           BPPARAM = .createEnv(ncores, ntasks, verbose))
   list_all_cor <- lapply(seq_along(list_all_cor),
                          function(x) {colnames(list_all_cor[[x]])[2] <- x;
                          return(list_all_cor[[x]])})
@@ -119,7 +123,8 @@
   # shift all spectra according to final shift
   if (verbose) cat("Shift all spectra according to the best shift \n")
   spectra_obj <- bplapply(spectra_obj, .do_shift_corr, final_shift, max.shift,
-                          nb_points_shift, which_corr_max, BPPARAM = para_param)
+                          nb_points_shift, which_corr_max,
+                          BPPARAM = .createEnv(ncores, ntasks, verbose))
 
   return(spectra_obj)
 }

@@ -12,7 +12,7 @@
 #' @param type.import Type of import. Either \code{"txt"}, \code{"csv"},
 #' \code{"fid"} or \code{"1r"}.
 #' @param baseline.correction Logical. If \code{TRUE} a baseline correction is
-#' applied for each spectrum (Wang et al (2013)). Default to \code{FALSE}.
+#' applied for each spectrum. Default to \code{FALSE}.
 #' @param alignment Logical. If \code{TRUE} a peak alignment is
 #' applied between all spectra. Default to \code{FALSE}.
 #' @param normalisation Logical. If \code{TRUE} a normalisation is applied for
@@ -24,8 +24,8 @@
 #' @param ... Further arguments to be passed to the functions
 #' \code{\link{read.table}}, \code{\link{importSpectraBruker}},
 #' \code{\link[PepsNMR]{Normalization}}
-#' (\code{\link[PepsNMR]{PepsNMR-package}}), \code{\link{alignSpectra}},
-#' \code{\link{baselineCorrection}} or \code{\link{normaliseSpectra}} for
+#' (\code{\link[PepsNMR]{PepsNMR-package}}), \code{\link{alignSpectra}} or
+#' \code{\link{normaliseSpectra}} for
 #' specifying the parameters of the algorithm, if necessary.
 #'
 #' @details
@@ -49,7 +49,7 @@
 #'
 #' @export
 #'
-#' @seealso \code{\link{importSpectraBruker}} \code{\link{baselineCorrection}}
+#' @seealso \code{\link{importSpectraBruker}}
 #' \code{\link{normaliseSpectra}} \code{\link{alignSpectra}}
 #'
 #' @examples
@@ -86,17 +86,22 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
     imported_spectra <- do.call("read.table", import.param)
   } else if (type.import == "fid") {
     if (verbose) cat("Import spectra from fid files...  \n")
+
+    #zero-filling
+    zf <- TRUE
+    if(!is.null(import.args[["fn"]]) && import.args["fn"] < 1) zf <- FALSE
+
     import.param <- c(list(Fid_data = NULL, Fid_info = NULL,
                            data.path = name.dir, readFids = TRUE,
                            groupDelayCorr = TRUE, solventSuppression = TRUE,
-                           apodization = TRUE, fourierTransform = TRUE,
-                           zeroOrderPhaseCorr = TRUE,
+                           apodization = TRUE, zerofilling = zf,
+                           fourierTransform = TRUE, zeroOrderPhaseCorr = TRUE,
                            internalReferencing = TRUE,
                            baselineCorrection = FALSE, negativeValues0 = FALSE,
                            warping = FALSE, windowSelection = TRUE,
                            bucketing = FALSE, regionRemoval = FALSE,
                            zoneAggregation = FALSE, normalization = FALSE,
-                           export = FALSE, writeArg = "none"),
+                           export = FALSE, writeArg = "none", verbose = verbose),
                       import.args[names(import.args) %in%
                                     names(formals(args(ReadFids)))],
                       import.args[names(import.args) %in%
@@ -105,6 +110,8 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
                                     names(formals(args(SolventSuppression)))],
                       import.args[names(import.args) %in%
                                     names(formals(args(Apodization)))],
+                      import.args[names(import.args) %in%
+                                    names(formals(args(ZeroFilling)))],
                       import.args[names(import.args) %in%
                                     names(formals(args(FourierTransform)))],
                       import.args[names(import.args) %in%
@@ -120,9 +127,8 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
       imported_spectra <-
         do.call("PreprocessingChain", import.param)$Spectrum_data
     } else {
-      capture.output(imported_spectra <-
-                       do.call("PreprocessingChain",
-                               import.param)$Spectrum_data)
+      imported_spectra <- do.call("PreprocessingChain",
+                                  import.param)$Spectrum_data
     }
     imported_spectra <- as.data.frame(t(Re(imported_spectra)))
     imported_spectra <- imported_spectra[nrow(imported_spectra):1, ]
@@ -139,8 +145,17 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
 
   # baseline correction
   if (baseline.correction) {
-    imported_spectra <- baselineCorrection(imported_spectra, ncores = ncores,
-                                           verbose = verbose)
+    baseline.params <- c(list(Spectrum_data = t(imported_spectra),
+                              verbose = verbose),
+                         import.args[names(import.args) %in%
+                                       c(names(formals(args(BaselineCorrection))))])
+
+    imported_spectra <- t(do.call("BaselineCorrection", baseline.params))
+
+    negvalue.params <- c(list(Spectrum_data = t(imported_spectra),
+                              verbose = verbose))
+
+    imported_spectra <- t(do.call("NegativeValuesZeroing", negvalue.params))
   }
 
   # peak alignment
@@ -200,22 +215,6 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
 #' @param verbose A boolean value to allow print out process information.
-#' @param ... Further arguments to be passed to the functions
-#' \code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
-#' \code{\link{normaliseSpectra}} for specifying the parameters of the
-#' algorithm, if necessary.
-#'
-#' @details
-#' Some preprocessing steps are included during the importation. First, spectra
-#' are baseline corrected if \code{baseline.correction = TRUE}. Then, all
-#' spectrum definition domains are aligned to a unique one (either the one
-#' specified in \code{ppm.grid} or the grid of the default library). Finally,
-#' all spectra are normalised if \code{normalisation = TRUE}.
-#'
-#' @references Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
-#' Distribution-based classification method for baseline correction of
-#' metabolomic 1D proton nuclear magnetic resonance spectra.
-#' \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
 #'
 #' @return A data frame with spectra in columns and chemical shifts (in ppm)
 #' in rows.
@@ -224,7 +223,7 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
 #' @importFrom BiocParallel bptry bpok
 #' @export
 #'
-#' @seealso \code{\link{baselineCorrection}} \code{\link{normaliseSpectra}}
+#' @seealso \code{\link{normaliseSpectra}}
 #' \code{\link{alignSpectra}}
 #'
 #' @examples
@@ -232,9 +231,7 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
 #' spectra_data <- importSpectraBruker(current_path)
 importSpectraBruker <- function(name.dir, which.spectra = "first",
                                 ppm.grid = NULL, sample.names = NULL,
-                                ncores = 1, verbose = TRUE, ...){
-
-  import.args <- list(...)
+                                ncores = 1, verbose = TRUE){
 
   if(!dir.exists(name.dir)){
     stop("Path of the Bruker files doesn't exist!")
@@ -426,83 +423,6 @@ normaliseSpectra <- function(spectra, type.norm = "CS", verbose = TRUE, ...){
 }
 
 
-
-#' Baseline correction
-#'
-#' Apply a baseline correction to a spectra with the algorithm described in
-#' Wang et al. (2013).
-#'
-#' @param spectra Data frame with spectra in columns and chemical shifts in
-#' rows. Colnames of this data frame correspond to pure metabolite names and
-#' rownames to chemical shift grid (in ppm).
-#' @param ncores Number of cores used in parallel evaluation. Default to
-#' \code{1}.
-#' @param verbose A boolean value to allow print out process information.
-#'
-#' @return A data frame with baseline corrected spectra in columns and chemical
-#' shifts (in ppm) in rows.
-#'
-#' @references Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
-#' Distribution-based classification method for baseline correction of
-#' metabolomic 1D proton nuclear magnetic resonance spectra.
-#' \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
-#'
-#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SerialParam
-#' @export
-#'
-#' @examples
-#' current_path <- system.file("extdata", package = "ASICS")
-#' spectra_data <- importSpectra(name.dir = current_path,
-#'                      name.file = "spectra_example.txt", type.import = "txt")
-#' spectra_base_cor <- baselineCorrection(spectra_data)
-baselineCorrection <- function(spectra, ncores = 1, verbose = TRUE){
-
-  if (!is.numeric(as.numeric(rownames(spectra)))) {
-    stop("Rownames of spectra data frame do not contain ppm grid.")
-  }
-
-  if (verbose) cat("Baseline correction... \n")
-
-  # number of cores
-  ncores <- min(ncores, ncol(spectra))
-  if (.Platform$OS.type == "windows" | ncores == 1) {
-    para_param <- SerialParam(progressbar = verbose, stop.on.error = FALSE)
-  } else {
-    para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = verbose,
-                                 tasks = ncol(spectra),
-                                 manager.hostname = "localhost",
-                                 stop.on.error = FALSE)
-  }
-
-  spectra_list <- as.list(spectra)
-
-  # baseline correction
-  spectra_bc_list <-
-    bptry(bplapply(spectra_list, .baselineCorrector,
-                   BPPARAM = para_param))
-
-  # if error in a file
-  if (any(!bpok(spectra_bc_list))) {
-    warning(paste0("The baseline correction algorithm can not be used for",
-                   "spectra: ",
-                   paste(colnames(spectra)[!bpok(spectra_bc_list)],
-                         collapse = ", ")), call. = FALSE)
-  }
-  spectra_list[!(!bpok(spectra_bc_list))] <-
-    spectra_bc_list[!(!bpok(spectra_bc_list))]
-
-  # convert in a data frame
-  spectra_bc <- as.data.frame(do.call(cbind, spectra_list))
-  spectra_bc[spectra_bc < 0] <- 0
-  rownames(spectra_bc) <- rownames(spectra)
-  colnames(spectra_bc) <- colnames(spectra)
-
-  return(spectra_bc)
-}
-
-
-
 #' Alignment
 #'
 #' Align spectra of a data frame by a method based on the CluPA algorithm
@@ -545,17 +465,6 @@ alignSpectra <- function(spectra, reference = NULL, max.shift = 0.02,
 
   if (verbose) cat("Alignment... \n")
 
-  # number of cores
-  ncores <- min(ncores, ncol(spectra))
-  if (.Platform$OS.type == "windows" | ncores == 1) {
-    para_param <- SerialParam(progressbar = verbose)
-  } else {
-    para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = verbose,
-                                 tasks = ncol(spectra),
-                                 manager.hostname = "localhost")
-  }
-
   # maximum shift
   max_shift <- floor(max.shift / (ASICS::pure_library@ppm.grid[2] -
                                     ASICS::pure_library@ppm.grid[1]))
@@ -563,7 +472,8 @@ alignSpectra <- function(spectra, reference = NULL, max.shift = 0.02,
   # detect peaks
   if (verbose) cat("Peak detection \n")
   peak_list <- bplapply(as.list(seq_len(ncol(spectra))),
-                        .findPeaks, spectra, BPPARAM = para_param)
+                        .findPeaks, spectra,
+                        BPPARAM = .createEnv(ncores, ncol(spectra), verbose))
 
 
   # reference spectrum
@@ -577,7 +487,7 @@ alignSpectra <- function(spectra, reference = NULL, max.shift = 0.02,
   align_spectra <-
     bplapply(as.list(seq_len(ncol(spectra))),
              .alignmentIdx, spectra, peak_list, reference, max_shift,
-             BPPARAM = para_param)
+             BPPARAM = .createEnv(ncores, ncol(spectra), verbose))
 
   align_spectra_df <- as.data.frame(do.call(cbind, align_spectra),
                                     row.names = rownames(spectra))
@@ -779,17 +689,6 @@ binning <- function(spectra, bin = 0.01,
     spectra[idx_to_remove, ] <- 0
   }
 
-  # number of cores
-  ncores <- min(ncores, ncol(spectra))
-  if (.Platform$OS.type == "windows" | ncores == 1) {
-    para_param <- SerialParam(progressbar = verbose)
-  } else {
-    para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = verbose,
-                                 tasks = ncol(spectra),
-                                 manager.hostname = "localhost")
-  }
-
   # compute buckets
   buckets <- seq(max(0.5, min(trunc(old_grid * 10, 1) / 10)) + bin / 2,
                  min(10, max(trunc(old_grid * 10, 1) / 10)) + bin / 2,
@@ -800,7 +699,7 @@ binning <- function(spectra, bin = 0.01,
   # buckets values for each spectrum
   buckets_values_list <-
     bplapply(spectra_list, .binningSpectrum, old_grid, buckets, bin,
-             BPPARAM = para_param)
+             BPPARAM = .createEnv(ncores, ncol(spectra), verbose))
 
   # convert in a data frame
   buckets_values <- as.data.frame(do.call(cbind, buckets_values_list))

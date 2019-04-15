@@ -173,3 +173,20 @@
   return(list(coefficients = coefficients, residuals = residuals))
 }
 
+
+## To create a parallel environment
+#' @importFrom BiocParallel SerialParam MulticoreParam register
+.createEnv <- function(ncores, ntasks, verbose){
+  ncores <- min(ncores, ntasks)
+
+  para_param <- NULL
+  if (.Platform$OS.type == "windows" | ncores == 1) {
+    para_param <- SerialParam(progressbar = verbose)
+  } else {
+    para_param <- MulticoreParam(workers = ncores,
+                                 progressbar = verbose,
+                                 tasks = ntasks)
+  }
+  return(para_param)
+}
+

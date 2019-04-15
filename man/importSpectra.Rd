@@ -20,7 +20,7 @@ columns (spectrum names in the first line and ppm grid in the first column).}
 \code{"fid"} or \code{"1r"}.}
 
 \item{baseline.correction}{Logical. If \code{TRUE} a baseline correction is
-applied for each spectrum (Wang et al (2013)). Default to \code{FALSE}.}
+applied for each spectrum. Default to \code{FALSE}.}
 
 \item{alignment}{Logical. If \code{TRUE} a peak alignment is
 applied between all spectra. Default to \code{FALSE}.}
@@ -37,8 +37,8 @@ each spectrum (see \code{\link{normaliseSpectra}} for details). Default to
 \item{...}{Further arguments to be passed to the functions
 \code{\link{read.table}}, \code{\link{importSpectraBruker}},
 \code{\link[PepsNMR]{Normalization}}
-(\code{\link[PepsNMR]{PepsNMR-package}}), \code{\link{alignSpectra}},
-\code{\link{baselineCorrection}} or \code{\link{normaliseSpectra}} for
+(\code{\link[PepsNMR]{PepsNMR-package}}), \code{\link{alignSpectra}} or
+\code{\link{normaliseSpectra}} for
 specifying the parameters of the algorithm, if necessary.}
 }
 \value{
@@ -80,6 +80,6 @@ metabolomic 1D proton nuclear magnetic resonance spectra.
 \emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
 }
 \seealso{
-\code{\link{importSpectraBruker}} \code{\link{baselineCorrection}}
+\code{\link{importSpectraBruker}}
 \code{\link{normaliseSpectra}} \code{\link{alignSpectra}}
 }

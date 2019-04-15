@@ -93,16 +93,6 @@ ASICS <- function(spectra_obj,
   # seed and parallel environment
   set.seed(seed)
 
-  ncores <- min(ncores, length(spectra_obj_raw))
-  if (.Platform$OS.type == "windows" | ncores == 1) {
-    para_param <- SerialParam(progressbar = verbose)
-  } else {
-    para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = verbose,
-                                 tasks = length(spectra_obj_raw),
-                                 manager.hostname = "localhost")
-  }
-
   # default library or not
   if(is.null(pure.library)){
     pure.library <- ASICS::pure_library
@@ -117,7 +107,9 @@ ASICS <- function(spectra_obj,
   #### Remove areas from spectrum and library ####
   if (verbose) cat("Remove areas from spectrum and library \n")
   spectra_obj <- bplapply(spectra_list, .removeAreas, exclusion.areas,
-                          pure.library, BPPARAM = para_param)
+                          pure.library,
+                          BPPARAM = .createEnv(ncores, length(spectra_obj_raw),
+                                               verbose))
 
   # number of points on library grid corresponding to maximum shift
   if (length(spectra_list) == 1 | !combine) {
@@ -136,7 +128,8 @@ ASICS <- function(spectra_obj,
   if (verbose) cat("Remove metabolites that cannot belong to the mixture \n")
   spectra_obj <- bplapply(spectra_obj, .cleanLibrary, threshold.noise,
                           nb_points_shift[length(nb_points_shift)],
-                          BPPARAM = para_param)
+                          BPPARAM = .createEnv(ncores, length(spectra_obj_raw),
+                                               verbose))
 
   #-----------------------------------------------------------------------------
   #### Find the best translation between each pure spectra and mixture ####
@@ -151,35 +144,42 @@ ASICS <- function(spectra_obj,
              function(x){x[["mixture_weights"]] <-
                as.numeric(1 / (abs(x[["cleaned_spectrum"]]@spectra) *
                                  s1 ^ 2 + s2 ^ 2)); return(x)},
-             BPPARAM = para_param)
+             BPPARAM = .createEnv(ncores, length(spectra_obj_raw),
+                                  verbose))
 
   if (verbose) cat("Translate library \n")
   if (length(spectra_list) == 1 | !combine) {
     spectra_obj <- bplapply(spectra_obj, .translateLibrary,
                             nb_points_shift[length(nb_points_shift)],
                             max.shift[length(max.shift)],
-                              BPPARAM = para_param)
+                            BPPARAM = .createEnv(ncores, length(spectra_obj_raw),
+                                                 verbose))
   } else {
     # spectra binning
     spec_bin <- binning(data.frame(as.matrix(getSpectra(spectra_obj_raw))),
                         exclusion.areas = exclusion.areas,
-                        ncores = ncores, verbose = FALSE)
+                        ncores = ncores, verbose = TRUE, bin = 0.001)
     spec_bin <- spec_bin[rowSums(spec_bin) != 0, ]
     spectra_obj <- .translateLibrary_combineVersion(spectra_obj, max.shift,
                                                  nb_points_shift, spec_bin,
-                                                 pure.library, para_param,
+                                                 pure.library, ncores,
+                                                 length(spectra_obj_raw),
                                                  verbose)
   }
 
   #-----------------------------------------------------------------------------
   #### Localized deformations of pure spectra ####
   if (verbose) cat("Deform library peaks \n")
-  spectra_obj <- bplapply(spectra_obj, .deformLibrary, BPPARAM = para_param)
+  spectra_obj <- bplapply(spectra_obj, .deformLibrary,
+                          BPPARAM = .createEnv(ncores, length(spectra_obj_raw),
+                                               verbose))
 
   #-----------------------------------------------------------------------------
   #### Threshold and concentration optimisation for each metabolites ####
   if (verbose) cat("Compute quantifications \n")
-  spectra_obj <- bplapply(spectra_obj, .concentrationOpti, BPPARAM = para_param)
+  spectra_obj <- bplapply(spectra_obj, .concentrationOpti,
+                          BPPARAM = .createEnv(ncores, length(spectra_obj_raw),
+                                               verbose))
 
   #-----------------------------------------------------------------------------
   #### Results ####

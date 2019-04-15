@@ -5,7 +5,7 @@
 \title{Import preprocessed metabolomic spectra from Bruker files}
 \usage{
 importSpectraBruker(name.dir, which.spectra = "first", ppm.grid = NULL,
-  sample.names = NULL, ncores = 1, verbose = TRUE, ...)
+  sample.names = NULL, ncores = 1, verbose = TRUE)
 }
 \arguments{
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each
@@ -29,11 +29,6 @@ the pure library is used).}
 \code{1}.}
 
 \item{verbose}{A boolean value to allow print out process information.}
-
-\item{...}{Further arguments to be passed to the functions
-\code{\link{alignSpectra}}, \code{\link{baselineCorrection}} or
-\code{\link{normaliseSpectra}} for specifying the parameters of the
-algorithm, if necessary.}
 }
 \value{
 A data frame with spectra in columns and chemical shifts (in ppm)
@@ -45,24 +40,11 @@ This folder contains one subfolder for each sample.
 (optional) Spectra are baseline corrected, aligned and normalised by the area
 under the curve during the importation.
 }
-\details{
-Some preprocessing steps are included during the importation. First, spectra
-are baseline corrected if \code{baseline.correction = TRUE}. Then, all
-spectrum definition domains are aligned to a unique one (either the one
-specified in \code{ppm.grid} or the grid of the default library). Finally,
-all spectra are normalised if \code{normalisation = TRUE}.
-}
 \examples{
 current_path <- system.file("extdata", "example_spectra", package = "ASICS")
 spectra_data <- importSpectraBruker(current_path)
 }
-\references{
-Wang, K.C., Wang, S.Y., Kuo, C.H., Tseng Y.J. (2013).
-Distribution-based classification method for baseline correction of
-metabolomic 1D proton nuclear magnetic resonance spectra.
-\emph{Analytical Chemistry}, \strong{85}(2), 1231-1239.
-}
 \seealso{
-\code{\link{baselineCorrection}} \code{\link{normaliseSpectra}}
+\code{\link{normaliseSpectra}}
 \code{\link{alignSpectra}}
 }

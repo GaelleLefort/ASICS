@@ -215,7 +215,7 @@
 
 
 ## Find the spectrum of reference
-#' @importFrom BiocParallel bplapply MulticoreParam multicoreWorkers SerialParam
+#' @importFrom BiocParallel bplapply
 #' @importFrom plyr llply
 .findReference <- function (spectra, ncores = 1, verbose) {
 
@@ -223,23 +223,13 @@
   spec_bin <- binning(as.data.frame(spectra), ncores = ncores,
                       verbose = verbose)
 
-  ncores <- min(ncores, ncol(spec_bin))
-  if (.Platform$OS.type == "windows" | ncores == 1) {
-    para_param <- SerialParam(progressbar = verbose)
-  } else {
-    para_param <- MulticoreParam(workers = ncores,
-                                 progressbar = verbose,
-                                 tasks = ncol(spec_bin),
-                                 manager.hostname = "localhost")
-  }
-
   # similarity
   if (verbose) cat("Compute LCSS similarities \n")
   simi_matrix <- bplapply(as.list(seq_along(spec_bin)),
                             function(x) vapply(seq_along(spec_bin),
                                                .similarityLCSS, x, spec_bin,
                                                FUN.VALUE = numeric(1)),
-                            BPPARAM = para_param)
+                          BPPARAM = .createEnv(ncores, ncol(spectra), verbose))
 
 
   simi_matrix <- do.call("cbind", simi_matrix)
@@ -264,6 +254,51 @@
   return(similarity)
 }
 
+
+## Obtain  a  set  of  standard deviation SDset from intensity with 2w + 1 point
+#sliding windows
+#' @importFrom stats sd
+#' @keywords internal
+.getSD <- function(intensity, sliding_windows){
+  SDset <- numeric(length(intensity))
+  for(i in seq_along(intensity)){
+    SDset[i] <- sd(intensity[max(1, i - sliding_windows):
+                               min(i + sliding_windows, length(intensity))])
+  }
+  return(SDset)
+}
+
+## Calculate the median m1 from SDset. Exclude the elements greater than 2m1
+#from SDset, and recalculate the median m2 from SDset. Repeat this routine until
+#m2/m1 converges and set m2 as the expected value of the noise standard
+#deviation
+#' @importFrom stats median
+#' @keywords internal
+.findNoiseSD <- function(SDset, ratio){
+  m1 <- median(SDset)
+  SDset <- SDset[SDset < 2 * m1]
+  m2 <- median(SDset)
+
+  while(m2 / m1 < ratio){
+    m1 <- m2
+    SDset <- SDset[SDset < 2 * m1]
+    m2 <- median(SDset) + 1e-5
+  }
+  return(m2)
+}
+
+## Use the noise standard deviation sigma to determine whether each data point
+#is signal or noise
+.isSignal <- function(sigma, SDset, windows, threshold){
+  SNvector <- SDset * 0
+
+  for(i in seq_along(SNvector)){
+    if(SDset[i] > sigma * threshold){
+      SNvector[max(1, i - windows):min(i + windows, length(SNvector))] <- 1
+    }
+  }
+  return(SNvector)
+}
 
 ## Find peaks to perform a clustering on them
 .findPeaks <- function(idx, spectra) {

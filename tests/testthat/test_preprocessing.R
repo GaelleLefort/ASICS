@@ -42,7 +42,6 @@ test_that("Preprocessing functions work well and give a data frame", {
                                 name.file = "spectra_example.txt",
                                 type.import = "txt")
   expect_is(normaliseSpectra(spectra_data, type.norm = "CS"), "data.frame")
-  expect_is(baselineCorrection(spectra_data), "data.frame")
   expect_is(alignSpectra(spectra_data), "data.frame")
 })
 
@@ -67,7 +66,6 @@ without error", {
   current_path <- system.file("extdata", "spectra_example.txt",
                               package = "ASICS")
   spectra_data <- read.table(current_path, header = TRUE, row.names = 1)
-  spectra_data <- baselineCorrection(spectra_data)
   spectra_obj <- createSpectra(spectra_data)
 
   expect_s4_class(spectra_obj, "Spectra")
