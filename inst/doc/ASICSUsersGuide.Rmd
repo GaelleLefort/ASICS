@@ -132,16 +132,11 @@ spectra_obj <- createSpectra(spectra_norm)
 ```
 
 Identification and quantification of metabolites can now be carried out using 
-<<<<<<< HEAD
-only the function `ASICS`. This function takes approximately 2 minutes by 
-spectrum to run. 
-=======
 only the function `ASICS`. This function takes approximately 2 minutes per 
 spectrum to run. To control randomness in the algorithm (used in the estimation 
 of the significativity of a given metabolite concentration), the `set.seed` 
 parameter can be used.
 
->>>>>>> dev
 ```{r ASICS, results='hide', cache=TRUE}
 # part of the spectrum to exclude (water and urea)
 to_exclude <- matrix(c(4.5, 5.1, 5.5, 6.5), ncol = 2, byrow = TRUE)
