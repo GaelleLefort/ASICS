@@ -433,8 +433,7 @@ normaliseSpectra <- function(spectra, type.norm = "CS", verbose = TRUE, ...){
 #' to chemical shift grid (in ppm).
 #' @param reference Index of the reference spectrum used for the alignment.
 #' Default to \code{NULL}, \emph{i.e.} the reference spectrum is automatically
-#' detected with the \code{\link[speaq]{findRef}} function of the \code{speaq}
-#' package.
+#' detected.
 #' @param max.shift Maximum shift allowed for the alignment. Default to 0.002.
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
