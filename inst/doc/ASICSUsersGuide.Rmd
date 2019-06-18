@@ -103,18 +103,15 @@ spectra_data_txt <- importSpectra(name.dir = diabetes,
                                   type = "txt")
 ```
 
-Several functions for the preprocessing of spectra are also available: baseline 
-correction, normalisation and alignment on a reference spectrum 
-(based on Vu et al. (2011)). For example, spectra are baseline corrected with:
-```{r preprocessing, results='hide'}
-spectra_base_cor <- baselineCorrection(spectra_data_txt)
-```
+Several functions for the preprocessing of spectra are also available: 
+normalisation and alignment on a reference spectrum 
+(based on Vu et al. (2011)). 
 
 Many types of normalisation are available. By default, spectra are normalised
 to a constant sum (`type.norm = "CS"`). Otherwise, a normalisation method 
 implemented in the `PepsNMR` package could be used. For example:
 ```{r normalisation}
-spectra_norm <- normaliseSpectra(spectra_base_cor, type.norm = "pqn")
+spectra_norm <- normaliseSpectra(spectra_data_txt, type.norm = "pqn")
 ```
 
 The alignment algorithm is based on Vu et al. (2011). To find the reference 
