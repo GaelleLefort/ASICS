@@ -9,7 +9,8 @@
 \usage{
 \S4method{plot}{AnalysisResults,ANY}(x, y, ..., graph = c("default",
   "ind", "var", "eig", "boxplot", "buckets"), add.label = TRUE,
-  axes = c(1, 2), col.ind = NULL, xlim = c(0.5, 10), ylim = NULL)
+  n.label.var = 10, axes = c(1, 2), col.ind = NULL, xlim = c(0.5,
+  10), ylim = NULL)
 }
 \arguments{
 \item{x}{An object of class \linkS4class{AnalysisResults}.}
@@ -27,6 +28,9 @@ Default value is \code{"default"} (\emph{i.e.,} \code{c("ind", "var")} for
 PCA and OPLS-DA and \code{c("boxplot")} for tests).}
 
 \item{add.label}{If \code{TRUE}, labels are added on individual plot.}
+
+\item{n.label.var}{An integer indicating the number of label to add on
+variable plot.}
 
 \item{axes}{A numeric vector of length 2 specifying the dimensions to be
 plotted for individual and variable plots.}

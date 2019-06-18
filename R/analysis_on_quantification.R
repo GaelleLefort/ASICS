@@ -166,7 +166,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
   # PCA
   resPCA <- opls(x = t(assay(analysis_data, 1)),
                  predI = min(10, dim(analysis_data)[2]), scaleC = scale_unit,
-                 printL = FALSE, plotL = FALSE)
+                 info.txtC = NULL, fig.pdfC = NULL)
 
   resPCA@suppLs$yModelMN <- colData(analysis_data)
 
@@ -194,7 +194,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 
 #' @importFrom gridExtra grid.arrange
 .plotPCA <- function(res.pca, graph, add.label = TRUE,
-                     axes = c(1, 2), col.ind = NULL){
+                     axes = c(1, 2), col.ind = NULL, nb_label){
 
   if (!(is.null(col.ind)) &&
       !(col.ind %in% colnames(res.pca@suppLs$yModelMN))) {
@@ -240,7 +240,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
                     var_contrib[, 2] * eigen_value$eigen_var[axes[2]]) /
       (eigen_value$eigen_var[axes[1]] + eigen_value$eigen_var[axes[2]])
 
-    to_plot[[pos]] <- .plotVar(var_coord, var_color, eigen_value, axes)
+    to_plot[[pos]] <- .plotVar(var_coord, var_color, eigen_value, axes, nb_label)
   }
 
   if (length(graph) == 1) {
@@ -268,10 +268,10 @@ pca <- function(analysis_data, scale.unit = TRUE,
 }
 
 
-.plotVar <- function(var_coord, var_color, eigen_value, axes){
+.plotVar <- function(var_coord, var_color, eigen_value, axes, nb_label){
 
   # add label for the 10 variables that contribute the most
-  coord_lab <- var_coord[var_color >= sort(var_color, decreasing = TRUE)[10], ]
+  coord_lab <- var_coord[var_color >= sort(var_color, decreasing = TRUE)[nb_label], ]
   coord_lab$label <- rownames(coord_lab)
 
   # graph limits
@@ -433,8 +433,8 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
   if (is.null(param.args$log10L)) param.args$log10L <- FALSE
   if (is.null(param.args$permI)) param.args$permI <- 0
   if (is.null(param.args$scaleC)) param.args$scaleC <- "standard"
-  if (is.null(param.args$printL)) param.args$printL <- FALSE
-  if (is.null(param.args$plotL)) param.args$plotL <- FALSE
+  if (is.null(param.args$info.txtC)) param.args$info.txtC <- NULL
+  if (is.null(param.args$fig.pdfC)) param.args$fig.pdfC <- NULL
   if (!is.null(param.args$subset)) param.args$subset <- NULL
 
   # opls-da and cross-validation
@@ -554,7 +554,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 
 #' @importFrom SummarizedExperiment assay
 #' @importFrom zoo na.approx
-.plotOPLSDA <- function(res.oplsda, graph, add.label = TRUE, xlim, ylim){
+.plotOPLSDA <- function(res.oplsda, graph, add.label = TRUE, xlim, ylim, nb_label){
 
   to_plot <- list()
   pos <- 1
@@ -590,7 +590,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
                        sort = FALSE)$VIP
 
     to_plot[[pos]] <- .plotVar(var_coord, var_color, eigen_value,
-                               axes = c(1, 2)) +
+                               axes = c(1, 2), nb_label) +
       labs(title = "OPLS-DA - Variable plot",
            y = "Orthogonal component 1",
            x = "Dimension 1",
