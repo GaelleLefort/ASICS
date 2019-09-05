@@ -5,36 +5,36 @@
 }
 
 ## Linear interpolation to adapt old_spectrum on the old grid to the new grid
-.changeGrid <- function(old_spectrum, old_grid, new_grid) {
+  .changeGrid <- function(old_spectrum, old_grid, new_grid) {
 
-  # new_grid must be included in old_grid
-  if (new_grid[1] < old_grid[1]) new_grid[1] <- old_grid[1]
-  n <- length(old_grid)
-  nphi <- length(new_grid)
-  if (new_grid[nphi] > old_grid[n]) new_grid[nphi] <- old_grid[n]
+      # new_grid must be included in old_grid
+      if (new_grid[1] < old_grid[1]) new_grid[1] <- old_grid[1]
+      n <- length(old_grid)
+      nphi <- length(new_grid)
+      if (new_grid[nphi] > old_grid[n]) new_grid[nphi] <- old_grid[n]
 
-  # combine both grid (1 = old and 0 = new)
-  grid_indicator <- rep(c(1, 0), c(n, nphi))
-  old_grid[1] <- old_grid[1] - 1e-06
-  old_grid[n] <- old_grid[n] + 1e-06
-  combined_grid <- c(old_grid, new_grid)
+      # combine both grid (1 = old and 0 = new)
+      grid_indicator <- rep(c(1, 0), c(n, nphi))
+      old_grid[1] <- old_grid[1] - 1e-06
+      old_grid[n] <- old_grid[n] + 1e-06
+      combined_grid <- c(old_grid, new_grid)
 
-  # sort combined grid and get points on old grid just before points on new grid
-  idx_sorted_grid <- order(combined_grid)
-  u <- cumsum(grid_indicator[idx_sorted_grid])
-  lower_bound <- u[grid_indicator[idx_sorted_grid] == 0]
+      # sort combined grid and get points on old grid just before points on new grid
+      idx_sorted_grid <- order(combined_grid)
+      u <- cumsum(grid_indicator[idx_sorted_grid])
+      lower_bound <- u[grid_indicator[idx_sorted_grid] == 0]
 
-  # spectrum on new grid
-  new_spectrum <- old_spectrum[lower_bound] +
-    (new_grid - old_grid[lower_bound]) *
-    (old_spectrum[(lower_bound + 1)] - old_spectrum[lower_bound]) /
-    (old_grid[(lower_bound + 1)] - old_grid[lower_bound])
+      # spectrum on new grid
+      new_spectrum <- old_spectrum[lower_bound] +
+        (new_grid - old_grid[lower_bound]) *
+        (old_spectrum[(lower_bound + 1)] - old_spectrum[lower_bound]) /
+        (old_grid[(lower_bound + 1)] - old_grid[lower_bound])
 
-  if (is.na(new_spectrum[nphi])) new_spectrum[nphi] <- old_spectrum[n]
-  if (is.na(new_spectrum[1])) new_spectrum[1] <- old_spectrum[1]
+      if (is.na(new_spectrum[nphi])) new_spectrum[nphi] <- old_spectrum[n]
+      if (is.na(new_spectrum[1])) new_spectrum[1] <- old_spectrum[1]
 
-  return(new_spectrum)
-}
+    return(new_spectrum)
+  }
 
 
 

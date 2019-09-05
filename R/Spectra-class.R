@@ -281,21 +281,22 @@ setMethod(
                     "first one is used"))
     }
 
-    # first grid for all objects
-    for(i in 2:length(elements)){
-      if(!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)){
-        elements[[i]]@spectra <- apply(elements[[i]]@spectra, 2, .changeGrid,
-                                       elements[[i]]@ppm.grid,
-                                       elements[[1]]@ppm.grid)
-      }
-    }
+        # first grid for all objects
+        for(i in 2:length(elements)){
+          if(!any(elements[[1]]@ppm.grid == elements[[i]]@ppm.grid)){
+            elements[[i]]@spectra <- Matrix(apply(elements[[i]]@spectra, 2, .changeGrid,
+                                           elements[[i]]@ppm.grid,
+                                           elements[[1]]@ppm.grid))
+              elements[[i]]@ppm.grid <- elements[[1]]@ppm.grid
+          }
+        }
 
-    return(new("Spectra",
-               sample.name = do.call("c", lapply(elements, getSampleName)),
-               ppm.grid = x@ppm.grid,
-               spectra = do.call("cbind", lapply(elements, getSpectra)),
-               norm.method = x@norm.method,
-               norm.params = x@norm.params))
+      return(new("Spectra",
+                 sample.name = do.call("c", lapply(elements, getSampleName)),
+                 ppm.grid = x@ppm.grid,
+                 spectra = do.call("cbind", lapply(elements, getSpectra)),
+                 norm.method = x@norm.method,
+                 norm.params = x@norm.params))
   }
 )
 
