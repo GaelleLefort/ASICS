@@ -188,6 +188,8 @@ setMethod(
 #' Default value is \code{"default"} (\emph{i.e.,} \code{c("ind", "var")} for
 #' PCA and OPLS-DA and \code{c("boxplot")} for tests).
 #' @param add.label If \code{TRUE}, labels are added on individual plot.
+#' @param n.label.var An integer indicating the number of label to add on
+#' variable plot.
 #' @param axes A numeric vector of length 2 specifying the dimensions to be
 #' plotted for individual and variable plots.
 #' @param col.ind A character specifying the name of the design variable used
@@ -239,8 +241,8 @@ setMethod(
   signature = "AnalysisResults",
   definition = function(x, y, ..., graph = c("default", "ind", "var", "eig",
                                              "boxplot", "buckets"),
-                        add.label = TRUE, axes = c(1, 2), col.ind = NULL,
-                        xlim = c(0.5, 10), ylim = NULL) {
+                        add.label = TRUE, n.label.var = 10, axes = c(1, 2),
+                        col.ind = NULL, xlim = c(0.5, 10), ylim = NULL) {
 
       graph <- match.arg(graph)
 
@@ -251,7 +253,7 @@ setMethod(
                      "with PCA analysis"))
 
         .plotPCA(x@results, graph = graph, add.label = add.label,
-                 axes = axes, col.ind = col.ind)
+                 axes = axes, col.ind = col.ind, nb_label = n.label.var)
 
       } else if (x@type.analysis == "OPLS-DA") {
         if (graph == "default") graph <- c("ind", "var")
@@ -263,7 +265,7 @@ setMethod(
                      "bucket data type"))
 
         .plotOPLSDA(x, graph = graph, add.label = add.label,
-                                xlim = xlim, ylim = ylim)
+                                xlim = xlim, ylim = ylim, nb_label = n.label.var)
 
       } else if (x@type.analysis == "Kruskal-Wallis tests") {
         if (graph == "default") graph <- "boxplot"

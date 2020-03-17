@@ -201,7 +201,10 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
 #'
 #' @param name.dir Path of the folder containing one subfolder by sample. Each
 #' subfolder contains the Bruker files of this sample.
-#' @param which.spectra If there is more than one spectrum by sample, which is
+#' @param which.spectra If there is no folder with experiment number
+#' (\code{all_spectra/<spectrum_name>/pdata/...}) set \code{which.spectra} to
+#' \code{NULL}. Else if there is more than one spectrum by sample
+#' (\code{all_spectra/<spectrum_name>/<experiment_number>/pdata/...}), which is
 #' the spectrum to import (either always the first one with \code{which.spectra
 #' = "first"}, always the last one with \code{which.spectra = "last"} or a
 #' vector of length the number of spectra that specifies the number of each
@@ -237,10 +240,11 @@ importSpectraBruker <- function(name.dir, which.spectra = "first",
     stop("Path of the Bruker files doesn't exist!")
   }
 
-  if (length(which.spectra) != 1 | (!(which.spectra %in% c("first", "last")) &
-                                    !is.numeric(which.spectra))) {
+  if (!is.null(which.spectra) && (length(which.spectra) != 1 |
+                                  (!(which.spectra %in% c("first", "last", NULL)) &
+                                    !is.numeric(which.spectra)))) {
     stop(paste("'which.spectra' must be of length 1 and either 'first', 'last'",
-               " or a number."))
+               "'NULL' or a number."))
   }
 
   if (!is.null(ppm.grid) & !is.numeric(ppm.grid)) {
@@ -268,6 +272,8 @@ importSpectraBruker <- function(name.dir, which.spectra = "first",
                                         sort(as.numeric(dir(x))))),
                                         utils::tail, 1,
                                         FUN.VALUE = numeric(1))))
+  } else if (is.null(which.spectra)) {
+    cur_dir_spec <- cur_dir
   } else {
     cur_dir_spec <- as.list(file.path(cur_dir, which.spectra))
   }
@@ -479,6 +485,9 @@ alignSpectra <- function(spectra, reference = NULL, max.shift = 0.02,
   if (is.null(reference)) {
     if (verbose) cat("Finding reference spectrum \n")
     reference <- .findReference(spectra, ncores, verbose)
+
+    if (verbose) cat(paste("The reference spectrum is the number", reference,
+                           ":", colnames(spectra)[reference],"\n"))
   }
 
   # import spectra

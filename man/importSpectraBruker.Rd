@@ -11,7 +11,10 @@ importSpectraBruker(name.dir, which.spectra = "first", ppm.grid = NULL,
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each
 subfolder contains the Bruker files of this sample.}
 
-\item{which.spectra}{If there is more than one spectrum by sample, which is
+\item{which.spectra}{If there is no folder with experiment number
+(\code{all_spectra/<spectrum_name>/pdata/...}) set \code{which.spectra} to
+\code{NULL}. Else if there is more than one spectrum by sample
+(\code{all_spectra/<spectrum_name>/<experiment_number>/pdata/...}), which is
 the spectrum to import (either always the first one with \code{which.spectra
 = "first"}, always the last one with \code{which.spectra = "last"} or a
 vector of length the number of spectra that specifies the number of each

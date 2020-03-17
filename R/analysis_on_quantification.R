@@ -433,8 +433,8 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
   if (is.null(param.args$log10L)) param.args$log10L <- FALSE
   if (is.null(param.args$permI)) param.args$permI <- 0
   if (is.null(param.args$scaleC)) param.args$scaleC <- "standard"
-  if (is.null(param.args$info.txtC)) param.args$info.txtC <- 'NULL'
-  if (is.null(param.args$fig.pdfC)) param.args$fig.pdfC <- 'NULL'
+  if (is.null(param.args$info.txtC)) param.args$info.txtC <- NULL
+  if (is.null(param.args$fig.pdfC)) param.args$fig.pdfC <- NULL
   if (!is.null(param.args$subset)) param.args$subset <- NULL
 
   # opls-da and cross-validation

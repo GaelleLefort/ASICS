@@ -15,7 +15,7 @@ CHANGES in ASICS VERSION 1.0.1
 
 Improvements
 * need to specify number of cores to use a parallel environment
-* reference library (improvement of reference spectra)
+* reference library (improvement of reference spectra by cleaning them)
 
 
 CHANGES in ASICS VERSION 0.99.0
