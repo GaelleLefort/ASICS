@@ -1,6 +1,23 @@
 citHeader("To cite ASICS in publications use:")
 
 citEntry(entry = "Article",
+  title        = "ASICS: an R package for a whole analysis workflow of 1D 1H NMR spectra  ",
+  author       = personList(as.person("Gaëlle Lefort"), as.person("Laurence Liaubet"), as.person("Cécile Canlet"), as.person("Patrick Tardivel"), as.person("Marie-Christine Père"), as.person("Hélène Quesnel"), as.person("Alain Paris"), as.person("Nathalie Iannuccelli"), as.person("Nathalie Vialaneix"), as.person("Rémi Servien")),
+  journal      = "Bioinformatics",
+  year         = "2019",
+  volume       = "35",
+  number       = "21",
+  pages        = "4356–4363",
+  url          = "https://doi.org/10.1093/bioinformatics/btz248",
+
+  textVersion  =
+  paste("Lefort G., Liaubet L., Canlet C., Tardivel P., Père M.C., Quesnel H., Paris A., Iannuccelli N., Vialaneix N. Servien R. (2019).",
+        "ASICS: an R package for a whole analysis workflow of 1D 1H NMR spectra.",
+        "Bioinformatics, 35(21): 4356–4363.",
+        "https://doi.org/10.1093/bioinformatics/btz248")
+)
+
+citEntry(entry = "Article",
   title        = "ASICS: an automatic method for identification and quantification of metabolites in complex 1D 1H NMR spectra",
   author       = personList(as.person("Patrick Tardivel"), as.person("Cécile Canlet"), as.person("Gaëlle Lefort"), as.person("Marie Tremblay-Franco"), as.person("Laurent Debrauwer"), as.person("Didier Concordet"), as.person("Rémi Servien")),
   journal      = "Metabolomics",
