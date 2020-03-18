@@ -36,10 +36,10 @@
 
     spectra <-
       rbind(spectra,
-            data.frame(grid = ASICS.results@ppm.grid,
+            data.frame(grid = pure_lib@ppm.grid,
                        mixture = metab_to_add_pure,
                        which_mix  = rep(add.metab,
-                                        length(ASICS.results@ppm.grid))))
+                                        length(pure_lib@ppm.grid))))
 
     if (add.metab %in% ASICS.results@deformed.library$metabolite_name[
       ASICS.results@deformed.library$sample ==
@@ -65,6 +65,11 @@
     }
   }
 
+  # remove unused points to plot
+  spectra <- spectra[spectra$grid > xlim[1] &
+                       spectra$grid < xlim[2], ]
+
+  spectra$which_mix <- factor(spectra$which_mix)
   spectra$which_mix <- relevel(spectra$which_mix, "Original spectrum")
   # plot with ggplot2
   p1 <- ggplot(spectra) +

@@ -357,6 +357,10 @@ setMethod(
                             new.row.names = seq_len(ncol(x@spectra) *
                                                  nrow(x@spectra)))
 
+    # remove unused points to plot
+    data_to_plot <- data_to_plot[data_to_plot$ppm_grid > xlim[1] &
+                                   data_to_plot$ppm_grid < xlim[2], ]
+
     # set y boundaries if ylim is NULL
     if (is.null(ylim)) ylim <- c(0, max(data_to_plot$intensity))
 

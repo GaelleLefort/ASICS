@@ -220,7 +220,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 
     conditions <- NULL
     if (!is.null(col.ind)) {
-      conditions <- res.pca@suppLs$yModelMN[, col.ind]
+      conditions <- as.factor(res.pca@suppLs$yModelMN[, col.ind])
     }
 
     to_plot[[pos]] <- .plotIndiv(indiv_coord, eigen_value, add.label, axes,
@@ -575,7 +575,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
     to_plot[[pos]] <-
       .plotIndiv(indiv_coord, eigen_value, add.label = add.label,
                  axes = c(1, 2),
-                 condition = condition$conditionOPLSDA) +
+                 condition = factor(condition$conditionOPLSDA)) +
       coord_cartesian() + ylab("Orthogonal component 1") +
       xlab("Dimension 1") +
       ggtitle("OPLS-DA - Individual plot")
