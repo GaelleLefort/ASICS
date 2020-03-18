@@ -404,6 +404,7 @@ pca <- function(analysis_data, scale.unit = TRUE,
 #'   # Import design
 #'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                    package = "ASICSdata"), header = TRUE)
+#'   design$condition <- factor(design$condition)
 #'
 #'   # Create object for analysis and remove features with more than 25% of
 #'   # zeros
@@ -433,8 +434,8 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
   if (is.null(param.args$log10L)) param.args$log10L <- FALSE
   if (is.null(param.args$permI)) param.args$permI <- 0
   if (is.null(param.args$scaleC)) param.args$scaleC <- "standard"
-  if (is.null(param.args$info.txtC)) param.args$info.txtC <- NULL
-  if (is.null(param.args$fig.pdfC)) param.args$fig.pdfC <- NULL
+  if (is.null(param.args$info.txtC)) param.args$info.txtC <- 'none'
+  if (is.null(param.args$fig.pdfC)) param.args$fig.pdfC <- 'none'
   if (!is.null(param.args$subset)) param.args$subset <- NULL
 
   # opls-da and cross-validation
@@ -677,6 +678,7 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
 #'   # Import design
 #'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                    package = "ASICSdata"), header = TRUE)
+#'   design$condition <- factor(design$condition)
 #'
 #'   # Create object for analysis and remove features with more than 25% of
 #'   # zeros
@@ -772,10 +774,9 @@ kruskalWallis <- function(analysis_data, condition,
     df <- data.frame(
       feature = rep(rep(feature_with_padj, each = 5),
                     length(unlist(dimnames(stat)[2]))),
-      group = rep(unlist(dimnames(stat)[2]),
-                  each = length(unlist(dimnames(stat)[1])) * 5),
+      group = factor(rep(unlist(dimnames(stat)[2]),
+                  each = length(unlist(dimnames(stat)[1])) * 5)),
       quantif = unlist(stats))
-    df$group <- relevel(df$group, ref = levels(data_long$group)[1])
 
     p_boxplot <-
       ggplot(df, aes_string(x = "group", y = "quantif", fill = "group")) +

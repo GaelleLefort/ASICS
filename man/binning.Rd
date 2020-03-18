@@ -4,8 +4,15 @@
 \alias{binning}
 \title{Binning/Bucketing of NMR spectra}
 \usage{
-binning(spectra, bin = 0.01, exclusion.areas = matrix(c(4.5, 5.1), ncol
-  = 2), normalisation = TRUE, ncores = 1, verbose = TRUE, ...)
+binning(
+  spectra,
+  bin = 0.01,
+  exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
+  normalisation = TRUE,
+  ncores = 1,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shifts in

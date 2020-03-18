@@ -4,8 +4,14 @@
 \alias{formatForAnalysis}
 \title{Format data for analysis}
 \usage{
-formatForAnalysis(data, design = NULL, feature_info = NULL,
-  zero.threshold = 100, zero.group = NULL, outliers = NULL)
+formatForAnalysis(
+  data,
+  design = NULL,
+  feature_info = NULL,
+  zero.threshold = 100,
+  zero.group = NULL,
+  outliers = NULL
+)
 }
 \arguments{
 \item{data}{A data frame containing omics dataset with samples in columns and

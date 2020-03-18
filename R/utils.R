@@ -5,7 +5,7 @@
 }
 
 ## Linear interpolation to adapt old_spectrum on the old grid to the new grid
-  .changeGrid <- function(old_spectrum, old_grid, new_grid) {
+.changeGrid <- function(old_spectrum, old_grid, new_grid) {
 
       # new_grid must be included in old_grid
       if (new_grid[1] < old_grid[1]) new_grid[1] <- old_grid[1]

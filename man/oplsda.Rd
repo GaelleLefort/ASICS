@@ -5,8 +5,15 @@
 \title{Orthogonal projections to latent structures discriminant analysis (OPLS-DA)
 on a \code{\link{SummarizedExperiment}} object}
 \usage{
-oplsda(analysis_data, condition, cross.val = 1, thres.VIP = 1,
-  type.data = "quantifications", seed = 12345, ...)
+oplsda(
+  analysis_data,
+  condition,
+  cross.val = 1,
+  thres.VIP = 1,
+  type.data = "quantifications",
+  seed = 12345,
+  ...
+)
 }
 \arguments{
 \item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
@@ -49,6 +56,7 @@ if (require("ASICSdata", quietly = TRUE)) {
   # Import design
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
+  design$condition <- factor(design$condition)
 
   # Create object for analysis and remove features with more than 25\% of
   # zeros

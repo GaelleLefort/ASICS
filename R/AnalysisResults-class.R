@@ -216,6 +216,7 @@ setMethod(
 #'   # Import design
 #'   design <- read.table(system.file("extdata", "design_diabete_example.txt",
 #'                                    package = "ASICSdata"), header = TRUE)
+#'   design$condition <- factor(design$condition)
 #'
 #'   # Create object for analysis and remove metabolites with more than 25% of
 #'   # zeros

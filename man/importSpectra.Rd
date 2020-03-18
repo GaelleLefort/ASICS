@@ -4,9 +4,17 @@
 \alias{importSpectra}
 \title{Import metabolomic spectra}
 \usage{
-importSpectra(name.dir = NULL, name.file = NULL, type.import,
-  baseline.correction = FALSE, alignment = FALSE,
-  normalisation = TRUE, ncores = 1, verbose = TRUE, ...)
+importSpectra(
+  name.dir = NULL,
+  name.file = NULL,
+  type.import,
+  baseline.correction = FALSE,
+  alignment = FALSE,
+  normalisation = TRUE,
+  ncores = 1,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{name.dir}{Path of the folder containing the spectra. Each

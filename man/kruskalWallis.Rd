@@ -4,8 +4,13 @@
 \alias{kruskalWallis}
 \title{Kruskal-Wallis rank sum tests on a \code{\link{SummarizedExperiment}} object}
 \usage{
-kruskalWallis(analysis_data, condition, alpha = 0.05,
-  type.data = "quantifications", ...)
+kruskalWallis(
+  analysis_data,
+  condition,
+  alpha = 0.05,
+  type.data = "quantifications",
+  ...
+)
 }
 \arguments{
 \item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained
@@ -41,6 +46,7 @@ if (require("ASICSdata", quietly = TRUE)) {
   # Import design
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
+  design$condition <- factor(design$condition)
 
   # Create object for analysis and remove features with more than 25\% of
   # zeros

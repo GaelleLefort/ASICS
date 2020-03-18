@@ -4,8 +4,13 @@
 \alias{alignSpectra}
 \title{Alignment}
 \usage{
-alignSpectra(spectra, reference = NULL, max.shift = 0.02, ncores = 1,
-  verbose = TRUE)
+alignSpectra(
+  spectra,
+  reference = NULL,
+  max.shift = 0.02,
+  ncores = 1,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{spectra}{Data frame with spectra in columns and chemical shift in rows.

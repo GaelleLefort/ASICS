@@ -5,8 +5,12 @@
 \title{Principal Component Analysis (PCA) on a \code{\link{SummarizedExperiment}}
 object}
 \usage{
-pca(analysis_data, scale.unit = TRUE, type.data = "quantifications",
-  condition = NULL)
+pca(
+  analysis_data,
+  scale.unit = TRUE,
+  type.data = "quantifications",
+  condition = NULL
+)
 }
 \arguments{
 \item{analysis_data}{A \code{\link{SummarizedExperiment}} object obtained

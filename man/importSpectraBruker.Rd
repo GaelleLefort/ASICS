@@ -4,8 +4,14 @@
 \alias{importSpectraBruker}
 \title{Import preprocessed metabolomic spectra from Bruker files}
 \usage{
-importSpectraBruker(name.dir, which.spectra = "first", ppm.grid = NULL,
-  sample.names = NULL, ncores = 1, verbose = TRUE)
+importSpectraBruker(
+  name.dir,
+  which.spectra = "first",
+  ppm.grid = NULL,
+  sample.names = NULL,
+  ncores = 1,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{name.dir}{Path of the folder containing one subfolder by sample. Each

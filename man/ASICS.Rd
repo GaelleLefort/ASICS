@@ -4,9 +4,17 @@
 \alias{ASICS}
 \title{Automatic Statistical Identification in Complex Spectra}
 \usage{
-ASICS(spectra_obj, exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
-  max.shift = 0.02, pure.library = NULL, threshold.noise = 0.02,
-  combine = TRUE, seed = 1234, ncores = 1, verbose = TRUE)
+ASICS(
+  spectra_obj,
+  exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
+  max.shift = 0.02,
+  pure.library = NULL,
+  threshold.noise = 0.02,
+  combine = TRUE,
+  seed = 1234,
+  ncores = 1,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{spectra_obj}{An object of class \linkS4class{Spectra} obtained with the

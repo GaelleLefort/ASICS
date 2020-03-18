@@ -39,6 +39,7 @@ test_that("OPLS-DA on quantifications works well", {
   # import design
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
+  design$condition <- factor(design$condition)
 
   analysis_obj <- formatForAnalysis(quantification,
                                     zero.threshold = 25, design = design)
@@ -69,6 +70,7 @@ test_that("Kruskall-Wallis on quantifications works well", {
   # import design
   design <- read.table(system.file("extdata", "design_diabete_example.txt",
                                    package = "ASICSdata"), header = TRUE)
+  design$condition <- factor(design$condition)
 
   # create object for analysis and remove metabolites with more than 25% of
   #zeros
