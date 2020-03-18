@@ -9,6 +9,8 @@ binning(
   bin = 0.01,
   exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
   normalisation = TRUE,
+  low.lim = 0.5,
+  high.lim = 10,
   ncores = 1,
   verbose = TRUE,
   ...
@@ -28,6 +30,9 @@ of the analysis (ppm). By default, the water region is excluded
 \item{normalisation}{Logical. If \code{TRUE} a normalisation is applied for
 each spectrum (see \code{\link{normaliseSpectra}} for details). Default to
 \code{TRUE}.}
+
+\item{low.lim, high.lim}{low and high chemical shift limits for the output bins
+(default values : \code{low.lim = 0.5} and \code{high.lim = 10}).}
 
 \item{ncores}{Number of cores used in parallel evaluation. Default to
 \code{1}.}

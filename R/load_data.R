@@ -649,6 +649,8 @@ createSpectra <- function(spectra, norm.method = NULL, norm.params = NULL){
 #' @param normalisation Logical. If \code{TRUE} a normalisation is applied for
 #' each spectrum (see \code{\link{normaliseSpectra}} for details). Default to
 #' \code{TRUE}.
+#' @param low.lim,high.lim low and high chemical shift limits for the output bins
+#' (default values : \code{low.lim = 0.5} and \code{high.lim = 10}).
 #' @param ncores Number of cores used in parallel evaluation. Default to
 #' \code{1}.
 #' @param verbose A boolean value to allow print out process information.
@@ -669,7 +671,8 @@ createSpectra <- function(spectra, norm.method = NULL, norm.params = NULL){
 #' spectra_bin <- binning(spectra_data, bin = 0.01, type.norm = "pqn")
 binning <- function(spectra, bin = 0.01,
                     exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
-                    normalisation= TRUE, ncores = 1, verbose = TRUE, ...){
+                    normalisation= TRUE, low.lim = 0.5, high.lim = 10,
+                    ncores = 1, verbose = TRUE, ...){
 
   extra.args <- list(...)
 
@@ -698,10 +701,10 @@ binning <- function(spectra, bin = 0.01,
   }
 
   # compute buckets
-  buckets <- seq(max(0.5, min(trunc(old_grid * 10, 1) / 10)) + bin / 2,
-                 min(10, max(trunc(old_grid * 10, 1) / 10)) + bin / 2,
+  buckets <- seq(max(low.lim, min(trunc(old_grid * 10, 1)/10)) +
+                   bin/2,
+                 min(high.lim, max(trunc(old_grid * 10, 1)/10)) + bin/2,
                  by = bin)
-
 
   spectra_list <- as.list(spectra)
   # buckets values for each spectrum
