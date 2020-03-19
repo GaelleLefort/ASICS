@@ -156,10 +156,19 @@ ASICS <- function(spectra_obj,
                                                  verbose))
   } else {
     # spectra binning
-    spec_bin <- binning(data.frame(as.matrix(getSpectra(spectra_obj_raw))),
-                        exclusion.areas = exclusion.areas,
-                        ncores = ncores, verbose = TRUE, bin = 0.001)
+    spectra_to_bin <- data.frame(as.matrix(getSpectra(spectra_obj_raw)))
+    rownames(spectra_to_bin) <- spectra_obj_raw@ppm.grid
+    norm.param <- c(list(spectra = spectra_to_bin,
+                         exclusion.areas = exclusion.areas,
+                         ncores = ncores,
+                         bin = 0.001,
+                         verbose = FALSE,
+                         type.norm = spectra_obj_raw@norm.method),
+                    spectra_obj_raw@norm.params)
+    spec_bin <- do.call("binning", norm.param)
+
     spec_bin <- spec_bin[rowSums(spec_bin) != 0, ]
+
     spectra_obj <- .translateLibrary_combineVersion(spectra_obj, max.shift,
                                                  nb_points_shift, spec_bin,
                                                  pure.library, ncores,

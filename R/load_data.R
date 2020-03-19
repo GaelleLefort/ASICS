@@ -184,6 +184,8 @@ importSpectra <- function(name.dir = NULL, name.file = NULL, type.import,
     if (!is.null(norm.param$type.norm) & length(params) != 0) {
       attr(imported_spectra, "norm.param") <- params
     }
+  } else {
+    attr(imported_spectra, "type.norm") <- "none"
   }
 
   return(imported_spectra)
@@ -403,27 +405,30 @@ importSpectraBruker <- function(name.dir, which.spectra = "first",
 normaliseSpectra <- function(spectra, type.norm = "CS", verbose = TRUE, ...){
 
   if (!type.norm %in% c("CS", "mean", "pqn", "median", "firstquartile",
-                        "peak")) {
+                        "peak", "none")) {
     stop("This normalisation method is not available.")
   }
 
-  if (!is.numeric(as.numeric(rownames(spectra)))) {
-    stop("Rownames of spectra data frame don't contain ppm grid.")
+  spectra_norm <- spectra
+  if(type.norm != "none") {
+    if (!is.numeric(as.numeric(rownames(spectra)))) {
+      stop("Rownames of spectra data frame don't contain ppm grid.")
+    }
+
+    if (verbose) cat(paste("Normalisation method :",  type.norm, "\n"))
+
+    if (type.norm == "CS") {
+      spectra_norm <- data.frame(apply(spectra, 2, function(x)
+        t(x / .AUC(as.numeric(rownames(spectra)), x))))
+    } else {
+      capture.output(spectra_norm  <-
+                       data.frame(t(Normalization(t(spectra),
+                                                  type.norm = type.norm, ...))))
+    }
+
+    rownames(spectra_norm) <- rownames(spectra)
+    colnames(spectra_norm) <- colnames(spectra)
   }
-
-  if (verbose) cat("Normalisation... \n")
-
-  if (type.norm == "CS") {
-    spectra_norm <- data.frame(apply(spectra, 2, function(x)
-      t(x / .AUC(as.numeric(rownames(spectra)), x))))
-  } else {
-    capture.output(spectra_norm  <-
-                     data.frame(t(Normalization(t(spectra),
-                                                type.norm = type.norm, ...))))
-  }
-
-  rownames(spectra_norm) <- rownames(spectra)
-  colnames(spectra_norm) <- colnames(spectra)
 
   return(spectra_norm)
 }
@@ -609,7 +614,7 @@ createSpectra <- function(spectra, norm.method = NULL, norm.params = NULL){
   if (is.null(norm.method) & !is.null(attr(spectra, "type.norm"))) {
     norm.method <- attr(spectra, "type.norm")
   } else if (is.null(norm.method) & is.null(attr(spectra, "type.norm"))) {
-    norm.method <- "CS"
+    norm.method <- "none"
   }
 
   if (is.null(norm.params) & !is.null(attr(spectra, "norm.param"))) {
@@ -715,7 +720,6 @@ binning <- function(spectra, bin = 0.01,
   # convert in a data frame
   buckets_values <- as.data.frame(do.call(cbind, buckets_values_list))
 
-  # normalisation
   # normalisation
   spectra_norm <- buckets_values
   if (normalisation) {

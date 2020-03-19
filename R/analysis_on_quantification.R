@@ -434,8 +434,8 @@ oplsda <- function(analysis_data, condition, cross.val = 1, thres.VIP = 1,
   if (is.null(param.args$log10L)) param.args$log10L <- FALSE
   if (is.null(param.args$permI)) param.args$permI <- 0
   if (is.null(param.args$scaleC)) param.args$scaleC <- "standard"
-  if (is.null(param.args$info.txtC)) param.args$info.txtC <- 'none'
-  if (is.null(param.args$fig.pdfC)) param.args$fig.pdfC <- 'none'
+  if (is.null(param.args$info.txtC)) param.args$info.txtC <- "none"
+  if (is.null(param.args$fig.pdfC)) param.args$fig.pdfC <- "none"
   if (!is.null(param.args$subset)) param.args$subset <- NULL
 
   # opls-da and cross-validation
@@ -709,7 +709,10 @@ kruskalWallis <- function(analysis_data, condition,
   rownames(mean_by_group) <- mean_by_group[, 1]
   mean_by_group[, 1] <- NULL
   mean_by_group <- as.data.frame(t(mean_by_group))
+  mean_by_group$p_adj <- p_adj
   mean_by_group$significant <- p_adj < alpha
+  mean_by_group <- mean_by_group[order(mean_by_group$p_adj,
+                                       decreasing = FALSE), ]
 
   res_tests <- data.frame(Feature = rownames(assay(analysis_data, 1)),
                           "Adjusted p-value" = p_adj)
