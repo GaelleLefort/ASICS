@@ -44,14 +44,10 @@ spectra_obj <- createSpectra(spectra_data)
 ```
 
 Identification and quantification of metabolites can now be carried out using 
-only the function `ASICS`. For this example, only two metabolites are kept 
-(Alanine and Lactate) and quantification is performed on the first spectra.
+only the function `ASICS`. 
 ```{r quantification}
 to_exclude <- matrix(c(4.5, 10), ncol = 2)
-pure_lib <- pure_library[getSampleName(pure_library) %in%
-                         c("Lactate", "L-Alanine")]
-resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
-                   pure.library = pure_lib, verbose = FALSE)
+resASICS <- ASICS(spectra_obj, exclusion.areas = to_exclude, verbose = FALSE)
 ```
 
 Some analysis functions can be carried out on the quantification results. More

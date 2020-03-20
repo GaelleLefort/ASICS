@@ -1,5 +1,4 @@
 #### Threshold and concentration optimisation for each metabolite ####
-#' @importFrom stats rnorm runif
 #' @importFrom methods is
 #' @keywords internal
 .concentrationOpti <- function(spectrum_obj){
@@ -7,39 +6,9 @@
   # variance matrix of maximum likelihood
   A <- as.numeric(1 / sqrt(1/spectrum_obj[["mixture_weights"]])) *
     spectrum_obj[["cleaned_library"]]@spectra
-  VMLE <- solve(t(A)%*%A)
+  VMLE <- as.matrix(solve(t(A)%*%A))
 
-  # first threshold minimisation
-  N <- 1000
-  C <- t(chol(VMLE))
-  ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N, rnorm(nrow(C)*N))
-
-  # regularization paramater of lasso under positive constraints
-  se <- sqrt(diag(VMLE))
-
-  # L1 norm of threshold optimisation
-  nb_draw <- 30
-  p <- ncol(VMLE)
-  W <- matrix(nrow = nb_draw, ncol = p)
-  u <- numeric(nb_draw)
-
-  delta0 <- rep(0.5, p) # 0.5 by metabolite
-  a_min <- sum(.computeThreshold(delta0, ZMLE, se)) #threshold sum by metabolite
-  err <- 0.4
-
-  for(i in seq_len(400)) {
-    err <- 0.99 * err
-    W <- matrix(delta0 + err * c(runif(p * nb_draw, -1, 1)), nrow = nb_draw,
-                byrow = TRUE)
-    W[W > 1]  <-  1
-    W[W < 0] <- 0.0001
-    u <- apply(W, 1, .toMinimize, ZMLE, se)
-    if (min(u) < a_min)
-    {
-      delta0 <- W[which.min(u), ]
-      a_min <- min(u)
-    }
-  }
+  th <- optimal_thres_uni(VMLE)
 
   # pseudo MLE estimation
   B2 <- try(.lmConstrained(spectrum_obj[["cleaned_spectrum"]]@spectra,
@@ -53,12 +22,8 @@
                          10e-3)$coefficients
   }
 
-  # compute all thresholds
-  N <- 10000
-  ZMLE <- C%*%matrix(nrow = nrow(C), ncol = N, rnorm(nrow(C)*N))
-
   # concentration lasso estimation with positive constraints
-  identified_metab <- (B2 > .tuning(delta0, ZMLE) / delta0) & (B2 > 0)
+  identified_metab <- (B2 > th) & (B2 > 0)
 
   identified_library <-
     spectrum_obj[["cleaned_library"]][which(identified_metab)]
@@ -67,7 +32,7 @@
     try(.lmConstrained(spectrum_obj[["cleaned_spectrum"]]@spectra,
                        identified_library@spectra,
                        spectrum_obj[["mixture_weights"]])$coefficients,
-                     silent = TRUE)
+        silent = TRUE)
   if(is(B_final_tot,"try-error")){
     B_final_tot <- .lmConstrained(spectrum_obj[["cleaned_spectrum"]]@spectra,
                                   identified_library@spectra,
@@ -122,21 +87,87 @@
 }
 
 
-
 ##### Threshold optimisation functions
-.toMinimize <- function(x, ZMLE, se) {
-  sum(.computeThreshold(x, ZMLE, se))
+#' @importFrom mvtnorm rmvnorm
+optimal_thres_uni <- function(V){
+
+  n <- 1000 # number of simulation for the quantile computation
+  p <- ncol(V)
+
+  se <- sqrt(diag(V)) # standard deviation
+  C <- diag(1/se)%*%V%*%diag(1/se) # correlation matrix associated with V
+
+  Y <- rmvnorm(n, mean = rep(0, nrow(C)), sigma = C)
+
+  seuil <- newton_volume(C, Y) # numerical computation of optimal thresholds
+  return(se * seuil)
 }
 
-#' @importFrom stats qnorm
-#' @keywords internal
-.computeThreshold <- function(x, ZMLE, se) {
-  return(.tuning(x, ZMLE)/x + se*qnorm(0.95))
+newton_volume <- function(C, Y){
+
+  # initial threshold
+  sup <- apply(Y, 1, max)
+  q95 <- quantile(sup, probs = 0.95, names = FALSE)
+  lim1 <- rep(q95, nrow(C))
+
+  lim_temp <- lim1
+  flag <- TRUE
+  while (flag == T) {
+    grad <- compute_gradient(lim1, C, Y)
+    inc <- 1 / grad / max(1 / grad)
+
+    flag2 <- TRUE
+    lambda <- 0.4
+    while (flag2 == T) {
+      lim_temp <- shrink(lim1 - lambda * inc, Y)
+      if (sum(log(lim_temp)) < sum(log(lim1))) {
+        lim1 <- lim_temp
+        flag2 <- FALSE
+      } else {
+        lambda <- lambda * 0.6666
+        if (lambda < 0.005) {
+          flag2 <- FALSE
+          flag <- FALSE
+        }
+      }
+    }
+  }
+
+  return(lim1)
+}
+
+#' @importFrom stats dnorm
+compute_gradient <- function(lim1, C, Y) {
+
+  grad <- numeric(nrow(C))
+
+  for (i in 1:nrow(C))  {
+    Sig22_ <- solve(C[-i,-i])
+    s2 <- C[i, i] - C[i, -i] %*% Sig22_ %*% C[-i,i]
+    sel <- which(rowSums((Y[, -i] > lim1[-i])) == 0)
+    m <- t(C[i, -i] %*% Sig22_ %*% t(Y[sel, -i]))
+    grad[i] <- mean(dnorm(as.numeric(Y[sel,i]), as.numeric(m),
+                          rep(s2, length(m))))
+  }
+
+  return(grad)
 }
 
 #' @importFrom stats quantile
-#' @keywords internal
-.tuning <- function(delta, ZMLE) {
-  observation <- apply(as.double(delta) * (ZMLE), 2, max)
-  return(quantile(observation, 0.95))
+shrink <- function(lim, Y) {
+  ZZ <- Y * matrix(rep(1 / lim, nrow(Y)), nrow = nrow(Y), byrow = TRUE)
+  sup <- apply(ZZ, 1, max)
+  q95 <- quantile(sup, probs = 0.95, names = FALSE)
+  return(lim * rep(q95, ncol(Y)))
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -51,6 +51,11 @@ quantification results.
 Quantification of 1D 1H NMR spectra with ASICS method using a library of
 pure metabolite spectra. The method is presented in Tardivel et al. (2017).
 }
+\note{
+Since version 2.3.1 small changes were applied in order to improve the
+speed of metabolite selection algorithm. To reproduce previous results, you
+have to use an older version.
+}
 \examples{
 # Import data and create object
 current_path <- system.file("extdata", package = "ASICS")
@@ -58,12 +63,9 @@ spectra_data <- importSpectra(name.dir = current_path,
                      name.file = "spectra_example.txt", type.import = "txt")
 spectra_obj <- createSpectra(spectra_data)
 
-# Estimation of relative quantification of Lactate and L-Alanine
+# Estimation of relative quantifications
 to_exclude <- matrix(c(4.5, 10), ncol = 2)
-pure_lib <- pure_library[getSampleName(pure_library) \%in\%
-                         c("Lactate", "L-Alanine")]
-resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
-                  pure.library = pure_lib, combine = FALSE)
+resASICS <- ASICS(spectra_obj, exclusion.areas = to_exclude, combine = FALSE)
 }
 \references{
 Tardivel P., Canlet C., Lefort G., Tremblay-Franco M., Debrauwer

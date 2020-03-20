@@ -21,6 +21,10 @@
 #' \code{1}.
 #' @param verbose A boolean value to allow print out process information.
 #'
+#' @note Since version 2.3.1 small changes were applied in order to improve the
+#' speed of metabolite selection algorithm. To reproduce previous results, you
+#' have to use an older version.
+#'
 #' @return An object of type \linkS4class{ASICSResults} containing the
 #' quantification results.
 #'
@@ -44,12 +48,9 @@
 #'                      name.file = "spectra_example.txt", type.import = "txt")
 #' spectra_obj <- createSpectra(spectra_data)
 #'
-#' # Estimation of relative quantification of Lactate and L-Alanine
+#' # Estimation of relative quantifications
 #' to_exclude <- matrix(c(4.5, 10), ncol = 2)
-#' pure_lib <- pure_library[getSampleName(pure_library) %in%
-#'                          c("Lactate", "L-Alanine")]
-#' resASICS <- ASICS(spectra_obj[1], exclusion.areas = to_exclude,
-#'                   pure.library = pure_lib, combine = FALSE)
+#' resASICS <- ASICS(spectra_obj, exclusion.areas = to_exclude, combine = FALSE)
 ASICS <- function(spectra_obj,
                   exclusion.areas = matrix(c(4.5, 5.1), ncol = 2),
                   max.shift = 0.02, pure.library = NULL,
