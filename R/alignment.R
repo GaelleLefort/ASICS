@@ -146,8 +146,6 @@
 }
 
 
-
-
 #' @importFrom stats median fft
 .findBestShift <- function (refSpec, tarSpec, maxShift = 0) {
 
@@ -219,39 +217,33 @@
 #' @importFrom plyr llply
 .findReference <- function (spectra, ncores = 1, verbose) {
 
-  # binning
-  spec_bin <- binning(as.data.frame(spectra), ncores = ncores,
-                      verbose = verbose)
-
   # similarity
-  if (verbose) cat("Compute LCSS similarities \n")
-  simi_matrix <- bplapply(as.list(seq_along(spec_bin)),
-                            function(x) vapply(seq_along(spec_bin),
-                                               .similarityLCSS, x, spec_bin,
-                                               FUN.VALUE = numeric(1)),
+  if (verbose) cat("Compute FFT correlations \n")
+  simi_matrix <- bplapply(as.list(1:ncol(spectra)),
+     function(x) vapply(1:ncol(spectra),
+                        function(y) ifelse(x <= y, 0, .computeFFT(spectra[,y],
+                                                                  spectra[,x])),
+                                             FUN.VALUE = numeric(1)),
                           BPPARAM = .createEnv(ncores, ncol(spectra), verbose))
-
 
   simi_matrix <- do.call("cbind", simi_matrix)
 
   simi_matrix <- simi_matrix + t(simi_matrix)
-  diag(simi_matrix) <- diag(simi_matrix) / 2
+  diag(simi_matrix) <- 1
 
   return(which.max(rowSums(simi_matrix)))
 }
 
 
 ## Compute LCSS similarity
-#' @importFrom TSdist LCSSDistance
-.similarityLCSS <- function(x, y, spectra_bin) {
-  similarity <- 0
-  if (x == y) {
-    similarity <- nrow(spectra_bin)
-  } else if (y > x) {
-    similarity <- LCSSDistance(spectra_bin[, x], spectra_bin[, y], 0.01)
-  }
+.computeFFT <- function (refSpec, tarSpec) {
 
-  return(similarity)
+  M <- length(refSpec)
+  R <- fft((refSpec - mean(refSpec))/sd(refSpec)) *
+    Conj(fft((tarSpec - mean(tarSpec))/sd(tarSpec))) / (M^2)
+  vals <- (2^ceiling(log2(M))/length(refSpec)) * Re(fft(R, inverse = TRUE))
+
+  return(vals[1])
 }
 
 

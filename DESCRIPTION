@@ -26,7 +26,6 @@ Imports:
     ropls,
     stats,
     SummarizedExperiment,
-    TSdist,
     utils,
     Matrix,
     zoo
